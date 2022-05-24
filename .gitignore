@@ -12,3 +12,5 @@ _deps
 cuCV.code-workspace
 doc/html
 doc/latex
+build
+temp
