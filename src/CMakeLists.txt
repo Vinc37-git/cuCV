@@ -8,6 +8,7 @@ add_library(cuCV_LIB STATIC
         cumat.cu
         kernel.cu
         errorhandling.cpp
+        initializers.cpp
         )
 
 
