@@ -13,7 +13,7 @@
 
 
 template <typename T>
-__global__ void cuCV::kernel::add(CuMat<T> & OUT, CuMat<T> & A, CuMat<T> & B) {
+__global__ void cuCV::kernel::add(CuMat<T> OUT, const CuMat<T> A, const CuMat<T> B) {
     // threadIdx.x contains the index of the thread within the block
     // blockDim.x contains the size of thread block (number of threads in the thread block).
 
@@ -25,28 +25,64 @@ __global__ void cuCV::kernel::add(CuMat<T> & OUT, CuMat<T> & A, CuMat<T> & B) {
 
     int index = row * A.mWidth + col;  // linearisation of index
 
+    if (col < A.mWidth && row < A.mHeight)
+        OUT.mData[index] = A.mData[index] + B.mData[index];
+}
+
+
+template <typename T>
+__global__ void cuCV::kernel::dif(CuMat<T> OUT, CuMat<T> A, CuMat<T> B) {
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+
+    int index = row * A.mWidth + col;  // linearisation of index
+
     if (col < A.mWidth && row < A.mHeight) {
-        OUT.mData[index] = A.mData[index] * B.mData[index];
+        OUT.mData[index] = A.mData[index] - B.mData[index];
     }
 }
 
 
-/*
 template <typename T>
-__global__ void cuCV::kernel::add(T * OUT) {
-    //
+__global__ void cuCV::kernel::mul(CuMat<T> OUT, CuMat<T> A, CuMat<T> B) {
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+
+    int index = row * A.mWidth + col;  // linearisation of index
+
+    if (col < A.mWidth && row < A.mHeight) {
+        OUT.mData[index] = A.mData[index] - B.mData[index];
+    }
 }
-*/
+
+
 template <typename T>
-__global__ void cuCV::kernel::dif<T>(cuCV::CuMat<T> OUT) {
-    //
+__global__ void cuCV::kernel::div(CuMat<T> OUT, CuMat<T> A, CuMat<T> B) {
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+
+    int index = row * A.mWidth + col;  // linearisation of index
+
+    if (col < A.mWidth && row < A.mHeight) {
+        OUT.mData[index] = A.mData[index] - B.mData[index];
+    }
 }
+
 
 /// Explicit template specialization
-template __global__ void cuCV::kernel::add(CuMat<unsigned char> & OUT, CuMat<unsigned char> & A, CuMat<unsigned char> & B);
-template __global__ void cuCV::kernel::add(CuMat<unsigned short> & OUT, CuMat<unsigned short> & A, CuMat<unsigned short> & B);
-template __global__ void cuCV::kernel::add(CuMat<double> & OUT, CuMat<double> & A, CuMat<double> & B);
+template __global__ void cuCV::kernel::add(CuMat<CUCV_8U> OUT, const CuMat<CUCV_8U> A, const CuMat<CUCV_8U> B);
+template __global__ void cuCV::kernel::add(CuMat<CUCV_16U> OUT, const CuMat<CUCV_16U> A, const CuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::add(CuMat<CUCV_64F> OUT, const CuMat<CUCV_64F> A, const CuMat<CUCV_64F> B);
 
+template __global__ void cuCV::kernel::dif(CuMat<CUCV_8U> OUT, const CuMat<CUCV_8U> A, const CuMat<CUCV_8U> B);
+template __global__ void cuCV::kernel::dif(CuMat<CUCV_16U> OUT, const CuMat<CUCV_16U> A, const CuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::dif(CuMat<CUCV_64F> OUT, const CuMat<CUCV_64F> A, const CuMat<CUCV_64F> B);
 
-//template __global__ void cuCV::kernel::add(unsigned char * OUT);
-template __global__ void cuCV::kernel::dif<unsigned char>(cuCV::CuMat<unsigned char> OUT);
+template __global__ void cuCV::kernel::mul(CuMat<CUCV_8U> OUT, const CuMat<CUCV_8U> A, const CuMat<CUCV_8U> B);
+template __global__ void cuCV::kernel::mul(CuMat<CUCV_16U> OUT, const CuMat<CUCV_16U> A, const CuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::mul(CuMat<CUCV_64F> OUT, const CuMat<CUCV_64F> A, const CuMat<CUCV_64F> B);
+
+template __global__ void cuCV::kernel::div(CuMat<CUCV_8U> OUT, const CuMat<CUCV_8U> A, const CuMat<CUCV_8U> B);
+template __global__ void cuCV::kernel::div(CuMat<CUCV_16U> OUT, const CuMat<CUCV_16U> A, const CuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::div(CuMat<CUCV_64F> OUT, const CuMat<CUCV_64F> A, const CuMat<CUCV_64F> B);
+

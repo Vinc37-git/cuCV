@@ -10,15 +10,21 @@
  */
 
 
- #ifndef CUMAT_H
- #define CUMAT_H
+#ifndef CUMAT_H
+#define CUMAT_H
 
- #define BLOCK_SIZE 32
+
 
 #include <iostream>
+#include <unistd.h>
 
+
+#include "errorhandling.h"
 #include "mat.h"
 #include "kernel.h"
+
+#define BLOCK_SIZE 5
+
 
 namespace cuCV {
 
@@ -27,15 +33,17 @@ class CuMat : public Mat<T> {
 public:
 
     CuMat();
-    CuMat(int width, int height, int channels, void * data); ///< We will use templates later
+    CuMat(Mat<T> & SRC);
+    //CuMat(int width, int height, int channels, void * data);
 
     void add(CuMat & OUT, CuMat & B);
 
-    void allocate(const Mat<T> & srcMat);
-    void free();
     void uploadFrom(const Mat<T> & srcMat);
     void downloadTo(const Mat<T> & dstMat) const;
 
+private:
+    bool allocateLike(const Mat<T> & srcMat);
+    void free();
 
 };
 

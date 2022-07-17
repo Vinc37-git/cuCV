@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <unistd.h>
 
 #include <cuda_runtime.h>
 
@@ -21,33 +22,84 @@
 
 
 int main() {
+    fprintf(stderr, "Starting main.\n");
 
-    int N = 10000;
+    int N = 4;
 
-    cuCV::Mat A = cuCV::Mat<CUCV_8U>(N, N, 1);
-    cuCV::Mat B = cuCV::Mat<CUCV_8U>(N, N, 1);
-    cuCV::Mat C = cuCV::Mat<CUCV_8U>(N, N, 1);
+    cuCV::Mat A = cuCV::Mat<CUCV_64F>(N, N, N);
+    cuCV::Mat B = cuCV::Mat<CUCV_64F>(N, N, N);
+    cuCV::Mat C = cuCV::Mat<CUCV_8U>(N, N, N);
 
-    A.ones();
-    B.ones();
+    /*A.ones();
+    //B.ones();
 
-    A = A + 5;
+    A += 5;
 
-    A.print(5, 5);
+    A.print(5, 5, 0);
 
-    cuCV::CuMat<CUCV_8U> A_dev;
-    cuCV::CuMat<CUCV_8U> B_dev;
-    cuCV::CuMat<CUCV_8U> C_dev;
+    B = A + 2;
 
-    A_dev.uploadFrom(A);
-    B_dev.uploadFrom(B);
-
-    A_dev.add(C_dev, B_dev);
-    //C_dev = A_dev + B_dev;
-
-    C_dev.downloadTo(C);
+    B.print(5, 5, 0);
 
 
+    B = B + 2;
+
+    B.print(5, 5, 1);*/
+
+    C.eye();
+
+    CUCV_64F testData[8] = {1, 0, 0, 1, 1, 0, 0, 1};
+
+    std::cout << "Ch1 " << std::endl;
+    C.print(5,5,0);
+    std::cout << "Ch2 " << std::endl;
+    C.print(5,5,1);
+
+    for (size_t i=0; i<8; i++) {
+        std::cout << (int) C.mData[i] << " vs " << testData[i] <<std::endl;
+        if (C.mData[i] != testData[i])
+            printf("failed.\n");
+    } 
+
+
+
+    //A.clear();
+    //B.clear();
+
+return 0;
+
+/*
+    cuCV::CuMat<CUCV_8U> A_dev(A);
+    cuCV::CuMat<CUCV_8U> B_dev(B);
+    cuCV::CuMat<CUCV_8U> C_dev(C);
+
+    try {
+        std::cout << "Uploading A" << std::endl;
+        A_dev.uploadFrom(A);
+
+        std::cout << "Uploading B" << std::endl;
+        B_dev.uploadFrom(B);
+
+        std::cout << "Performing Math" << std::endl;
+        A_dev.add(C_dev, B_dev);
+
+        //C_dev = A_dev + B_dev;
+
+        std::cout << "Downloading Results" << std::endl;
+        C_dev.downloadTo(C);
+
+        std::cout << "Print Solution: " << std::endl;
+        C.print(5,5,0);
+    }
+    catch(const char * e) {
+        std::cerr << "Catched: " << e << '\n';
+    }
+    catch(std::exception const & e) {
+        std::cerr << e.what() << '\n';
+    }
+    
+
+*/
 
 
     //cuCV::CuMat B_dev = cuCV::CuMat(N, N, 1, b);
