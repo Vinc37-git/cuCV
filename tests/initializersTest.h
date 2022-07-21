@@ -21,6 +21,7 @@ class InitializersTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(InitializersTest);
     CPPUNIT_TEST(testZeros);
     CPPUNIT_TEST(testOnes);
+    CPPUNIT_TEST(testEye);
     CPPUNIT_TEST_SUITE_END();
 
     protected:
