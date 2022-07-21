@@ -9,6 +9,8 @@ add_library(cuCV_LIB STATIC
         kernel.cu
         errorhandling.cpp
         initializers.cpp
+        kernelcumat.cu
+        linalg.cu
         )
 
 
