@@ -35,7 +35,7 @@ enum class CuType {cuCV_8U, cuCV_16U, cuCV_64F};
 
 /**
  * @brief The Mat class represents a mathematical matrix with a maximum of 3 dimensions in cuCV.
- * It works as a base class for the cuCV Matrix Class which can be used for GPU applications. 
+ * It works as a base class for the cuCV cuMat Matrix Class which can be used for GPU applications. 
  * Member variables are dimension parameters and a pointer pointing to the data of the matrix
  * which must be stored in row major order. Channel data is stored subsequently.
  * Member functions are fundamental mathematical operations (on CPU) as well as initilaizers and some other

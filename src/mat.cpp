@@ -13,7 +13,7 @@
 
 template <typename T>
 cuCV::Mat<T>::Mat() 
-        : mData(NULL) { }
+        : mWidth(0), mHeight(0), mChannels(0), mStride(0), mData(NULL) { }
 
 
 template <typename T>
@@ -25,7 +25,6 @@ template <typename T>
 cuCV::Mat<T>::Mat(int width, int height, int channels) 
         : mWidth(width), mHeight(height), mChannels(channels), mStride(width), mData(NULL) {
     //mData = (T *) malloc(width * height * channels * sizeof(T));
-    mWidth = width;
     }
 
 
@@ -43,7 +42,7 @@ cuCV::Mat<T>::Mat(const Mat & mat)
 template <typename T>
 cuCV::Mat<T>::Mat(Mat && mat) 
         : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), mStride(mat.mStride), mData(mat.mData) {
-    mat.mData == NULL;
+    mat.mData = NULL;
     //fprintf(stdout, "Move constructor used.\n");
 }
 
@@ -263,14 +262,16 @@ cuCV::Mat<T> cuCV::Mat<T>::operator/(T alpha) const {
 
 template <typename T>
 void cuCV::Mat<T>::alloc() {
-    if ((mWidth == 0) || (mHeight == 0) || (mChannels == 0))
+    if ((mWidth == 0) || (mHeight == 0) || (mChannels == 0)) {
         fprintf(stderr, "You are trying to allocate memory for a mat object but dimensions are: (%d, %d, %d). (FILE: %s), (LINE: %d)\n", mHeight, mWidth, mChannels, __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
 
     if (mData == NULL)
         mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
     else {
         fprintf(stderr, "mData was not NULL before allocation. mData must be freed before Reallocation. (FILE: %s), (LINE: %d)\n", __FILE__, __LINE__);
-        //exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 }
 
