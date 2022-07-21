@@ -13,13 +13,21 @@
 #define ERRORHANDLING_H
 
 #include <iostream>
+#include <exception>
 #include <cuda_runtime.h>
+
+#include "mat.h"
+#include "cumat.h"
 
 #define gpuErrchk(ans) { cuCV::error::gpuAssert((ans), __FILE__, __LINE__); }
 
-
-
 namespace cuCV {
+
+
+template <typename T>
+class CuMat;  ///< Forward Declaration of CuMat to make sure compiler knows the class exists
+
+
 namespace error {
 
 /**
@@ -36,7 +44,50 @@ void gpuAssert(cudaError_t code, const char * file, int line, bool abort=true);
 
 int cudaError(std::string pos, cudaError_t & err);
 
-}
+};  // namespace error
+
+namespace exception {
+
+
+/**
+ * @brief Dimension Mismatch Exception.
+ * 
+ * @tparam T 
+ */
+template <typename T>
+class DimensionMismatch : public std::exception {
+public:
+    DimensionMismatch();
+    DimensionMismatch(const cuCV::Mat<T> & A, const cuCV::Mat<T> & B, std::string desc="operation");
+    DimensionMismatch(const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B, std::string desc="operation");
+    DimensionMismatch(const cuCV::CuMat<T> & A, const cuCV::Mat<T> & B, std::string desc="download");
+    DimensionMismatch(const cuCV::Mat<T> & A, const cuCV::CuMat<T> & B, std::string desc="upload");
+
+    const char * what() const throw();
+    void genMessage();
+
+private:
+    std::string msg;
+    std::string operation;
+    const int aX, aY, aZ, bX, bY, bZ;
+};
+
+
+/**
+ * @brief Nullpointer exception. Is thrown when an operand points to NULL.
+ */
+class NullPointer : public std::exception {
+public:
+    NullPointer(const char * msg);
+
+    const char * what() const throw();
+
+    const char * msg;
+};
+
+
+};  // namespace exception
+
 }
 
 
