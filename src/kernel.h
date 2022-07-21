@@ -20,25 +20,50 @@
 
 namespace cuCV {
 
+
 template <typename T>
 class CuMat;  ///< Forward Declaration of CuMat to make sure compiler knows the class exists
 
+
+template <typename T>
+class KernelCuMat;  ///< Forward Declaration of CuMat to make sure compiler knows the class exists
+
+
 namespace kernel {
 
-template< typename T >
-__global__ void add(cuCV::CuMat<T> OUT, const cuCV::CuMat<T> A, const cuCV::CuMat<T> B);
+
+template <typename T>
+__global__ void add(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const cuCV::KernelCuMat<T> B);
+
+template <typename T>
+__global__ void add(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const T alpha);
 
 
-template< typename T >
-__global__ void dif(cuCV::CuMat<T> OUT, cuCV::CuMat<T> A, cuCV::CuMat<T> B);
+template <typename T>
+__global__ void dif(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const cuCV::KernelCuMat<T> B);
+
+template <typename T>
+__global__ void dif(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const T alpha);
 
 
-template< typename T >
-__global__ void mul(cuCV::CuMat<T> OUT, cuCV::CuMat<T> A, cuCV::CuMat<T> B);
+template <typename T>
+__global__ void mul(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const cuCV::KernelCuMat<T> B);
+
+template <typename T>
+__global__ void mul(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const T alpha);
 
 
-template< typename T >
-__global__ void div(cuCV::CuMat<T> OUT, cuCV::CuMat<T> A, cuCV::CuMat<T> B);
+template <typename T>
+__global__ void div(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const cuCV::KernelCuMat<T> B);
+
+template <typename T>
+__global__ void div(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const T alpha);
+
+template <typename T>
+__global__ void matmul(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const cuCV::KernelCuMat<T> B);
+
+template <typename T>
+__global__ void naiveMatmul(cuCV::KernelCuMat<T> OUT, const cuCV::KernelCuMat<T> A, const cuCV::KernelCuMat<T> B);
 
 };  // namespace kernel
 };  // namespace cuCV
