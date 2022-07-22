@@ -261,6 +261,36 @@ cuCV::Mat<T> cuCV::Mat<T>::operator/(T alpha) const {
 
 
 template <typename T>
+int cuCV::Mat<T>::getWidth() const {
+    return mWidth;
+}
+
+
+template <typename T>
+int cuCV::Mat<T>::getHeight() const {
+    return mHeight;
+}
+
+
+template <typename T>
+int cuCV::Mat<T>::getNChannels() const {
+    return mChannels;
+}
+
+
+template <typename T>
+int cuCV::Mat<T>::getStride() const {
+    return mStride;
+}
+
+
+template <typename T>
+T * cuCV::Mat<T>::getDataPtr() const {
+    return mData;
+}
+
+
+template <typename T>
 void cuCV::Mat<T>::alloc() {
     if ((mWidth == 0) || (mHeight == 0) || (mChannels == 0)) {
         fprintf(stderr, "You are trying to allocate memory for a mat object but dimensions are: (%d, %d, %d). (FILE: %s), (LINE: %d)\n", mHeight, mWidth, mChannels, __FILE__, __LINE__);

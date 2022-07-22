@@ -240,6 +240,44 @@ public:
     Mat operator/(T alpha) const;
 
 
+    // ******* PUBLIC SETTERS AND GETTERS *******
+    
+    /**
+     * @brief Get the Width of Mat.
+     * 
+     * @return The width as int.
+     */
+    int getWidth() const;
+
+    /**
+     * @brief Get the height of Mat.
+     * 
+     * @return The height as int.
+     */
+    int getHeight() const;
+
+    /**
+     * @brief Get the number of channels of Mat.
+     * 
+     * @return The number of channels as int.
+     */
+    int getNChannels() const;
+
+    /**
+     * @brief Get the stride of Mat.
+     * 
+     * @return The stride as int.
+     */
+    int getStride() const;
+
+    /**
+     * @brief Get the data pointer of Mat.
+     * 
+     * @return The data pointer as pointer to data of type T.
+     */
+    T * getDataPtr() const;
+
+
     //  ******* MEMBER FUNCTIONS **********
 
     /**
@@ -292,7 +330,6 @@ public:
      */
     void print(int nRows, int nCols, int channel=0) const;
 
-//protected:
     /**
      * @brief Allocate memory for a mat object with a already given size.
      */
@@ -308,6 +345,7 @@ public:
      */
     CuType cuType;
 
+//protected:
     int mWidth;  ///< Width of the matrix represented by the mat object.
     int mHeight;  ///< Height of the matrix represented by the mat object.
     int mStride;  ///< Stride of the matrix represented by the mat object.
