@@ -30,12 +30,18 @@ class CuMat;  ///< Forward Declaration of CuMat to make sure compiler knows the 
  * @tparam T 
  */
 template <typename T>
-class KernelCuMat : public Mat<T> {
+class KernelCuMat {
 public:
     /**
      * @brief Construct a new Kernel Cu Mat object
      */
-    KernelCuMat();
+    //KernelCuMat();
+
+    __host__ 
+    KernelCuMat(const CuMat<T> & cuMat);
+
+    __device__ 
+    KernelCuMat(int width, int height, int channels, int stride);
 
 
     /**
@@ -43,7 +49,7 @@ public:
      * 
      * @param cuMat 
      */
-    KernelCuMat(const CuMat<T> & cuMat);
+    //__host__ __device__ KernelCuMat(const CuMat<T> & cuMat);
 
 
     /**
@@ -51,13 +57,32 @@ public:
      * 
      * @param kernelCuMat 
      */
-    KernelCuMat(const KernelCuMat<T> & kernelCuMat);
+    //__host__ __device__ KernelCuMat(const KernelCuMat<T> & kernelCuMat);
 
 
     /**
      * @brief Destroy the Kernel Cu Mat object. No data will be freed.
      */
-    ~KernelCuMat();
+    //__host__ __device__ ~KernelCuMat();
+
+    __device__ 
+    cuCV::KernelCuMat<T> getSubCuMat(int blockIdRow, int blockIdCol, int blockIdCh=0) const;
+
+
+    __device__ 
+    void setElement(const int row, const int col, const T value);
+
+
+    __device__ 
+    T getElement(const int row, const int col) const;
+
+
+
+    int mWidth;  ///< Width of the matrix represented by the mat object.
+    int mHeight;  ///< Height of the matrix represented by the mat object.
+    int mStride;  ///< Stride of the matrix represented by the mat object.
+    int mChannels;  ///< Number of channels of the matrix represented by the mat object.
+    T * mData;  ///< Pointer to the data of the matrix represented by the mat object.
 };
 };
 
