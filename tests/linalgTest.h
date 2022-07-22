@@ -23,6 +23,7 @@
 class LinalgTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(LinalgTest);
     CPPUNIT_TEST(testNaiveMatmul);
+    CPPUNIT_TEST(testMatmul);
     CPPUNIT_TEST_SUITE_END();
 
     protected:
@@ -33,6 +34,7 @@ class LinalgTest : public CPPUNIT_NS::TestFixture {
     //void tearDown();
 
     void testNaiveMatmul();
+    void testMatmul();
 };
 
 #endif  // LINALGTEST_H
