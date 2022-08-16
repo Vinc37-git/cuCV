@@ -19,7 +19,7 @@
 #include "errorhandling.h"
 #include "mat.h"
 #include "kernel.h"
-#include "kernelcumat.h"
+#include "devicecumat.h"
 
 #define BLOCK_SIZE 32
 
@@ -184,7 +184,7 @@ public:
     void allocateLike(const Mat<T> & srcMat);
     void clearOnDevice();
 
-    KernelCuMat<T> kernel() const;
+    DeviceCuMat<T> kernel() const;
 
 
 //private:

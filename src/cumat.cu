@@ -408,8 +408,8 @@ void cuCV::CuMat<T>::clearOnDevice() {
 
 
 template <typename T>
-cuCV::KernelCuMat<T> cuCV::CuMat<T>::kernel() const {
-    return cuCV::KernelCuMat<T>(* this);
+cuCV::DeviceCuMat<T> cuCV::CuMat<T>::kernel() const {
+    return cuCV::DeviceCuMat<T>(* this);
 }
 
 
