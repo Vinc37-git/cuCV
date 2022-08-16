@@ -51,8 +51,38 @@ cuCV::CuMat<T> cuCV::matmul(const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) 
     const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
     const dim3 blocks((out.mWidth + threads.x - 1) / threads.x, (out.mHeight + threads.y - 1) / threads.y, out.mChannels);
 
-    /// Perform Math
     cuCV::kernel::matmul<<<blocks, threads>>>(out.kernel(), A.kernel(), B.kernel());
+    
+    return out;
+}
+
+
+template <typename T1, typename T2> 
+cuCV::CuMat<T1> cuCV::slowConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding) {
+/// @todo What happens when the kernel size is larger than A?
+
+    if (A.getDataPtr() == NULL || kernel.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("PointerError: one or more operands point to NULL data!");
+
+    // Determine size of output matrix
+    int outW = 0, outH = 0;
+    switch (padding) {
+    case cuCV::Padding::ZERO :
+        outW = A.getWidth(), outH = A.getHeight();
+        break;
+    default:
+        break;
+    }
+
+    // Create output matrix
+    cuCV::CuMat<T1> out(outH, outW, A.getNChannels());
+    out.allocateOnDevice();
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((out.mWidth + threads.x - 1) / threads.x, (out.mHeight + threads.y - 1) / threads.y, out.mChannels);
+
+    cuCV::kernel::slowConv2d<<<blocks, threads>>>(out.kernel(), A.kernel(), kernel.kernel(), padding);
 
     return out;
 }
@@ -66,3 +96,13 @@ template cuCV::CuMat<CUCV_64F> cuCV::naiveMatmul(const cuCV::CuMat<CUCV_64F> & A
 template cuCV::CuMat<CUCV_8U> cuCV::matmul(const cuCV::CuMat<CUCV_8U> & A, const cuCV::CuMat<CUCV_8U> & B);
 template cuCV::CuMat<CUCV_16U> cuCV::matmul(const cuCV::CuMat<CUCV_16U> & A, const cuCV::CuMat<CUCV_16U> & B);
 template cuCV::CuMat<CUCV_64F> cuCV::matmul(const cuCV::CuMat<CUCV_64F> & A, const cuCV::CuMat<CUCV_64F> & B);
+
+template cuCV::CuMat<CUCV_8U> cuCV::slowConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_16U> cuCV::slowConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_64F> cuCV::slowConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_8U> cuCV::slowConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_16U> cuCV::slowConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_64F> cuCV::slowConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_8U> cuCV::slowConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_16U> cuCV::slowConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_64F> cuCV::slowConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
