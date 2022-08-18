@@ -14,3 +14,6 @@ doc/html
 doc/latex
 build
 temp
+settings.json
+tasks.json
+measurments/logs/*.log

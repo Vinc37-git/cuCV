@@ -9,4 +9,5 @@ include(CTest)
 add_subdirectory(src)
 add_subdirectory(bin)
 add_subdirectory(tests)
+add_subdirectory(measurments)
 
