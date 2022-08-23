@@ -11,6 +11,8 @@ add_library(cuCV_LIB STATIC
         initializers.cpp
         devicecumat.cu
         linalg.cu
+        cumatinitializers.cu 
+        filter.cpp
         )
 
 
