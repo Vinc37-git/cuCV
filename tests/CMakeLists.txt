@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-add_executable(matrix_multi matrix_multi.cu)
-target_link_libraries(matrix_multi PRIVATE cuCV_LIB)
-
 add_executable(matConstructorsVisualTest matConstructorsVisualTest.cpp)
 target_link_libraries(matConstructorsVisualTest PRIVATE cuCV_LIB)
 
@@ -10,6 +7,7 @@ target_link_libraries(matConstructorsVisualTest PRIVATE cuCV_LIB)
 add_executable(matTests unitTestMain.cpp matTest.cpp)
 add_executable(initializersTests unitTestMain.cpp initializersTest.cpp)
 add_executable(cuMatTests unitTestMain.cpp cuMatTest.cpp)
+add_executable(cuMatInitializersTests unitTestMain.cpp cumatinitializersTest.cpp)
 add_executable(linalgTests unitTestMain.cpp linalgTest.cpp)
 #add_executable(cudeviceTests unitTestMain.cpp cudeviceTest.cpp)
 
@@ -17,12 +15,14 @@ add_executable(linalgTests unitTestMain.cpp linalgTest.cpp)
 target_link_libraries(matTests PRIVATE cuCV_LIB cppunit)
 target_link_libraries(initializersTests PRIVATE cuCV_LIB cppunit)
 target_link_libraries(cuMatTests PRIVATE cuCV_LIB cppunit)
+target_link_libraries(cuMatInitializersTests PRIVATE cuCV_LIB cppunit)
 target_link_libraries(linalgTests PRIVATE cuCV_LIB cppunit)
 #target_link_libraries(cudeviceTests PRIVATE cuCV_LIB cppunit)
 
 add_test("CppUnitMatTests" matTests)
 add_test("CppUnitInitializersTest" initializersTests)
 add_test("CppUnitCuMatTests" cuMatTests)
+add_test("CppUnitCuMatInitializersTests" cuMatInitializersTests)
 add_test("CppUnitLinalgTests" linalgTests)
 #add_test("CppUnitCudeviceTests" cudeviceTests)
 
