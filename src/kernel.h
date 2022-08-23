@@ -29,6 +29,8 @@ class CuMat;  ///< Forward Declaration of CuMat to make sure compiler knows the 
 template <typename T>
 class DeviceCuMat;  ///< Forward Declaration of CuMat to make sure compiler knows the class exists
 
+enum class Padding;
+
 
 namespace kernel {
 
@@ -78,7 +80,15 @@ void slowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const 
 
 
 template <typename T> __global__ 
+void zeros(cuCV::DeviceCuMat<T> OUT);
+
+
+template <typename T> __global__ 
 void ones(cuCV::DeviceCuMat<T> OUT);
+
+
+template <typename T> __global__ 
+void eye(cuCV::DeviceCuMat<T> OUT);
 
 
 };  // namespace kernel

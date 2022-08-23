@@ -254,10 +254,45 @@ void cuCV::kernel::slowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat
 
 
 template <typename T> __global__
+void cuCV::kernel::zeros(cuCV::DeviceCuMat<T> OUT) {
+    const unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
+    const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
+
+    const unsigned int index = row * OUT.mWidth + col + (OUT.mWidth*OUT.mHeight) * ch;  // linearisation of index
+
+    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels)
+        OUT.mData[index] = 0;
+}
+
+
+template <typename T> __global__
 void cuCV::kernel::ones(cuCV::DeviceCuMat<T> OUT) {
-    OUT.mData[(blockIdx.y * blockDim.y + threadIdx.y) * OUT.mWidth 
-            + (blockIdx.x * blockDim.x + threadIdx.x)
-            + (OUT.mWidth*OUT.mHeight) * blockIdx.z] = 1;
+    const unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
+    const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
+
+    const unsigned int index = row * OUT.mWidth + col + (OUT.mWidth*OUT.mHeight) * ch;  // linearisation of index
+
+    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels)
+        OUT.mData[index] = 1;
+}
+
+
+template <typename T> __global__
+void cuCV::kernel::eye(cuCV::DeviceCuMat<T> OUT) {
+    const unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
+    const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
+
+    const unsigned int index = row * OUT.mWidth + col + (OUT.mWidth*OUT.mHeight) * ch;  // linearisation of index
+
+    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels) {
+        if (col == row)
+            OUT.mData[index] = 1;
+        else
+            OUT.mData[index] = 0;
+    }
 }
 
 
@@ -313,3 +348,14 @@ template __global__ void cuCV::kernel::slowConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT
 template __global__ void cuCV::kernel::slowConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::slowConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
 
+template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_8U> OUT);
+template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_16U> OUT);
+template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_64F> OUT);
+
+template __global__ void cuCV::kernel::ones(cuCV::DeviceCuMat<CUCV_8U> OUT);
+template __global__ void cuCV::kernel::ones(cuCV::DeviceCuMat<CUCV_16U> OUT);
+template __global__ void cuCV::kernel::ones(cuCV::DeviceCuMat<CUCV_64F> OUT);
+
+template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_8U> OUT);
+template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_16U> OUT);
+template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_64F> OUT);
