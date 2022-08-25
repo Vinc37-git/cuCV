@@ -180,11 +180,15 @@ public:
     void uploadFrom(const Mat<T> & srcMat);
     void downloadTo(Mat<T> & dstMat) const;
 
+    void alloc() = delete;  ///< delete alloc() from parent class mat
+    void clear() = delete;  ///< delete clear() from parent class mat
     void allocateOnDevice();
     void allocateLike(const Mat<T> & srcMat);
     void clearOnDevice();
 
     DeviceCuMat<T> kernel() const;
+
+    T at() = delete;  ///< delete at() from parent class mat
 
 
 //private:
@@ -207,6 +211,8 @@ public:
      * @return true if data pointer is null.
      */
     bool empty() const;
+
+    void print() = delete;  ///< delete print() from parent class mat
 };
 
 };
