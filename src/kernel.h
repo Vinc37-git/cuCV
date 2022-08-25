@@ -13,6 +13,7 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
+#include <cmath>
 #include <cuda_runtime.h>
 
 #include "mat.h"
@@ -68,6 +69,10 @@ void div(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const T alpha);
 
 
 template <typename T> __global__ 
+void div(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, float * pAlpha);
+
+
+template <typename T> __global__ 
 void naiveMatmul(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const cuCV::DeviceCuMat<T> B);
 
 
@@ -89,6 +94,10 @@ void ones(cuCV::DeviceCuMat<T> OUT);
 
 template <typename T> __global__ 
 void eye(cuCV::DeviceCuMat<T> OUT);
+
+
+template <typename T> __global__ 
+void gauss(cuCV::DeviceCuMat<T> OUT, double sigma, bool norm, float * sum);
 
 
 };  // namespace kernel

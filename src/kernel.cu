@@ -122,6 +122,19 @@ __global__ void cuCV::kernel::div(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
 }
 
 
+template <typename T>
+__global__ void cuCV::kernel::div(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, float * pAlpha) {
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    int  ch = blockIdx.z * blockDim.z + threadIdx.z;
+
+    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+
+    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
+        OUT.mData[index] = A.mData[index] / * pAlpha;
+}
+
+
 template <typename T> __global__ 
 void cuCV::kernel::naiveMatmul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, const DeviceCuMat<T> B) {
     int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -296,6 +309,38 @@ void cuCV::kernel::eye(cuCV::DeviceCuMat<T> OUT) {
 }
 
 
+__device__
+double gaussian1dDevice(double x, double mu, double sigma) {
+    const double a = (x - mu) / sigma;
+    return std::exp(-0.5 * a * a);    
+}
+
+
+template <typename T> __global__ 
+void cuCV::kernel::gauss(cuCV::DeviceCuMat<T> OUT, double sigma, bool norm, float * sum) {
+    ///< @note: Only squared matrices are allowed and length of sides must the an odd number of elements. 
+
+    const unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
+    const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
+
+    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels) {
+        size_t radius = (size_t) OUT.mWidth / 2;
+
+        // Calculate gaussian distributed value for current position / thread
+        double out = gaussian1dDevice(row, radius, sigma) * gaussian1dDevice(col, radius, sigma);
+
+        // add out value to sum.
+        /// @bug Check if we need a lock since multiple threads could write at same time.
+        /// @note atomic function: performed in one atomic transaction
+        if (ch == 0)
+            float old = atomicAdd(sum, out);
+
+        OUT.setElement(row, col, ch, (T) out);
+    }
+}
+
+
 
 /// Explicit template specialization
 template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const DeviceCuMat<CUCV_8U> B);
@@ -330,6 +375,10 @@ template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_8U> OUT, const Devic
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const CUCV_16U alpha);
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const CUCV_64F alpha);
 
+template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, float * pAlpha);
+template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, float * pAlpha);
+template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, float * pAlpha);
+
 template __global__ void cuCV::kernel::naiveMatmul(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const DeviceCuMat<CUCV_8U> B);
 template __global__ void cuCV::kernel::naiveMatmul(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const DeviceCuMat<CUCV_16U> B);
 template __global__ void cuCV::kernel::naiveMatmul(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const DeviceCuMat<CUCV_64F> B);
@@ -359,3 +408,7 @@ template __global__ void cuCV::kernel::ones(cuCV::DeviceCuMat<CUCV_64F> OUT);
 template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_8U> OUT);
 template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_16U> OUT);
 template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_64F> OUT);
+
+template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_8U> OUT, double sigma, bool norm, float * sum);
+template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_16U> OUT, double sigma, bool norm, float * sum);
+template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_64F> OUT, double sigma, bool norm, float * sum);
