@@ -73,6 +73,10 @@ CuMat<T> onesOnDevice(int width, int height, int channels);
 template <typename T>
 CuMat<T> eyeOnDevice(int width, int height, int channels);
 
+
+template <typename T>
+CuMat<T> gaussOnDevice(int length, int channels, double sigma, bool norm);
+
 }
 
 #endif  // CUMATINITIALIZERS_H

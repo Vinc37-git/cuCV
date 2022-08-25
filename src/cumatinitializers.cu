@@ -77,6 +77,43 @@ cuCV::CuMat<T> cuCV::eyeOnDevice(int width, int height, int channels) {
 }
 
 
+template <typename T>
+cuCV::CuMat<T> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm) {
+    if (length % 2 == 0) 
+        throw std::runtime_error("Invalid side-length for Gaussian Kernel. It must be an odd number."); 
+
+    cuCV::CuMat<T> mat(length, length, channels);
+    mat.allocateOnDevice();
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((mat.getWidth() + threads.x - 1) / threads.x, (mat.getHeight() + threads.y - 1) / threads.y, mat.getNChannels());
+
+    /// Perform Math
+    float * pSum;
+    gpuErrchk(cudaMalloc((void**) & pSum, sizeof(float)));  // void**) &
+    gpuErrchk(cudaMemset((void *) pSum, 0, sizeof(float)));
+
+    cuCV::kernel::gauss<<<blocks, threads>>>(mat.kernel(), sigma, norm, pSum);
+
+    //gpuErrchk(cudaPeekAtLastError());
+    //gpuErrchk(cudaDeviceSynchronize());
+
+    /// Since we can not gurantee synchronization on grid level of all threads in the gauss kernel after cummulating the sum,
+    /// we will use a second, consecutive kernel to normalize the data
+    if ((bool) norm) {
+        //cuCV::kernel::gauss<<<blocks, threads>>>(mat.kernel(), sigma, norm, pSum);
+        cuCV::kernel::div<<<blocks, threads>>>(mat.kernel(), mat.kernel(), pSum);
+        gpuErrchk(cudaPeekAtLastError());
+        gpuErrchk(cudaDeviceSynchronize());
+    }
+
+    gpuErrchk(cudaFree(pSum));
+
+    return mat;
+}
+
+
 /// Explicit template specialization
 template cuCV::CuMat<CUCV_8U> cuCV::getEmptyOnDevice<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_16U> cuCV::getEmptyOnDevice<CUCV_16U>(const int width, const int height, const int channels);
@@ -93,3 +130,7 @@ template cuCV::CuMat<CUCV_64F> cuCV::onesOnDevice<CUCV_64F>(const int width, con
 template cuCV::CuMat<CUCV_8U> cuCV::eyeOnDevice<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_16U> cuCV::eyeOnDevice<CUCV_16U>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_64F> cuCV::eyeOnDevice<CUCV_64F>(const int width, const int height, const int channels);
+
+template cuCV::CuMat<CUCV_8U> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
+template cuCV::CuMat<CUCV_16U> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
+template cuCV::CuMat<CUCV_64F> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
