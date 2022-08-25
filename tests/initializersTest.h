@@ -16,12 +16,14 @@
 #include "initializers.h"
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <cmath>
 
 class InitializersTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(InitializersTest);
     CPPUNIT_TEST(testZeros);
     CPPUNIT_TEST(testOnes);
     CPPUNIT_TEST(testEye);
+    CPPUNIT_TEST(testGauss);
     CPPUNIT_TEST_SUITE_END();
 
     protected:
@@ -34,6 +36,7 @@ class InitializersTest : public CPPUNIT_NS::TestFixture {
     void testZeros();
     void testOnes();
     void testEye();
+    void testGauss();
 };
 
 #endif  // INITIALIZERSTEST_H

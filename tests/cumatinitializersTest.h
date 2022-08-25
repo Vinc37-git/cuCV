@@ -23,6 +23,7 @@ class CuMatInitializersTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testZeros);
     CPPUNIT_TEST(testOnes);
     CPPUNIT_TEST(testEye);
+    CPPUNIT_TEST(testGauss);
     CPPUNIT_TEST_SUITE_END();
 
     protected:
@@ -35,6 +36,7 @@ class CuMatInitializersTest : public CPPUNIT_NS::TestFixture {
     void testZeros();
     void testOnes();
     void testEye();
+    void testGauss();
 };
 
 #endif  // CUMATINITIALIZERSTEST_H

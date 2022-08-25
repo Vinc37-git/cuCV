@@ -59,3 +59,33 @@ void InitializersTest::testEye() {
         CPPUNIT_ASSERT(C.mData[i]==testData[i]);
     }
 }
+
+
+double discreteGaussianTest(size_t len, int x, int y, double sigma) {
+    x -= len/2, y -= len/2;
+    double r = x * x + y * y, s = 2.f * sigma * sigma;
+    return exp(-r / s ) / (s * M_PI);
+}
+
+
+void InitializersTest::testGauss() {
+
+    N = 5;
+
+    for (double sig = 0.5; sig < 5; sig += 0.4) {
+        // cuCV::Mat A = cuCV::gauss<CUCV_8U>(N, N, sig, false);
+        // cuCV::Mat B = cuCV::gauss<CUCV_16U>(N, N, sig, false);
+        cuCV::Mat C = cuCV::gauss<CUCV_64F>(N, N, sig);
+
+        double scale64F = C.at((int) N/2, (int) N/2) / discreteGaussianTest(N, (int) N/2, (int) N/2, sig);
+
+        for (size_t row = 0; row < N; ++row) {
+            for (size_t col = 0; col < N; ++col) {
+                // CPPUNIT_ASSERT_EQUAL(A.mData[row * N + col], (unsigned char) discreteGaussianTest(N, col, row, sig));
+                // CPPUNIT_ASSERT_EQUAL(B.mData[row * N + col], (unsigned short) discreteGaussianTest(N, col, row, sig));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(" ", discreteGaussianTest(N, col, row, sig) * scale64F, C.mData[row * N + col], 0.001);
+            }
+        }
+    }
+
+}
