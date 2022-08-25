@@ -55,6 +55,8 @@ public:
      * @brief Construct a new Mat object pointing to data. Provide dimension parameteres and a pointer to data.
      * Note that data must be stored ROW MAJOR and channels as subsequent data blocks.
      * Use this constructor, when you have data already stored in memory.
+     * Note that the matrix will steale the memory and hence, the matrix will take care about deallocation.
+     * @todo add a member function `forgetMem()` to prevent auto deallocation when Mat object gets destroyed.
      * 
      * @param width The number of columns of the matrix.
      * @param height The number of rows of the matrix.
@@ -65,7 +67,7 @@ public:
 
     /**
      * @brief Construct a new empty Mat object. Provide dimension parameteres, but the data pointer will be a `NULL` pointer.
-     * Use this constructor, when you want to use a initializer method of the Mat class.
+     * Use this constructor, when you want to use an initializer method of the Mat class.
      * 
      * @param width The number of columns of the matrix.
      * @param height The number of rows of the matrix.
@@ -91,7 +93,6 @@ public:
     /**
      * @brief Destroy the Mat object. Unfreed pointer will be freed. 
      * However, make sure to free all data once it is not needed anymore.
-     * NOTE: free() is deactivated to detect leaked memory mistakes.
      * 
      */
     ~Mat();
