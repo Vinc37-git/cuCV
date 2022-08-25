@@ -41,6 +41,11 @@ cuCV::CuMat<T> createKernel(const cuCV::Kernel kerneltype, const size_t kernelX,
             cuCV::CuMat<CUCV_64F> laplaceDev(3, 3, 1);
             laplaceDev.uploadFrom(laplaceCpu);
             return laplaceDev;
+
+        case cuCV::Kernel::GAUSS:
+            double sigma = 1;  ///< @todo: Pass as argument
+            bool norm = true;  ///< @todo: Pass as argument
+            return cuCV::gaussOnDevice<CUCV_64F>(kernelX, 1, sigma, norm);
         
         default:
             break;
