@@ -12,7 +12,9 @@
 #ifndef INITIALIZERS_H
 #define INITIALIZERS_H
 
+#include <cmath>
 #include "mat.h"
+#include "errorhandling.h"
 
 namespace cuCV {
 
@@ -66,6 +68,20 @@ Mat<T> ones(int width, int height, int channels);
  */
 template <typename T>
 Mat<T> eye(int width, int height, int channels);
+
+
+/**
+ * @brief Get a squared mat object which entries follow a gaussian distribution.
+ * 
+ * @tparam T The type of the matrix.
+ * @param length The length of one side of the matrix.
+ * @param channels The number of channels of the matrix.
+ * @param sigma The standard deviation. Defaults to 1.
+ * @param norm Normalize kernel such that the sum over all elements equals 1. Defaults to true.
+ * @return The Mat object.
+ */
+template <typename T>
+Mat<T> gauss(const int length, const int channels, double sigma=1, bool norm=true);
 
 }
 
