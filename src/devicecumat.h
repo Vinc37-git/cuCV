@@ -48,6 +48,10 @@ public:
 
 
     __device__ 
+    void setElement(const int row, const int col, const int ch, const T value);
+
+
+    __device__ 
     T getElement(const int row, const int col) const;
 
 

@@ -39,6 +39,14 @@ void cuCV::DeviceCuMat<T>::setElement(const int row, const int col, const T valu
 }
 
 
+template <typename T> __device__ 
+void cuCV::DeviceCuMat<T>::setElement(const int row, const int col, const int ch, const T value) {
+    //printf("Set %d at %d with %d, %d, %d\n", value, mStride * row + col, mStride, row, col);
+    mData[mStride * row + col + ch * (mStride * mHeight)] = value;
+    /// @bug add mStrideY and replace mHeight
+}
+
+
 template <typename T> __device__  
 T cuCV::DeviceCuMat<T>::getElement(const int row, const int col) const {
     return mData[mStride * row + col];
