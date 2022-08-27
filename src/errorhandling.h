@@ -19,19 +19,27 @@
 #include "mat.h"
 #include "cumat.h"
 
+
+/**
+ * @brief A macro to wrap all cuda runtime api calls. 
+ * 
+ */
 #define gpuErrchk(ans) { cuCV::error::gpuAssert((ans), __FILE__, __LINE__); }
+
 
 namespace cuCV {
 
-
 template <typename T>
-class CuMat;  ///< Forward Declaration of CuMat to make sure compiler knows the class exists
+class CuMat;  // Forward Declaration of CuMat to make sure compiler knows the class exists
 
 
+/**
+ * @brief A collection of error handling functions. 
+ */
 namespace error {
 
 /**
- * @brief Canoncial Way to check for errors
+ * @brief Canoncial Way to check for errors by cuda runtime api.
  * from https://stackoverflow.com/questions/14038589/what-is-the-canonical-way-to-check-for-errors-using-the-cuda-runtime-api
  * 
  * @param code 
@@ -42,15 +50,28 @@ namespace error {
 void gpuAssert(cudaError_t code, const char * file, int line, bool abort=true);
 
 
+/**
+ * @brief DEPRACTED - use gpuAssert instead - A function to translate the cuda error code.
+ * 
+ * @param pos 
+ * @param err 
+ * @return int 
+ */
 int cudaError(std::string pos, cudaError_t & err);
 
 };  // namespace error
 
+
+/**
+ * @brief A collection of custom cuCV exceptions. 
+ */
 namespace exception {
 
 
 /**
- * @brief Dimension Mismatch Exception.
+ * @brief Dimension Mismatch Exception. 
+ * A custom exception which will be thrown when the dimensions of two matrices 
+ * do not match for an operation or data up- / download. The matrices may be of type Mat or CuMat.
  * 
  * @tparam T 
  */
@@ -85,10 +106,8 @@ public:
     const char * msg;
 };
 
-
 };  // namespace exception
 
 }
-
 
 #endif //

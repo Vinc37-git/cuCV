@@ -28,10 +28,20 @@
 #define CUCV_16U_MAX 65535
 
 
-
+/**
+ * @brief A CUDA accelerated Computer Vision Library.
+ * 
+ */
 namespace cuCV {
 
+
+/**
+ * @brief ENUM CURRENTLY NOT USED. 
+ * Available datatypes in CUCV: CUCV_8U, CUCV_16U, CUCV_64F.
+ * 
+ */
 enum class CuType {cuCV_8U, cuCV_16U, cuCV_64F};
+
 
 /**
  * @brief The Mat class represents a mathematical matrix with a maximum of 3 dimensions in cuCV.
@@ -342,11 +352,12 @@ public:
     void clear();  ///< Maybe
     
     /**
-     * @brief cuCV Datatypes.
+     * @brief @note CURRENTLY NOT USED. cuCV Datatypes.
      */
     CuType cuType;
 
 //protected:
+///< @todo: Make protected.
     int mWidth;  ///< Width of the matrix represented by the mat object.
     int mHeight;  ///< Height of the matrix represented by the mat object.
     int mStride;  ///< Stride of the matrix represented by the mat object.

@@ -18,14 +18,16 @@ namespace cuCV {
 
 
 template <typename T>
-class CuMat;  ///< Forward Declaration of CuMat to make sure compiler knows the class exists
+class CuMat;  // Forward Declaration of CuMat to make sure compiler knows the class exists
 
 /**
- * @brief Kernel CuMat Class is a sibling of the standard CuMat Class. However, it only borrows a reference to the data
+ * @brief Device CuMat Class is almost a copy of the standard CuMat Class. However, it only borrows a reference to the data
  * of an cuMat Object to launch the cuda kernel. This is neccessary due to the fact, that __global__ cuda kernels require 
  * arguments to be passed by value, which would result in a copy of data when using the standard cuMat object.
  * Since the data is borrowed only, the DeviceCuMat object will not take care of the data. When the object goes out of scope
  * after the kernel call, it will not free the data associated with the borrowed reference.
+ * Note that most of the member functions are __device__ functions. Hence, it should not be used on the host.
+ * Use it only for kernel calls else the standard CuMat Class
  * 
  * @tparam T 
  */
@@ -59,7 +61,7 @@ public:
     T getElement(const int row, const int col, const int ch) const;
 
 
-
+///< @todo make private
     int mWidth;  ///< Width of the matrix represented by the mat object.
     int mHeight;  ///< Height of the matrix represented by the mat object.
     int mStride;  ///< Stride of the matrix represented by the mat object.

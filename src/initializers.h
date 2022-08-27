@@ -44,6 +44,7 @@ Mat<T> getEmpty(int width, int height, int channels);
 template <typename T>
 Mat<T> zeros(int width, int height, int channels);
 
+
 /**
  * @brief Get a Mat object filled with ones.
  * 
