@@ -13,8 +13,19 @@ add_library(cuCV_LIB STATIC
         linalg.cu
         cumatinitializers.cu 
         filter.cpp
+        imread.cpp
         )
 
+set(CIMG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}"/include/cimg")
+target_include_directories(cuCV_LIB PUBLIC ${CIMG_INCLUDE_DIR})
+
+find_package(PNG REQUIRED)
+include_directories(${PNG_INCLUDE_DIR})
+target_link_libraries(cuCV_LIB PUBLIC ${PNG_LIBRARY})
+
+find_package(JPEG REQUIRED)
+include_directories(${JPEG_INCLUDE_DIR})
+target_link_libraries(cuCV_LIB PUBLIC ${JPEG_LIBRARY})
 
 # Request that cuCV_LIB be built with -std=c++11
 # As this is a public compile feature anything that links to cuCV_LIB
@@ -28,7 +39,7 @@ set_target_properties(cuCV_LIB
         PROPERTIES CUDA_SEPARABLE_COMPILATION ON
         )
 
-
+# Make headers in src available to everything that links against cuCV_LIB
 target_include_directories(cuCV_LIB
         INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}) 
