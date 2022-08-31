@@ -90,7 +90,7 @@ cuCV::CuMat<T> cuCV::matmul(const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) 
 
 
 template <typename T1, typename T2> 
-void cuCV::slowConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding) {
+void cuCV::simpleConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding) {
 
     if (A.getDataPtr() == NULL || kernel.getDataPtr() == NULL)
         throw cuCV::exception::NullPointer("PointerError: one or more operands point to NULL data!");
@@ -122,7 +122,7 @@ void cuCV::slowConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & ke
     const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
     const dim3 blocks((OUT.mWidth + threads.x - 1) / threads.x, (OUT.mHeight + threads.y - 1) / threads.y, OUT.mChannels);
 
-    cuCV::kernel::slowConv2d<<<blocks, threads>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
+    cuCV::kernel::simpleConv2d<<<blocks, threads>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
 
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
@@ -130,7 +130,7 @@ void cuCV::slowConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & ke
 
 
 template <typename T1, typename T2> 
-cuCV::CuMat<T1> cuCV::slowConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding) {
+cuCV::CuMat<T1> cuCV::simpleConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding) {
 
     // Determine size of output matrix
     int outW = 0, outH = 0;
@@ -146,14 +146,14 @@ cuCV::CuMat<T1> cuCV::slowConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, 
     cuCV::CuMat<T1> out(outH, outW, A.getNChannels());
     out.allocateOnDevice();
 
-    cuCV::slowConv2d(out, A, kernel, padding);
+    cuCV::simpleConv2d(out, A, kernel, padding);
 
     return out;
 }
 
 
 // template <typename T>
-// cuCV::CuMat<T> cuCV::slowConv2d(const CuMat<T> & A, const cuCV::Kernel kerneltype, const size_t kernelX, const size_t kernelY, const cuCV::Padding padding) {
+// cuCV::CuMat<T> cuCV::simpleConv2d(const CuMat<T> & A, const cuCV::Kernel kerneltype, const size_t kernelX, const size_t kernelY, const cuCV::Padding padding) {
 //     // Create kernel
     
 // }
@@ -176,24 +176,24 @@ template cuCV::CuMat<CUCV_8U> cuCV::matmul(const cuCV::CuMat<CUCV_8U> & A, const
 template cuCV::CuMat<CUCV_16U> cuCV::matmul(const cuCV::CuMat<CUCV_16U> & A, const cuCV::CuMat<CUCV_16U> & B);
 template cuCV::CuMat<CUCV_64F> cuCV::matmul(const cuCV::CuMat<CUCV_64F> & A, const cuCV::CuMat<CUCV_64F> & B);
 
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_8U> & OUT, const CuMat<CUCV_8U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_16U> & OUT, const CuMat<CUCV_16U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_64F> & OUT, const CuMat<CUCV_64F> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_8U> & OUT, const CuMat<CUCV_8U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_16U> & OUT, const CuMat<CUCV_16U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_64F> & OUT, const CuMat<CUCV_64F> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_8U> & OUT, const CuMat<CUCV_8U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_16U> & OUT, const CuMat<CUCV_16U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
-template void cuCV::slowConv2d(cuCV::CuMat<CUCV_64F> & OUT, const CuMat<CUCV_64F> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_8U> & OUT, const CuMat<CUCV_8U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_16U> & OUT, const CuMat<CUCV_16U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_64F> & OUT, const CuMat<CUCV_64F> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_8U> & OUT, const CuMat<CUCV_8U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_16U> & OUT, const CuMat<CUCV_16U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_64F> & OUT, const CuMat<CUCV_64F> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_8U> & OUT, const CuMat<CUCV_8U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_16U> & OUT, const CuMat<CUCV_16U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
+template void cuCV::simpleConv2d(cuCV::CuMat<CUCV_64F> & OUT, const CuMat<CUCV_64F> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
 
-template cuCV::CuMat<CUCV_8U> cuCV::slowConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
-template cuCV::CuMat<CUCV_16U> cuCV::slowConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
-template cuCV::CuMat<CUCV_64F> cuCV::slowConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
-template cuCV::CuMat<CUCV_8U> cuCV::slowConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
-template cuCV::CuMat<CUCV_16U> cuCV::slowConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
-template cuCV::CuMat<CUCV_64F> cuCV::slowConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
-template cuCV::CuMat<CUCV_8U> cuCV::slowConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
-template cuCV::CuMat<CUCV_16U> cuCV::slowConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
-template cuCV::CuMat<CUCV_64F> cuCV::slowConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_8U> cuCV::simpleConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_16U> cuCV::simpleConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_64F> cuCV::simpleConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_8U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_8U> cuCV::simpleConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_16U> cuCV::simpleConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_64F> cuCV::simpleConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_16U> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_8U> cuCV::simpleConv2d(const CuMat<CUCV_8U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_16U> cuCV::simpleConv2d(const CuMat<CUCV_16U> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
+template cuCV::CuMat<CUCV_64F> cuCV::simpleConv2d(const CuMat<CUCV_64F> & A, const CuMat<CUCV_64F> & kernel, const cuCV::Padding padding);
 
-// template cuCV::CuMat<CUCV_8U> cuCV::slowConv2d(const CuMat<CUCV_8U> & A, const cuCV::Kernel kerneltype, const size_t kernelX, const size_t kernelY, const cuCV::Padding padding);
+// template cuCV::CuMat<CUCV_8U> cuCV::simpleConv2d(const CuMat<CUCV_8U> & A, const cuCV::Kernel kerneltype, const size_t kernelX, const size_t kernelY, const cuCV::Padding padding);

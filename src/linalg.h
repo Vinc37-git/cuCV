@@ -86,7 +86,7 @@ CuMat<T> matmul(const CuMat<T> & A, const CuMat<T> & B);
  * @note REMOVE THIS FUNCTION and replace with boxFilter, gaussFilter, etc...
  */
 template <typename T>
-CuMat<T> slowConv2d(const CuMat<T> & A, const cuCV::Kernel kernel, const size_t kernelX, const size_t kernelY=3, const cuCV::Padding padding=0);
+CuMat<T> simpleConv2d(const CuMat<T> & A, const cuCV::Kernel kernel, const size_t kernelX, const size_t kernelY=3, const cuCV::Padding padding=0);
 
 
 /**
@@ -104,7 +104,7 @@ CuMat<T> slowConv2d(const CuMat<T> & A, const cuCV::Kernel kernel, const size_t 
  * @return the resulting matrix of type T1. The size dependes on the Padding method.
  */
 template <typename T1, typename T2>
-void slowConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
+void simpleConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
 
 
 /**
@@ -120,7 +120,7 @@ void slowConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, 
  * @return the resulting matrix of type T1. The size dependes on the Padding method.
  */
 template <typename T1, typename T2>
-CuMat<T1> slowConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
+CuMat<T1> simpleConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
 
 
 }  // namespace cuCV
