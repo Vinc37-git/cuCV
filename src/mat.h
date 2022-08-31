@@ -29,6 +29,16 @@
 
 
 /**
+ * @brief A debug print macro. It will print debug messages when CUCV_DEBUG is defined at compile time.
+ * However, if CUCV_DEBUG is not defined the optimizer should remove the code after compilation.
+ * A formated string can be passed as usual when using `fprintf` or `printf`.
+ */
+#define CUCV_DEBUG_PRINT(str, ...) \
+        do { if (CUCV_DEBUG) fprintf(stdout,"[%10s] : " str " (Line: %d, File: %s)\n", __func__, __VA_ARGS__, __LINE__, __FILE__); } while (0)
+
+
+
+/**
  * @brief A CUDA accelerated Computer Vision Library.
  * 
  */
@@ -67,7 +77,7 @@ public:
      * Use this constructor, when you have data already stored in memory.
      * Note that the matrix will steale the memory and hence, the matrix will take care about deallocation.
      * @todo add a member function `forgetMem()` to prevent auto deallocation when Mat object gets destroyed.
-     * @todo or add a member value `borrowed` which indicates that the data is only borrowed.
+     * @todo or add a member value `mBorrowed` which indicates that the data is only borrowed.
      * 
      * @param width The number of columns of the matrix.
      * @param height The number of rows of the matrix.
@@ -136,9 +146,7 @@ public:
     Mat & operator+=(T alpha);
 
     /**
-     * @brief Add on Mat object to another elementwise. Note that `A = A + B` will leak memory, 
-     * as the return Mat Object will point to a new chunk of memory and the reference to the 
-     * old A Object will be lost.
+     * @brief Add on Mat object to another elementwise.
      * 
      * @param mat 
      * @return Mat 
@@ -146,9 +154,7 @@ public:
     Mat operator+(const Mat & mat) const;
 
     /**
-     * @brief Add a scalar to a Mat object elementwise. Note that `A = A + 5` will leak memory, 
-     * as the return Mat Object will point to a new chunk of memory and the reference to the old 
-     * A Object will be lost.
+     * @brief Add a scalar to a Mat object elementwise.
      * 
      * @param alpha 
      * @return Mat 
