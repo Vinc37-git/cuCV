@@ -12,7 +12,9 @@ int main() {
     runner.addTest(suite);
     bool wasSucessful = runner.run();
 
-    gpuErrchk(cudaDeviceReset());  // to detect leaks with cuda-memcheck we need to call cudaDeviceReset(). 
+    #if CUDA_MEMCHECK_ABLE
+        gpuErrchk(cudaDeviceReset());  // to detect leaks with cuda-memcheck we need to call cudaDeviceReset(). 
+    #endif
 
     return wasSucessful ? 0 : 1;
 }

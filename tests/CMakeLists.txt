@@ -19,6 +19,11 @@ target_link_libraries(cuMatInitializersTests PRIVATE cuCV_LIB cppunit)
 target_link_libraries(linalgTests PRIVATE cuCV_LIB cppunit)
 #target_link_libraries(cudeviceTests PRIVATE cuCV_LIB cppunit)
 
+# To make test which call CUDA codes cuda-memcheckable, define CUDA_MEMCHECK_ABLE
+target_compile_definitions(cuMatTests PRIVATE CUDA_MEMCHECK_ABLE=1)
+target_compile_definitions(cuMatInitializersTests PRIVATE CUDA_MEMCHECK_ABLE=1)
+target_compile_definitions(linalgTests PRIVATE CUDA_MEMCHECK_ABLE=1)
+
 add_test("CppUnitMatTests" matTests)
 add_test("CppUnitInitializersTest" initializersTests)
 add_test("CppUnitCuMatTests" cuMatTests)
