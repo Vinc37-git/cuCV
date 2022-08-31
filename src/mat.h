@@ -24,8 +24,8 @@
 #define CUCV_16U unsigned short
 #define CUCV_64F double
 
-#define CUCV_8U_MAX 255
-#define CUCV_16U_MAX 65535
+#define CUCV_8U_MAX 0xff
+#define CUCV_16U_MAX 0xffff
 
 
 /**
@@ -67,6 +67,7 @@ public:
      * Use this constructor, when you have data already stored in memory.
      * Note that the matrix will steale the memory and hence, the matrix will take care about deallocation.
      * @todo add a member function `forgetMem()` to prevent auto deallocation when Mat object gets destroyed.
+     * @todo or add a member value `borrowed` which indicates that the data is only borrowed.
      * 
      * @param width The number of columns of the matrix.
      * @param height The number of rows of the matrix.
@@ -101,9 +102,9 @@ public:
 
     
     /**
-     * @brief Destroy the Mat object. Unfreed pointer will be freed. 
-     * However, make sure to free all data once it is not needed anymore.
-     * 
+     * @brief Destroy the Mat object. Allocated memory will be freed automatically. 
+     * However, clear the matrix by yourself if you do not need it anymore
+     * or let it go out of scope so that the destructor frees all data.
      */
     ~Mat();
 
