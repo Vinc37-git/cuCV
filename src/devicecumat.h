@@ -39,7 +39,7 @@ public:
     DeviceCuMat(const CuMat<T> & cuMat);
 
     __device__ 
-    DeviceCuMat(int width, int height, int channels, int stride);
+    DeviceCuMat(int width, int height, int channels, int strideX, int strideY);
 
     __device__ 
     cuCV::DeviceCuMat<T> getSubCuMat(int blockIdRow, int blockIdCol, int blockIdCh=0) const;
@@ -64,7 +64,8 @@ public:
 ///< @todo make private
     int mWidth;  ///< Width of the matrix represented by the mat object.
     int mHeight;  ///< Height of the matrix represented by the mat object.
-    int mStride;  ///< Stride of the matrix represented by the mat object.
+    int mStrideX;  ///< Stride of the memory in x direction.
+    int mStrideY;  ///< Stride of the memory in y direction.
     int mChannels;  ///< Number of channels of the matrix represented by the mat object.
     T * mData;  ///< Pointer to the data of the matrix represented by the mat object.
 };

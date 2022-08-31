@@ -15,47 +15,46 @@
 template <typename T> __host__ 
 cuCV::DeviceCuMat<T>::DeviceCuMat(const cuCV::CuMat<T> & cuMat) 
         : mWidth(cuMat.mWidth), mHeight(cuMat.mHeight), mChannels(cuMat.mChannels), 
-        mStride(cuMat.mStride),  mData(cuMat.mData) { }
+        mStrideX(cuMat.mStrideX), mStrideY(cuMat.mStrideY), mData(cuMat.mData) { }
 
 
 template <typename T> __device__ 
-cuCV::DeviceCuMat<T>::DeviceCuMat(int width, int height, int channels, int stride) 
+cuCV::DeviceCuMat<T>::DeviceCuMat(int width, int height, int channels, int strideX, int strideY) 
         : mWidth(width), mHeight(height), mChannels(channels), 
-        mStride(stride), mData(NULL) { }
+        mStrideX(strideX), mStrideY(strideY), mData(NULL) { }
 
 
 template <typename T> __device__ 
 cuCV::DeviceCuMat<T> cuCV::DeviceCuMat<T>::getSubCuMat(int blockIdRow, int blockIdCol, int blockIdCh) const {
-    cuCV::DeviceCuMat<T> sub(BLOCK_SIZE, BLOCK_SIZE, 1, mStride);
-    sub.mData = & mData[mStride * blockIdRow * BLOCK_SIZE + blockIdCol * BLOCK_SIZE];
+    cuCV::DeviceCuMat<T> sub(BLOCK_SIZE, BLOCK_SIZE, 1, mStrideX, mStrideY);
+    sub.mData = & mData[mStrideX * blockIdRow * BLOCK_SIZE + blockIdCol * BLOCK_SIZE];
     return sub;
 }
 
 
 template <typename T> __device__ 
 void cuCV::DeviceCuMat<T>::setElement(const int row, const int col, const T value) {
-    //printf("Set %d at %d with %d, %d, %d\n", value, mStride * row + col, mStride, row, col);
-    mData[mStride * row + col] = value;
+    //printf("Set %d at %d with %d, %d, %d\n", value, mStrideX * row + col, mStrideX, row, col);
+    mData[mStrideX * row + col] = value;
 }
 
 
 template <typename T> __device__ 
 void cuCV::DeviceCuMat<T>::setElement(const int row, const int col, const int ch, const T value) {
-    //printf("Set %d at %d with %d, %d, %d\n", value, mStride * row + col, mStride, row, col);
-    mData[mStride * row + col + ch * (mStride * mHeight)] = value;
-    /// @bug add mStrideY and replace mHeight
+    //printf("Set %d at %d with %d, %d, %d\n", value, mStrideX * row + col, mStrideX, row, col);
+    mData[mStrideX * row + col + ch * (mStrideX * mStrideY)] = value;
 }
 
 
 template <typename T> __device__  
 T cuCV::DeviceCuMat<T>::getElement(const int row, const int col) const {
-    return mData[mStride * row + col];
+    return mData[mStrideX * row + col];
 }
 
 
 template <typename T> __device__  
 T cuCV::DeviceCuMat<T>::getElement(const int row, const int col, const int ch) const {
-    return mData[mStride * row + col + (mStride*mHeight) * ch];
+    return mData[mStrideX * row + col + (mStrideX * mStrideY) * ch];
 }
 
 

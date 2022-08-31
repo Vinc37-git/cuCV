@@ -212,7 +212,7 @@ void cuCV::kernel::matmul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, const Devi
     }
     if (((blockCol * BLOCK_SIZE + threadCol) < OUT.mWidth) && ((blockRow * BLOCK_SIZE + threadRow) < OUT.mHeight)) {
         OUTsub.setElement(threadRow, threadCol, OUTval);
-        //printf("Set (%d, %d, %d), stride: %d = %d ==/!= %d\n", threadRow, threadCol, threadIdx.z, OUT.mStride, OUTval, OUTsub.getElement(threadRow, threadCol));
+        //printf("Set (%d, %d, %d), stride: %d = %d ==/!= %d\n", threadRow, threadCol, threadIdx.z, OUT.mStrideX, OUTval, OUTsub.getElement(threadRow, threadCol));
     }
 }
 

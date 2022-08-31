@@ -62,7 +62,8 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator=(CuMat cuMat) {
     this->cuType = cuMat.cuType;
     this->mWidth = cuMat.mWidth; 
     this->mHeight = cuMat.mHeight; 
-    this->mStride = cuMat.mStride;
+    this->mStrideX = cuMat.mStrideX;
+    this->mStrideY = cuMat.mStrideY;
     this->mChannels = cuMat.mChannels;
     return * this;
 }
@@ -310,7 +311,8 @@ void cuCV::CuMat<T>::uploadFrom(const Mat<T> & src) {
         this->mWidth = src.mWidth;
         this->mHeight = src.mHeight;
         this->mChannels = src.mChannels;
-        this->mStride = src.mStride;
+        this->mStrideX = src.mStrideX;
+        this->mStrideY = src.mStrideY;
     }
     else if (!compareDim(src, * this)) {
         throw cuCV::exception::DimensionMismatch(src, * this);
@@ -342,7 +344,8 @@ void cuCV::CuMat<T>::downloadTo(Mat<T> & dst) const {
         dst.mWidth = this->mWidth;
         dst.mHeight = this->mHeight;
         dst.mChannels = this->mChannels;
-        dst.mStride = this->mStride;
+        dst.mStrideX = this->mStrideX;
+        dst.mStrideY = this->mStrideY;
     }
     else if (!compareDim(* this, dst)) {
         throw cuCV::exception::DimensionMismatch(* this, dst);
@@ -364,7 +367,8 @@ void cuCV::CuMat<T>::allocateLike(const Mat<T> & src) {
         this->mWidth = src.mWidth;
         this->mHeight = src.mHeight;
         this->mChannels = src.mChannels;
-        this->mStride = src.mStride;
+        this->mStrideX = src.mStrideX;
+        this->mStrideY = src.mStrideY;
     }
     else if (!compareDim(src, * this))
         throw cuCV::exception::DimensionMismatch(src, * this, "allocation");
