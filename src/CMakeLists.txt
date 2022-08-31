@@ -16,7 +16,7 @@ add_library(cuCV_LIB STATIC
         imread.cpp
         )
 
-set(CIMG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}"/include/cimg")
+cmake_path(APPEND CIMG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} "include" "cimg")
 target_include_directories(cuCV_LIB PUBLIC ${CIMG_INCLUDE_DIR})
 
 find_package(PNG REQUIRED)
@@ -26,6 +26,9 @@ target_link_libraries(cuCV_LIB PUBLIC ${PNG_LIBRARY})
 find_package(JPEG REQUIRED)
 include_directories(${JPEG_INCLUDE_DIR})
 target_link_libraries(cuCV_LIB PUBLIC ${JPEG_LIBRARY})
+
+# Activate DEBUG printouts to stdout
+target_compile_definitions(cuCV_LIB PUBLIC CUCV_DEBUG)
 
 # Request that cuCV_LIB be built with -std=c++11
 # As this is a public compile feature anything that links to cuCV_LIB
