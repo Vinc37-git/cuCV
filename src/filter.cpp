@@ -42,7 +42,6 @@ cuCV::CuMat<CUCV_64F> cuCV::createKernel(const cuCV::Kernel kerneltype, const si
             return laplaceDev;
     }
     else if (kerneltype == cuCV::Kernel::GAUSS) {
-            double sigma = 1;  ///< @todo: Pass as argument
             bool norm = true;  ///< @todo: Pass as argument
             return cuCV::gaussOnDevice<CUCV_64F>(kernelX, 1, sigma, norm);
     }   
