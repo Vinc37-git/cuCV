@@ -13,24 +13,28 @@
 
 template <typename T>
 cuCV::Mat<T>::Mat() 
-        : mWidth(0), mHeight(0), mChannels(0), mStride(0), mData(NULL) { }
+        : mWidth(0), mHeight(0), mChannels(0), 
+        mStrideX(0), mStrideY(0), mData(NULL) { }
 
 
 template <typename T>
 cuCV::Mat<T>::Mat(int width, int height, int channels, T * data) 
-        : mWidth(width), mHeight(height), mChannels(channels), mStride(width), mData(data) { }
+        : mWidth(width), mHeight(height), mChannels(channels), 
+        mStrideX(width), mStrideY(height), mData(data) { }
 
 
 template <typename T>
 cuCV::Mat<T>::Mat(int width, int height, int channels) 
-        : mWidth(width), mHeight(height), mChannels(channels), mStride(width), mData(NULL) {
+        : mWidth(width), mHeight(height), mChannels(channels), 
+        mStrideX(width), mStrideY(height), mData(NULL) {
     //mData = (T *) malloc(width * height * channels * sizeof(T));
     }
 
 
 template <typename T>
 cuCV::Mat<T>::Mat(const Mat & mat) 
-        : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), mStride(mat.mStride), mData(NULL) {
+        : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), 
+        mStrideX(mat.mStrideX), mStrideY(mat.mStrideY), mData(NULL) {
     if (mat.mData != NULL) {
         //mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
         mData = new T [mWidth * mHeight * mChannels];
@@ -42,7 +46,8 @@ cuCV::Mat<T>::Mat(const Mat & mat)
 
 template <typename T>
 cuCV::Mat<T>::Mat(Mat && mat) 
-        : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), mStride(mat.mStride), mData(mat.mData) {
+        : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), 
+        mStrideX(mat.mStrideX), mStrideY(mat.mStrideY), mData(mat.mData) {
     //fprintf(stdout, "%p swaped with %p : Move constructor used.\n", mat.mData, mData);
     mat.mData = NULL;
 }
@@ -73,7 +78,8 @@ cuCV::Mat<T> & cuCV::Mat<T>::operator=(Mat mat) {
 
     mWidth = mat.mWidth; 
     mHeight = mat.mHeight; 
-    mStride = mat.mStride;
+    mStrideX = mat.mStrideX;
+    mStrideY = mat.mStrideY;
     mChannels = mat.mChannels;
 
     //fprintf(stdout, "%p swaped with %p : Assignment operator used.\n", mat.mData, mData);
@@ -284,8 +290,14 @@ int cuCV::Mat<T>::getNChannels() const {
 
 
 template <typename T>
-int cuCV::Mat<T>::getStride() const {
-    return mStride;
+int cuCV::Mat<T>::getStrideX() const {
+    return mStrideX;
+}
+
+
+template <typename T>
+int cuCV::Mat<T>::getStrideY() const {
+    return mStrideY;
 }
 
 
@@ -331,14 +343,14 @@ void cuCV::Mat<T>::clear() {
 template <typename T>
 T cuCV::Mat<T>::at(const int row, const int col) const {
     /// row major: a11, a12, a13, a21, ...
-    return mData[row * mStride + col];
+    return mData[row * mStrideX + col];
 }
 
 
 template <typename T>
 T cuCV::Mat<T>::at(const int row, const int col, const int channel) const {
     /// row major: a11, a12, a13, a21, ...
-    return mData[row * mStride + col + channel*mWidth*mHeight];
+    return mData[row * mStrideX + col + channel * mStrideX * mStrideY];
 }
 
 
@@ -370,7 +382,7 @@ void cuCV::Mat<T>::eye() {
 
     alloc();
 
-    const int STRIDE = mWidth;
+    const int STRIDE = mStrideX;
 
     int c = 0;
 
