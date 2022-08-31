@@ -31,6 +31,7 @@ class MatTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testMul);
     CPPUNIT_TEST(testDif);
     CPPUNIT_TEST(testDiv);
+    CPPUNIT_TEST(testConvert);
     CPPUNIT_TEST_SUITE_END();
 
     protected:
@@ -50,6 +51,7 @@ class MatTest : public CPPUNIT_NS::TestFixture {
     void testMul();
     void testDif();
     void testDiv();
+    void testConvert();
     //void testMatMul();
 };
 

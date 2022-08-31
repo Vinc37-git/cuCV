@@ -230,4 +230,26 @@ void MatTest::testDiv() {
 }
 
 
+void MatTest::testConvert() {
+    A8U.ones();
+    A16U.ones();
+    A64F.ones();
 
+    // A 8U to 16U
+    cuCV::Mat A8U_to_A16U = A8U.astype<CUCV_16U>();
+    cuCV::Mat A16U_to_A64F = A8U.astype<CUCV_64F>();
+    cuCV::Mat A64F_to_A8U = A8U.astype<CUCV_8U>();
+
+    cuCV::Mat A8U_to_A64F = A8U.astype<CUCV_64F>();
+    cuCV::Mat A16U_to_A8U = A8U.astype<CUCV_8U>();
+    cuCV::Mat A64F_to_A16U = A8U.astype<CUCV_16U>();
+
+    for (size_t i=0; i<N*N*N; i++) {
+        CPPUNIT_ASSERT(A8U.mData[i] == A64F_to_A8U.mData[i]);
+        CPPUNIT_ASSERT(A8U.mData[i] == A16U_to_A8U.mData[i]);
+        CPPUNIT_ASSERT(A16U.mData[i] == A8U_to_A16U.mData[i]);
+        CPPUNIT_ASSERT(A16U.mData[i] == A64F_to_A16U.mData[i]);
+        CPPUNIT_ASSERT(A64F.mData[i] == A8U_to_A64F.mData[i]);
+        CPPUNIT_ASSERT(A64F.mData[i] == A16U_to_A64F.mData[i]);
+    }
+}
