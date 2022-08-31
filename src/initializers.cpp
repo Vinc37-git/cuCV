@@ -54,7 +54,8 @@ cuCV::Mat<T> cuCV::gauss(const int length, const int channels, double sigma, boo
     if (length % 2 == 0) 
         throw std::runtime_error("Invalid side-length for Gaussian Kernel. It must be an odd number."); 
     
-    T * data = (T *) malloc(length * length * channels * sizeof(T));
+    //T * data = (T *) malloc(length * length * channels * sizeof(T));
+    T * data = new T [length * length * channels];
 
     const int radius = length / 2;
 
