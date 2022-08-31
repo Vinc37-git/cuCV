@@ -15,7 +15,7 @@
 cuCV::Mat<CUCV_8U> cuCV::imread(const char * path) {
 
     if (!std::filesystem::is_regular_file(path)) {
-        printf("No file found at '%s'\n", path);
+        fprintf(stderr, "Error: No file found at '%s'\n", path);
         exit(EXIT_FAILURE);
     }
     
@@ -27,7 +27,8 @@ cuCV::Mat<CUCV_8U> cuCV::imread(const char * path) {
 
     unsigned char * data = new unsigned char [counts];
     memcpy((void *) data, (const void *) image.data(), counts);
-    CUCV_DEBUG_PRINT("Copied %p to %p : imread.\n", image.data(), data);
+    
+    CUCV_DEBUG_PRINT("Copied image data %p to mat object %p.", image.data(), data);
     
     // The mat will take care about free(data) / delete [] data
     // The compiler will handle mat as lvalue and hence not copy the data a second time.
@@ -37,7 +38,7 @@ cuCV::Mat<CUCV_8U> cuCV::imread(const char * path) {
 
 cuCV::CuMat<CUCV_8U> cuCV::imreadToDevice(const char * path) {
     if (!std::filesystem::is_regular_file(path)) {
-        printf("No file found at '%s'\n", path);
+        fprintf(stderr, "Error: No file found at '%s'\n", path);
         exit(EXIT_FAILURE);
     }
     
@@ -60,6 +61,8 @@ void cuCV::imwrite(cuCV::Mat<CUCV_8U> & mat, const char * path) {
     cimg_library::CImg<unsigned char> image(mat.getDataPtr(), mat.getWidth(), mat.getHeight(), mat.getNChannels(), true);
 
     image.save(path);
+
+    CUCV_DEBUG_PRINT("Wrote image to %s", path);
 }
 
 
