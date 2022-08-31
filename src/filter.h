@@ -49,8 +49,8 @@ enum class Kernel {
  * @param sigma The standard deviation for Gaussian kernels. Defaults to 1.
  * @return The kernel of type T.
  */
-template <typename T>
-CuMat<T> createKernel(const Kernel kerneltype, const size_t kernelX=3, const size_t kernelY=3, const int sigma=1);
+//template <typename T>
+CuMat<CUCV_64F> createKernel(const Kernel kerneltype, const size_t kernelX=3, const size_t kernelY=3, const int sigma=1);
     
 }  // namespace cuCV
 
