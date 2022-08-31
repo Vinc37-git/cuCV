@@ -427,7 +427,7 @@ void conv2dCUDAwDT(int N, int nCh, int i_max, FILE * file) {
 
             cucvMat1_dev.uploadFrom(cucvMat1);
             filterBox_dev.uploadFrom(filterBox);
-            cuCV::CuMat cucvMatResult_dev = cuCV::slowConv2d(cucvMat1_dev, filterBox_dev, cuCV::Padding::ZERO);
+            cuCV::CuMat cucvMatResult_dev = cuCV::simpleConv2d(cucvMat1_dev, filterBox_dev, cuCV::Padding::ZERO);
             cucvMatResult_dev.downloadTo(cucvMatResult);
 
             auto toc = stop(tic);
@@ -457,6 +457,7 @@ void conv2dOpenCV(int N, int nCh, int i_max, FILE * file) {
         int64_t total = 0;
         for (int i = 0; i < i_max; ++i) {  
             cv::Mat opencvMat1 = cv::Mat::ones(n, n, getCVequivalent(nCh));
+            cv::randu(opencvMat1, cv::Scalar(0), cv::Scalar(256));
             cv::Mat opencvMat2(N, N, getCVequivalent(nCh));
             
             auto tic = begin();
@@ -491,7 +492,7 @@ int main(int argc, char ** argv) {
     constexpr int N = 1024 * 2 * 2 * 2;  // Max number of one matrix side.
     int nCh = 1;  // Number of channels
     int I_MAX = 1;  // Perform every computation I_MAX times
-
+    
     {
         // Measure Addition
         fs::path fpath = fs::path(__FILE__).parent_path() / "logs" / fs::path("addition.log");
