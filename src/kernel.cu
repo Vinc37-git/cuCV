@@ -310,7 +310,7 @@ void cuCV::kernel::eye(cuCV::DeviceCuMat<T> OUT) {
 
 
 __device__
-double gaussian1dDevice(double x, double mu, double sigma) {
+static double gaussian1dDevice(double x, double mu, double sigma) {
     const double a = (x - mu) / sigma;
     return std::exp(-0.5 * a * a);    
 }
