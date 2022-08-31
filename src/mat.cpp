@@ -296,6 +296,12 @@ T * cuCV::Mat<T>::getDataPtr() const {
 
 
 template <typename T>
+size_t cuCV::Mat<T>::getSize() const {
+    return mWidth * mHeight * mChannels;
+}
+
+
+template <typename T>
 void cuCV::Mat<T>::alloc() {
     if ((mWidth == 0) || (mHeight == 0) || (mChannels == 0)) {
         fprintf(stderr, "You are trying to allocate memory for a mat object but dimensions are: (%d, %d, %d). (FILE: %s), (LINE: %d)\n", mHeight, mWidth, mChannels, __FILE__, __LINE__);
@@ -385,6 +391,20 @@ void cuCV::Mat<T>::eye() {
 
 
 template <typename T>
+template <typename Tout>
+cuCV::Mat<Tout> cuCV::Mat<T>::astype() {
+
+    /** @todo: check if (type == this->type) return copy */
+
+    cuCV::Mat<Tout> OUT(mWidth, mHeight, mChannels);
+    OUT.alloc();
+    for (size_t i = 0; i < OUT.getSize(); i++)
+        OUT.getDataPtr()[i] = static_cast<Tout>(mData[i]);
+    return OUT;
+}
+
+
+template <typename T>
 void cuCV::Mat<T>::print(int nRows, int nCols, int channel) const {
     if (mData == NULL) {
         fprintf(stderr, "print() method failed: Data Pointer is NULL.");
@@ -411,3 +431,13 @@ void cuCV::Mat<T>::print(int nRows, int nCols, int channel) const {
 template class cuCV::Mat<unsigned char>;
 template class cuCV::Mat<unsigned short>;
 template class cuCV::Mat<double>;
+
+template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_8U>::astype();
+template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_8U>::astype();
+template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_8U>::astype();
+template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_16U>::astype();
+template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_16U>::astype();
+template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_16U>::astype();
+template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_64F>::astype();
+template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_64F>::astype();
+template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_64F>::astype();

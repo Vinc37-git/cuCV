@@ -295,6 +295,13 @@ public:
      */
     T * getDataPtr() const;
 
+    /**
+     * @brief Get the number of elements in the matrix.
+     * 
+     * @return NUmber of elements. 
+     */
+    size_t getSize() const;
+
 
     //  ******* MEMBER FUNCTIONS **********
 
@@ -331,6 +338,16 @@ public:
      * @brief Initialize the mat object as Identity Matrix.
      */
     void eye() ;
+
+    /**
+     * @brief Return a copy of the mat object as type dtype. 
+     * Note that the user has to take care about overflows before conversion.
+     * 
+     * @tparam Tout The target data type.
+     * @return A copy of the mat object as type dtype.
+     */
+    template <typename Tout>
+    Mat<Tout> astype();
 
     /**
      * @brief Check if matrix contains data.
