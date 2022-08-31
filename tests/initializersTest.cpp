@@ -61,7 +61,7 @@ void InitializersTest::testEye() {
 }
 
 
-double discreteGaussianTest(size_t len, int x, int y, double sigma) {
+static double discreteGaussianTest(size_t len, int x, int y, double sigma) {
     x -= len/2, y -= len/2;
     double r = x * x + y * y, s = 2.f * sigma * sigma;
     return exp(-r / s ) / (s * M_PI);
