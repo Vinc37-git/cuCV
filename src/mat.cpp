@@ -32,25 +32,28 @@ template <typename T>
 cuCV::Mat<T>::Mat(const Mat & mat) 
         : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), mStride(mat.mStride), mData(NULL) {
     if (mat.mData != NULL) {
-        mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
+        //mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
+        mData = new T [mWidth * mHeight * mChannels];
         memcpy(mData, mat.mData, mWidth * mHeight * mChannels * sizeof(T));
     }
-    //fprintf(stdout, "Copy constructor used.\n");
+    //fprintf(stdout, "%p copied to (==) %p: Copy constructor used.\n", mat.mData, mData);
 }
 
 
 template <typename T>
 cuCV::Mat<T>::Mat(Mat && mat) 
         : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), mStride(mat.mStride), mData(mat.mData) {
+    //fprintf(stdout, "%p swaped with %p : Move constructor used.\n", mat.mData, mData);
     mat.mData = NULL;
-    //fprintf(stdout, "Move constructor used.\n");
 }
 
 
 template <typename T>
 cuCV::Mat<T>::~Mat() {
     if (mData != NULL) {
-        free(mData);
+        //fprintf(stdout, "%p destroyed : Destructor used.\n", mData);
+        //free(mData);
+        delete [] mData;
         mData = NULL;
     }
 }
@@ -72,6 +75,8 @@ cuCV::Mat<T> & cuCV::Mat<T>::operator=(Mat mat) {
     mHeight = mat.mHeight; 
     mStride = mat.mStride;
     mChannels = mat.mChannels;
+
+    //fprintf(stdout, "%p swaped with %p : Assignment operator used.\n", mat.mData, mData);
 
     return * this;
 }
@@ -298,7 +303,8 @@ void cuCV::Mat<T>::alloc() {
     }
 
     if (mData == NULL)
-        mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
+        //mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
+        mData = new T [mWidth * mHeight * mChannels];
     else {
         fprintf(stderr, "mData was not NULL before allocation. mData must be freed before Reallocation. (FILE: %s), (LINE: %d)\n", __FILE__, __LINE__);
         exit(EXIT_FAILURE);
@@ -309,7 +315,8 @@ void cuCV::Mat<T>::alloc() {
 template <typename T>
 void cuCV::Mat<T>::clear() {
     if (mData != NULL) {
-        free(mData);
+        //free(mData);
+        delete [] mData;
         mData = NULL;
     }
 }
@@ -332,9 +339,7 @@ T cuCV::Mat<T>::at(const int row, const int col, const int channel) const {
 template <typename T>
 void cuCV::Mat<T>::zeros() {
 
-    if (mData == NULL) { // allocate
-        mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
-    }
+    alloc();
 
     for (size_t i=0; i < mWidth * mHeight * mChannels; i++) {
         mData[i] = (T) 0;
@@ -346,9 +351,7 @@ void cuCV::Mat<T>::zeros() {
 template <typename T>
 void cuCV::Mat<T>::ones() {
 
-    if (mData == NULL) { // allocate
-        mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
-    }
+    alloc();
 
     for (size_t i=0; i < mWidth * mHeight * mChannels; i++) {
         mData[i] = (T) 1;
@@ -359,9 +362,7 @@ void cuCV::Mat<T>::ones() {
 template <typename T>
 void cuCV::Mat<T>::eye() {
 
-    if (mData == NULL) { // allocate
-        mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
-    }
+    alloc();
 
     const int STRIDE = mWidth;
 
@@ -386,7 +387,8 @@ void cuCV::Mat<T>::eye() {
 template <typename T>
 void cuCV::Mat<T>::print(int nRows, int nCols, int channel) const {
     if (mData == NULL) {
-        fprintf(stderr, "Data Pointer is NULL.");
+        fprintf(stderr, "print() method failed: Data Pointer is NULL.");
+        return;
     }
 
     if (nRows > mHeight)
