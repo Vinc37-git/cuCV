@@ -111,3 +111,65 @@ void LinalgTest::testMatmul() {
         CPPUNIT_ASSERT(C_out.mData[i]==C1.mData[i]);
     }
 }
+
+
+void LinalgTest::testSimpleConv2d() {
+    nCh = 3;
+    N = 100;
+    int f = 9;
+    
+    cuCV::Mat A1 = cuCV::eye<CUCV_8U>(N, N, nCh) * f;
+    cuCV::Mat B1 = cuCV::eye<CUCV_16U>(N, N, nCh) * f;
+    cuCV::Mat C1 = cuCV::eye<CUCV_64F>(N, N, nCh) * f;
+
+    int filterN = 3;
+
+    cuCV::Mat box = cuCV::ones<CUCV_64F>(filterN, filterN, nCh) / 9;
+
+    cuCV::CuMat<CUCV_8U> A_dev1(A1);
+    cuCV::CuMat<CUCV_16U> B_dev1(B1);
+    cuCV::CuMat<CUCV_64F> C_dev1(C1);
+
+    cuCV::CuMat<CUCV_64F> box_dev(box);
+
+    A_dev1.uploadFrom(A1);
+    B_dev1.uploadFrom(B1);
+    C_dev1.uploadFrom(C1);
+
+    box_dev.uploadFrom(box);
+
+    cuCV::CuMat<CUCV_8U> A_dev_out = cuCV::simpleConv2d(A_dev1, box_dev, cuCV::Padding::ZERO);
+    cuCV::CuMat<CUCV_16U> B_dev_out = cuCV::simpleConv2d(B_dev1, box_dev, cuCV::Padding::ZERO);
+    cuCV::CuMat<CUCV_64F> C_dev_out = cuCV::simpleConv2d(C_dev1, box_dev, cuCV::Padding::ZERO);
+
+    cuCV::Mat<CUCV_8U> A_out(N,N,nCh);
+    cuCV::Mat<CUCV_16U> B_out(N,N,nCh);
+    cuCV::Mat<CUCV_64F> C_out(N,N,nCh);
+
+    A_dev_out.downloadTo(A_out);
+    B_dev_out.downloadTo(B_out);
+    C_dev_out.downloadTo(C_out);
+
+    for (int ch = 0; ch < nCh; ch++) {
+        for (int row = 0; row < N; row++) {
+            for (int col = 0; col < N; col++) {
+                if (col == row && row != 0 && row != N-1) {
+                    CPPUNIT_ASSERT(A_out.at(row, col, ch) == f / 3);  // main diagonal
+                    CPPUNIT_ASSERT(B_out.at(row, col, ch) == f / 3);  // main diagonal
+                    CPPUNIT_ASSERT(C_out.at(row, col, ch) == f / 3);  // main diagonal
+                }
+                else if (abs(col - row) == 1) {
+                    CPPUNIT_ASSERT(A_out.at(row, col, ch) == f / 9 * 2);  // first off-diagonal
+                    CPPUNIT_ASSERT(B_out.at(row, col, ch) == f / 9 * 2);  // first off-diagonal
+                    CPPUNIT_ASSERT(C_out.at(row, col, ch) == f / 9 * 2);  // first off-diagonal
+                }
+                else if (abs(col - row) == 2) {
+                    CPPUNIT_ASSERT(A_out.at(row, col, ch) == f / 9);  // second off-diagonal
+                    CPPUNIT_ASSERT(B_out.at(row, col, ch) == f / 9);  // second off-diagonal
+                    CPPUNIT_ASSERT(C_out.at(row, col, ch) == f / 9);  // second off-diagonal
+                }
+            }
+        }
+    }
+    gpuErrchk(cudaDeviceReset());  // to detect leaks with cuda-memcheck
+}
