@@ -82,4 +82,5 @@ const char * cuCV::exception::NullPointer::what() const throw() {
 
 template class cuCV::exception::DimensionMismatch<CUCV_8U>;
 template class cuCV::exception::DimensionMismatch<CUCV_16U>;
+template class cuCV::exception::DimensionMismatch<CUCV_32F>;
 template class cuCV::exception::DimensionMismatch<CUCV_64F>;

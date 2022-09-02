@@ -453,22 +453,22 @@ void cuCV::Mat<T>::print(int nRows, int nCols, int channel) const {
 /// Explicit template specialization
 template class cuCV::Mat<unsigned char>;
 template class cuCV::Mat<unsigned short>;
-//template class cuCV::Mat<CUCV_32F>;
+template class cuCV::Mat<CUCV_32F>;
 template class cuCV::Mat<double>;
 
 template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_8U>::astype();
 template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_8U>::astype();
-//template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_8U>::astype();
+template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_8U>::astype();
 template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_8U>::astype();
 template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_16U>::astype();
 template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_16U>::astype();
-//template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_16U>::astype();
+template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_16U>::astype();
 template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_16U>::astype();
-// template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_32F>::astype();
-// template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_32F>::astype();
-// template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_32F>::astype();
-// template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_32F>::astype();
+template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_32F>::astype();
+template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_32F>::astype();
+template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_32F>::astype();
+template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_32F>::astype();
 template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_64F>::astype();
 template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_64F>::astype();
-// template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_64F>::astype();
+template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_64F>::astype();
 template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_64F>::astype();

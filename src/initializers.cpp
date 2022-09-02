@@ -84,18 +84,22 @@ cuCV::Mat<T> cuCV::gauss(const int length, const int channels, double sigma, boo
 /// Explicit template specialization
 template cuCV::Mat<CUCV_8U> cuCV::getEmpty<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::Mat<CUCV_16U> cuCV::getEmpty<CUCV_16U>(const int width, const int height, const int channels);
+template cuCV::Mat<CUCV_32F> cuCV::getEmpty<CUCV_32F>(const int width, const int height, const int channels);
 template cuCV::Mat<CUCV_64F> cuCV::getEmpty<CUCV_64F>(const int width, const int height, const int channels);
 
 template cuCV::Mat<CUCV_8U> cuCV::zeros<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::Mat<CUCV_16U> cuCV::zeros<CUCV_16U>(const int width, const int height, const int channels);
+template cuCV::Mat<CUCV_32F> cuCV::zeros<CUCV_32F>(const int width, const int height, const int channels);
 template cuCV::Mat<CUCV_64F> cuCV::zeros<CUCV_64F>(const int width, const int height, const int channels);
 
 template cuCV::Mat<CUCV_8U> cuCV::ones<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::Mat<CUCV_16U> cuCV::ones<CUCV_16U>(const int width, const int height, const int channels);
+template cuCV::Mat<CUCV_32F> cuCV::ones<CUCV_32F>(const int width, const int height, const int channels);
 template cuCV::Mat<CUCV_64F> cuCV::ones<CUCV_64F>(const int width, const int height, const int channels);
 
 template cuCV::Mat<CUCV_8U> cuCV::eye<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::Mat<CUCV_16U> cuCV::eye<CUCV_16U>(const int width, const int height, const int channels);
+template cuCV::Mat<CUCV_32F> cuCV::eye<CUCV_32F>(const int width, const int height, const int channels);
 template cuCV::Mat<CUCV_64F> cuCV::eye<CUCV_64F>(const int width, const int height, const int channels);
 
 //template cuCV::Mat<CUCV_8U> cuCV::gauss<CUCV_8U>(const int length, const int channels, const int sigma);
@@ -103,4 +107,5 @@ template cuCV::Mat<CUCV_64F> cuCV::eye<CUCV_64F>(const int width, const int heig
 // template cuCV::Mat<CUCV_64F> cuCV::gauss<CUCV_64F>(const int length, const int channels, const int sigma);
 // template cuCV::Mat<CUCV_8U> cuCV::gauss(int length, int channels, double sigma, bool norm);
 // template cuCV::Mat<CUCV_16U> cuCV::gauss(int length, int channels, double sigma, bool norm);
+template cuCV::Mat<CUCV_32F> cuCV::gauss(int length, int channels, double sigma, bool norm);
 template cuCV::Mat<CUCV_64F> cuCV::gauss(int length, int channels, double sigma, bool norm);

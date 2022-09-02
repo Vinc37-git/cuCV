@@ -457,4 +457,5 @@ bool cuCV::CuMat<T>::empty() const {
 /// Explicit template specialization
 template class cuCV::CuMat<CUCV_8U>;
 template class cuCV::CuMat<CUCV_16U>;
+template class cuCV::CuMat<CUCV_32F>;
 template class cuCV::CuMat<CUCV_64F>;

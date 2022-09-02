@@ -62,4 +62,5 @@ T cuCV::DeviceCuMat<T>::getElement(const int row, const int col, const int ch) c
 /// Explicit template specialization
 template class cuCV::DeviceCuMat<CUCV_8U>;
 template class cuCV::DeviceCuMat<CUCV_16U>;
+template class cuCV::DeviceCuMat<CUCV_32F>;
 template class cuCV::DeviceCuMat<CUCV_64F>;

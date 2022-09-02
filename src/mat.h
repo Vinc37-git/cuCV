@@ -22,7 +22,7 @@
  */
 #define CUCV_8U unsigned char
 #define CUCV_16U unsigned short
-//#define CUCV_32F float
+#define CUCV_32F float
 #define CUCV_64F double
 
 #define CUCV_8U_MAX 0xff

@@ -117,20 +117,25 @@ cuCV::CuMat<T> cuCV::gaussOnDevice(int length, int channels, double sigma, bool 
 /// Explicit template specialization
 template cuCV::CuMat<CUCV_8U> cuCV::getEmptyOnDevice<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_16U> cuCV::getEmptyOnDevice<CUCV_16U>(const int width, const int height, const int channels);
+template cuCV::CuMat<CUCV_32F> cuCV::getEmptyOnDevice<CUCV_32F>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_64F> cuCV::getEmptyOnDevice<CUCV_64F>(const int width, const int height, const int channels);
 
 template cuCV::CuMat<CUCV_8U> cuCV::zerosOnDevice<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_16U> cuCV::zerosOnDevice<CUCV_16U>(const int width, const int height, const int channels);
+template cuCV::CuMat<CUCV_32F> cuCV::zerosOnDevice<CUCV_32F>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_64F> cuCV::zerosOnDevice<CUCV_64F>(const int width, const int height, const int channels);
 
 template cuCV::CuMat<CUCV_8U> cuCV::onesOnDevice<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_16U> cuCV::onesOnDevice<CUCV_16U>(const int width, const int height, const int channels);
+template cuCV::CuMat<CUCV_32F> cuCV::onesOnDevice<CUCV_32F>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_64F> cuCV::onesOnDevice<CUCV_64F>(const int width, const int height, const int channels);
 
 template cuCV::CuMat<CUCV_8U> cuCV::eyeOnDevice<CUCV_8U>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_16U> cuCV::eyeOnDevice<CUCV_16U>(const int width, const int height, const int channels);
+template cuCV::CuMat<CUCV_32F> cuCV::eyeOnDevice<CUCV_32F>(const int width, const int height, const int channels);
 template cuCV::CuMat<CUCV_64F> cuCV::eyeOnDevice<CUCV_64F>(const int width, const int height, const int channels);
 
-template cuCV::CuMat<CUCV_8U> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
-template cuCV::CuMat<CUCV_16U> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
+//template cuCV::CuMat<CUCV_8U> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
+//template cuCV::CuMat<CUCV_16U> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
+template cuCV::CuMat<CUCV_32F> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
 template cuCV::CuMat<CUCV_64F> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);

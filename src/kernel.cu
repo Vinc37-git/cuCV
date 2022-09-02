@@ -378,70 +378,92 @@ void cuCV::kernel::gauss(cuCV::DeviceCuMat<T> OUT, double sigma, bool norm, floa
 /// Explicit template specialization
 template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const DeviceCuMat<CUCV_8U> B);
 template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const DeviceCuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const DeviceCuMat<CUCV_32F> B);
 template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const DeviceCuMat<CUCV_64F> B);
 
 template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const CUCV_8U alpha);
 template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const CUCV_16U alpha);
+template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const CUCV_32F alpha);
 template __global__ void cuCV::kernel::add(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const CUCV_64F alpha);
 
 template __global__ void cuCV::kernel::dif(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const DeviceCuMat<CUCV_8U> B);
 template __global__ void cuCV::kernel::dif(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const DeviceCuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::dif(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const DeviceCuMat<CUCV_32F> B);
 template __global__ void cuCV::kernel::dif(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const DeviceCuMat<CUCV_64F> B);
 
 template __global__ void cuCV::kernel::dif(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const CUCV_8U alpha);
 template __global__ void cuCV::kernel::dif(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const CUCV_16U alpha);
+template __global__ void cuCV::kernel::dif(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const CUCV_32F alpha);
 template __global__ void cuCV::kernel::dif(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const CUCV_64F alpha);
 
 template __global__ void cuCV::kernel::mul(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const DeviceCuMat<CUCV_8U> B);
 template __global__ void cuCV::kernel::mul(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const DeviceCuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::mul(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const DeviceCuMat<CUCV_32F> B);
 template __global__ void cuCV::kernel::mul(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const DeviceCuMat<CUCV_64F> B);
 
 template __global__ void cuCV::kernel::mul(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const CUCV_8U alpha);
 template __global__ void cuCV::kernel::mul(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const CUCV_16U alpha);
+template __global__ void cuCV::kernel::mul(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const CUCV_32F alpha);
 template __global__ void cuCV::kernel::mul(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const CUCV_64F alpha);
 
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const DeviceCuMat<CUCV_8U> B);
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const DeviceCuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const DeviceCuMat<CUCV_32F> B);
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const DeviceCuMat<CUCV_64F> B);
 
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const CUCV_8U alpha);
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const CUCV_16U alpha);
+template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const CUCV_32F alpha);
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const CUCV_64F alpha);
 
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, float * pAlpha);
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, float * pAlpha);
+template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, float * pAlpha);
 template __global__ void cuCV::kernel::div(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, float * pAlpha);
 
 template __global__ void cuCV::kernel::naiveMatmul(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const DeviceCuMat<CUCV_8U> B);
 template __global__ void cuCV::kernel::naiveMatmul(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const DeviceCuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::naiveMatmul(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const DeviceCuMat<CUCV_32F> B);
 template __global__ void cuCV::kernel::naiveMatmul(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const DeviceCuMat<CUCV_64F> B);
 
 template __global__ void cuCV::kernel::matmul(DeviceCuMat<CUCV_8U> OUT, const DeviceCuMat<CUCV_8U> A, const DeviceCuMat<CUCV_8U> B);
 template __global__ void cuCV::kernel::matmul(DeviceCuMat<CUCV_16U> OUT, const DeviceCuMat<CUCV_16U> A, const DeviceCuMat<CUCV_16U> B);
+template __global__ void cuCV::kernel::matmul(DeviceCuMat<CUCV_32F> OUT, const DeviceCuMat<CUCV_32F> A, const DeviceCuMat<CUCV_32F> B);
 template __global__ void cuCV::kernel::matmul(DeviceCuMat<CUCV_64F> OUT, const DeviceCuMat<CUCV_64F> A, const DeviceCuMat<CUCV_64F> B);
 
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT, const cuCV::DeviceCuMat<CUCV_8U> A, const cuCV::DeviceCuMat<CUCV_8U> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_8U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_8U> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_8U> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT, const cuCV::DeviceCuMat<CUCV_8U> A, const cuCV::DeviceCuMat<CUCV_16U> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_16U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_16U> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_16U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT, const cuCV::DeviceCuMat<CUCV_8U> A, const cuCV::DeviceCuMat<CUCV_32F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_32F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_32F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_32F> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT, const cuCV::DeviceCuMat<CUCV_8U> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
 
 template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_8U> OUT);
 template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_16U> OUT);
+template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_32F> OUT);
 template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_64F> OUT);
 
 template __global__ void cuCV::kernel::ones(cuCV::DeviceCuMat<CUCV_8U> OUT);
 template __global__ void cuCV::kernel::ones(cuCV::DeviceCuMat<CUCV_16U> OUT);
+template __global__ void cuCV::kernel::ones(cuCV::DeviceCuMat<CUCV_32F> OUT);
 template __global__ void cuCV::kernel::ones(cuCV::DeviceCuMat<CUCV_64F> OUT);
 
 template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_8U> OUT);
 template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_16U> OUT);
+template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_32F> OUT);
 template __global__ void cuCV::kernel::eye(cuCV::DeviceCuMat<CUCV_64F> OUT);
 
-template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_8U> OUT, double sigma, bool norm, float * sum);
-template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_16U> OUT, double sigma, bool norm, float * sum);
+//template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_8U> OUT, double sigma, bool norm, float * sum);
+//template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_16U> OUT, double sigma, bool norm, float * sum);
+template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_32F> OUT, double sigma, bool norm, float * sum);
 template __global__ void cuCV::kernel::gauss(cuCV::DeviceCuMat<CUCV_64F> OUT, double sigma, bool norm, float * sum);

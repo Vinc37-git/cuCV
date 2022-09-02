@@ -42,7 +42,7 @@ enum class Kernel {
  * If you create a Gaussian distributed kernel, choose a standart deviation.
  * Note that SobelX, SobelY and Laplace have predefined size (3x3) and Gaussian kernel must be square.
  * 
- * @tparam T CuType of the Kernel. Note that most of the kernels should be of floating type as comma values will be truncated otherwise.
+ * @tparam CUCV_32F.
  * @param kerneltype Choose between Box, unnormalized Box, SobelX, SobelY, Laplace and Gauss.
  * @param kernelX Kernel size in X direction for Box and Gaussian kernels. Defaults to 3.
  * @param kernelY Kernel size in Y direction for Box and Gaussian kernels. Defaults to 3.
@@ -50,7 +50,7 @@ enum class Kernel {
  * @return The kernel of type T.
  */
 //template <typename T>
-CuMat<CUCV_64F> createKernel(const Kernel kerneltype, const size_t kernelX=3, const size_t kernelY=3, const int sigma=1);
+CuMat<CUCV_32F> createKernel(const Kernel kerneltype, const size_t kernelX=3, const size_t kernelY=3, const int sigma=1);
     
 }  // namespace cuCV
 
