@@ -14,50 +14,56 @@
 template <typename T>
 cuCV::Mat<T>::Mat() 
         : mWidth(0), mHeight(0), mChannels(0), 
-        mStrideX(0), mStrideY(0), mData(NULL) { }
+        mStrideX(0), mStrideY(0), mData(NULL),
+        mBorrowed(false) { }
 
 
 template <typename T>
-cuCV::Mat<T>::Mat(int width, int height, int channels, T * data) 
+cuCV::Mat<T>::Mat(int width, int height, int channels, T * data, bool isBorrowed) 
         : mWidth(width), mHeight(height), mChannels(channels), 
-        mStrideX(width), mStrideY(height), mData(data) { }
+        mStrideX(width), mStrideY(height), mData(data),
+        mBorrowed(isBorrowed) {
+    if (mData == NULL && isBorrowed)
+        fprintf(stderr, "Warning: Mat constructed pointing to NULL, but data is set as 'borrowed'.");
+}
 
 
 template <typename T>
 cuCV::Mat<T>::Mat(int width, int height, int channels) 
         : mWidth(width), mHeight(height), mChannels(channels), 
-        mStrideX(width), mStrideY(height), mData(NULL) {
-    //mData = (T *) malloc(width * height * channels * sizeof(T));
-    }
+        mStrideX(width), mStrideY(height), mData(NULL),
+        mBorrowed(false) {
+    // No Allocation yet. Allocation will be done when the image is invoked at the first time.
+}
 
 
 template <typename T>
 cuCV::Mat<T>::Mat(const Mat & mat) 
         : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), 
-        mStrideX(mat.mStrideX), mStrideY(mat.mStrideY), mData(NULL) {
+        mStrideX(mat.mStrideX), mStrideY(mat.mStrideY), mData(NULL),
+        mBorrowed(false) {
     if (mat.mData != NULL) {
-        //mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
         mData = new T [mWidth * mHeight * mChannels];
         memcpy(mData, mat.mData, mWidth * mHeight * mChannels * sizeof(T));
+        CUCV_DEBUG_PRINT("Copy: %p copied to %p.", mat.mData, mData);
     }
-    //fprintf(stdout, "%p copied to (==) %p: Copy constructor used.\n", mat.mData, mData);
 }
 
 
 template <typename T>
 cuCV::Mat<T>::Mat(Mat && mat) 
         : mWidth(mat.mWidth), mHeight(mat.mHeight), mChannels(mat.mChannels), 
-        mStrideX(mat.mStrideX), mStrideY(mat.mStrideY), mData(mat.mData) {
-    //fprintf(stdout, "%p swaped with %p : Move constructor used.\n", mat.mData, mData);
+        mStrideX(mat.mStrideX), mStrideY(mat.mStrideY), mData(mat.mData),
+        mBorrowed(mat.mBorrowed) {
+    CUCV_DEBUG_PRINT("Move: %p swaped with %p.", mat.mData, mData);
     mat.mData = NULL;
 }
 
 
 template <typename T>
 cuCV::Mat<T>::~Mat() {
-    if (mData != NULL) {
-        //fprintf(stdout, "%p destroyed : Destructor used.\n", mData);
-        //free(mData);
+    if (mData != NULL && !mBorrowed) {
+        CUCV_DEBUG_PRINT("%p destroyed.", mData);
         delete [] mData;
         mData = NULL;
     }
@@ -81,8 +87,9 @@ cuCV::Mat<T> & cuCV::Mat<T>::operator=(Mat mat) {
     mStrideX = mat.mStrideX;
     mStrideY = mat.mStrideY;
     mChannels = mat.mChannels;
+    mBorrowed = mat.mBorrowed;
 
-    //fprintf(stdout, "%p swaped with %p : Assignment operator used.\n", mat.mData, mData);
+    CUCV_DEBUG_PRINT("%p swaped with %p.", mat.mData, mData);
 
     return * this;
 }
@@ -96,6 +103,7 @@ cuCV::Mat<T> & cuCV::Mat<T>::operator+=(const Mat & mat) {
         exit(EXIT_FAILURE);
     }
     /// @todo Check if mat is empty
+    /// @todo Throw exception
 
     /// Perform Math
     for (int i=0; i < mWidth * mHeight * mChannels; i++) {
@@ -142,6 +150,7 @@ cuCV::Mat<T> & cuCV::Mat<T>::operator-=(const Mat & mat) {
         exit(EXIT_FAILURE);
     }
     /// @todo Check if mat is empty
+    /// @todo Throw exception
 
     /// Perform Math
     for (int i=0; i < mWidth * mHeight * mChannels; i++) {
@@ -187,6 +196,7 @@ cuCV::Mat<T> & cuCV::Mat<T>::operator*=(const Mat & mat) {
         exit(EXIT_FAILURE);
     }
     /// @todo Check if mat is empty
+    /// @todo Throw exception
 
     /// Perform Math
     for (int i=0; i < mWidth * mHeight * mChannels; i++) {
@@ -233,6 +243,7 @@ cuCV::Mat<T> & cuCV::Mat<T>::operator/=(const Mat & mat) {
     }
     /// @todo Check if mat is empty
     /// @todo Check divide by zero
+    /// @todo Throw exception
 
     /// Perform Math
     for (int i=0; i < mWidth * mHeight * mChannels; i++) {
@@ -321,19 +332,19 @@ void cuCV::Mat<T>::alloc() {
     }
 
     if (mData == NULL)
-        //mData = (T *) malloc(mWidth * mHeight * mChannels * sizeof(T));
         mData = new T [mWidth * mHeight * mChannels];
     else {
         fprintf(stderr, "mData was not NULL before allocation. mData must be freed before Reallocation. (FILE: %s), (LINE: %d)\n", __FILE__, __LINE__);
         exit(EXIT_FAILURE);
     }
+
+    CUCV_DEBUG_PRINT("Allocated %ld bytes at %p.", getSize() * sizeof(T), mData);
 }
 
 
 template <typename T>
 void cuCV::Mat<T>::clear() {
-    if (mData != NULL) {
-        //free(mData);
+    if (mData != NULL && !mBorrowed) {
         delete [] mData;
         mData = NULL;
     }
@@ -442,14 +453,22 @@ void cuCV::Mat<T>::print(int nRows, int nCols, int channel) const {
 /// Explicit template specialization
 template class cuCV::Mat<unsigned char>;
 template class cuCV::Mat<unsigned short>;
+//template class cuCV::Mat<CUCV_32F>;
 template class cuCV::Mat<double>;
 
 template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_8U>::astype();
 template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_8U>::astype();
+//template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_8U>::astype();
 template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_8U>::astype();
 template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_16U>::astype();
 template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_16U>::astype();
+//template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_16U>::astype();
 template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_16U>::astype();
+// template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_32F>::astype();
+// template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_32F>::astype();
+// template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_32F>::astype();
+// template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_32F>::astype();
 template cuCV::Mat<CUCV_8U> cuCV::Mat<CUCV_64F>::astype();
 template cuCV::Mat<CUCV_16U> cuCV::Mat<CUCV_64F>::astype();
+// template cuCV::Mat<CUCV_32F> cuCV::Mat<CUCV_64F>::astype();
 template cuCV::Mat<CUCV_64F> cuCV::Mat<CUCV_64F>::astype();

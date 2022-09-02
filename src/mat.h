@@ -22,11 +22,15 @@
  */
 #define CUCV_8U unsigned char
 #define CUCV_16U unsigned short
+//#define CUCV_32F float
 #define CUCV_64F double
 
 #define CUCV_8U_MAX 0xff
 #define CUCV_16U_MAX 0xffff
 
+#ifndef CUCV_DEBUG
+#define CUCV_DEBUG 0
+#endif
 
 /**
  * @brief A debug print macro. It will print debug messages when CUCV_DEBUG is defined at compile time.
@@ -47,10 +51,10 @@ namespace cuCV {
 
 /**
  * @brief ENUM CURRENTLY NOT USED. 
- * Available datatypes in CUCV: CUCV_8U, CUCV_16U, CUCV_64F.
+ * Available datatypes in CUCV: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F.
  * 
  */
-enum class CuType {cuCV_8U, cuCV_16U, cuCV_64F};
+enum class CuType {cuCV_8U, cuCV_16U, cuCV_32F, cuCV_64F};
 
 
 /**
@@ -75,16 +79,20 @@ public:
      * @brief Construct a new Mat object pointing to data. Provide dimension parameteres and a pointer to data.
      * Note that data must be stored ROW MAJOR and channels as subsequent data blocks.
      * Use this constructor, when you have data already stored in memory.
-     * Note that the matrix will steale the memory and hence, the matrix will take care about deallocation.
-     * @todo add a member function `forgetMem()` to prevent auto deallocation when Mat object gets destroyed.
-     * @todo or add a member value `mBorrowed` which indicates that the data is only borrowed.
+     * If borrowed is true, the mat instance will only borrow the data. This means it will not copy or steal the data
+     * and hence, not take care about memory management. You must take care when operating on borrowed data, since it
+     * might be an invalid buffer (eg already deallocated)
+     * If borrowed is set to false, the mat instance will steal the data. This implies it will try to delete / free the
+     * data on destruction. You must ensure that no other instance is responsible for data, since it could result in an 
+     * invalid free() call or invalid buffer when operating on it.
      * 
      * @param width The number of columns of the matrix.
      * @param height The number of rows of the matrix.
      * @param channels The number of channels of the matrix.
      * @param data The pointer to the data stored in row major order.
+     * @param borrowed Indicates if data is borrowed only or will be stealed. Defaults to true.
      */
-    Mat(int width, int height, int channels, T * data); 
+    Mat(int width, int height, int channels, T * data, bool borrowed=true); 
 
     /**
      * @brief Construct a new empty Mat object. Provide dimension parameteres, but the data pointer will be a `NULL` pointer.
@@ -112,8 +120,9 @@ public:
 
     
     /**
-     * @brief Destroy the Mat object. Allocated memory will be freed automatically. 
-     * However, clear the matrix by yourself if you do not need it anymore
+     * @brief Destroy the Mat object. Allocated memory will be freed automatically,
+     * if the data is not borrowed. If the data is borrowed, nothing will happen. <br>
+     * However, consider to clear the matrix by yourself directly if you do not need it anymore
      * or let it go out of scope so that the destructor frees all data.
      */
     ~Mat();
@@ -395,6 +404,7 @@ public:
     int mStrideY;  ///< Stride of the memory in y direction.
     int mChannels;  ///< Number of channels of the matrix represented by the mat object.
     T * mData;  ///< Pointer to the data of the matrix represented by the mat object.
+    bool mBorrowed; ///< Indicates if data of mat is borrowed only. If borrowed, it will not try to deallocate on destruction.
 
 };
 

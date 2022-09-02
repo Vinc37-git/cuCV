@@ -19,38 +19,41 @@ cuCV::CuMat<T>::CuMat() { }
 
 template <typename T>
 cuCV::CuMat<T>::CuMat(Mat<T> & mat) 
-        : Mat<T>(mat.mWidth, mat.mHeight, mat.mChannels, NULL) {  ///< We initialize Base Class Object "Mat" using parameters of mat. However, dont point to the same data.
+        : Mat<T>(mat.mWidth, mat.mHeight, mat.mChannels, NULL, false) {  
+    ///< We instanciate Base Class Object "Mat" using parameters of mat. However, dont point to the same data.
     //allocateLike(mat);
 }
 
 
 template <typename T>
 cuCV::CuMat<T>::CuMat(int width, int height, int channels) 
-        : Mat<T>(width, height, channels, NULL) { 
-}
+        : Mat<T>(width, height, channels, NULL, false) { }
 
 
 template <typename T>
 cuCV::CuMat<T>::CuMat(const CuMat & cuMat)
-        : Mat<T>(cuMat.mWidth, cuMat.mHeight, cuMat.mChannels, NULL) {
+        : Mat<T>(cuMat.mWidth, cuMat.mHeight, cuMat.mChannels, NULL, false) {
     if (cuMat.mData != NULL) {
         allocateLike(cuMat);
         gpuErrchk(cudaMemcpy(this->mData, cuMat.mData, sizeof(T) * cuMat.mWidth * cuMat.mHeight * cuMat.mChannels, cudaMemcpyDeviceToDevice)); 
+        CUCV_DEBUG_PRINT("Copy: %p copied to %p.", cuMat.mData, this->mData);
     }
 }
 
 
 template <typename T>
 cuCV::CuMat<T>::CuMat(CuMat && cuMat)
-        : Mat<T>(cuMat.mWidth, cuMat.mHeight, cuMat.mChannels, cuMat.mData) {
+        : Mat<T>(cuMat.mWidth, cuMat.mHeight, cuMat.mChannels, cuMat.mData, cuMat.mBorrowed) {
     cuMat.mData = NULL;
+    CUCV_DEBUG_PRINT("Move: %p swaped with %p.", cuMat.mData, this->mData);
 }
 
 
 template <typename T>
 cuCV::CuMat<T>::~CuMat() {
-    if (this->mData != NULL) {
-        cudaFree(this->mData);
+    if (this->mData != NULL && !this->mBorrowed) {
+        CUCV_DEBUG_PRINT("%p destroyed.", this->mData);
+        gpuErrchk(cudaFree(this->mData));
         this->mData = NULL;
     }
 }
@@ -65,6 +68,8 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator=(CuMat cuMat) {
     this->mStrideX = cuMat.mStrideX;
     this->mStrideY = cuMat.mStrideY;
     this->mChannels = cuMat.mChannels;
+    this->mBorrowed = cuMat.mBorrowed;
+    CUCV_DEBUG_PRINT("%p swaped with %p.", cuMat.mData, this->mData);
     return * this;
 }
 
@@ -347,15 +352,14 @@ void cuCV::CuMat<T>::downloadTo(Mat<T> & dst) const {
         dst.mStrideX = this->mStrideX;
         dst.mStrideY = this->mStrideY;
     }
-    else if (!compareDim(* this, dst)) {
+    else if (!compareDim(* this, dst))
         throw cuCV::exception::DimensionMismatch(* this, dst);
-    }
+    
 
     // If MEM for destination on host is not allocated yet, allocate.
-    if (dst.mData == NULL) {
+    if (dst.mData == NULL)
         dst.alloc();  // The dim check makes sure the allocated size is always the right one for `this`.
-    }
-
+    
     gpuErrchk(cudaMemcpy(dst.mData, this->mData, sizeof(T) * dst.mWidth * dst.mHeight * dst.mChannels, cudaMemcpyDeviceToHost));
 }
 
@@ -373,14 +377,9 @@ void cuCV::CuMat<T>::allocateLike(const Mat<T> & src) {
     else if (!compareDim(src, * this))
         throw cuCV::exception::DimensionMismatch(src, * this, "allocation");
 
-    if (this->mData != NULL) {
-        fprintf(stderr, "WARNING: Data on device is freed automatically when function allocateLike was called. Make sure to clear data yourself.");
-        clearOnDevice();
-    }
-
     /// Allocate Memory
-    gpuErrchk(cudaMalloc((void**) & this->mData, sizeof(T) * src.mWidth * src.mHeight * src.mChannels));
-    
+    allocateOnDevice();
+
     if (this->mData == NULL)
         throw std::bad_alloc(); //("Allocation of VRAM failed.")
 }
@@ -389,13 +388,15 @@ void cuCV::CuMat<T>::allocateLike(const Mat<T> & src) {
 template <typename T>
 void cuCV::CuMat<T>::allocateOnDevice() {
     if (this->mData != NULL) {
-        fprintf(stderr, "WARNING: Data on device is freed automatically when function allocateLike was called. Make sure to clear data yourself.");
+        fprintf(stderr, "Warning: Data on device is freed automatically when function allocateOnDevice() is called. Make sure to clear data yourself.");
         clearOnDevice();
     }
     if ((this->mWidth == 0) || (this->mHeight == 0) || (this->mChannels == 0))
-        throw std::bad_alloc();  ///
+        fprintf(stderr, "Warning: Size of CuMat is zero. Allocation has no effect.");
 
     gpuErrchk(cudaMalloc((void**) & this->mData, sizeof(T) * this->mWidth * this->mHeight * this->mChannels));
+
+    CUCV_DEBUG_PRINT("Allocated %ld bytes at %p.", this->getSize() * sizeof(T), this->mData);
     
     if (this->mData == NULL)
         throw std::bad_alloc(); //("Allocation of VRAM failed.")    
@@ -404,7 +405,8 @@ void cuCV::CuMat<T>::allocateOnDevice() {
 
 template <typename T>
 void cuCV::CuMat<T>::clearOnDevice() {
-    if (this->mData != NULL) {
+    if (this->mData != NULL && !this->mBorrowed) {
+        CUCV_DEBUG_PRINT("%p cudaFree'd.", this->mData);
         cudaFree(this->mData);
         this->mData = NULL;
     }
@@ -448,10 +450,7 @@ bool cuCV::CuMat<T>::compareDim(const cuCV::Mat<T> & A, const cuCV::Mat<T> & B) 
 
 template <typename T>
 bool cuCV::CuMat<T>::empty() const {
-    if (this->mData == NULL)
-        return true;
-    else
-        return false;
+    return this->mData == NULL;
 }
 
 

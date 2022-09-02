@@ -22,21 +22,21 @@ cuCV::CuMat<CUCV_64F> cuCV::createKernel(const cuCV::Kernel kerneltype, const si
     }
     else if (kerneltype == cuCV::Kernel::SOBELX) {
             CUCV_64F * sobelXraw = new CUCV_64F [9] {1, 0, -1, 2, 0, -2, 1, 0, -1};
-            cuCV::Mat<CUCV_64F> sobelXcpu(3, 3, 1, sobelXraw);
+            cuCV::Mat<CUCV_64F> sobelXcpu(3, 3, 1, sobelXraw, false);
             cuCV::CuMat<CUCV_64F> sobelXdev(3, 3, 1);
             sobelXdev.uploadFrom(sobelXcpu);
             return sobelXdev;
     }
     else if (kerneltype == cuCV::Kernel::SOBELY) {
             CUCV_64F * sobelYraw = new CUCV_64F [9] {1, 2, 1, 0, 0, 0, -1, -2, -1};
-            cuCV::Mat<CUCV_64F> sobelYcpu(3, 3, 1, sobelYraw);
+            cuCV::Mat<CUCV_64F> sobelYcpu(3, 3, 1, sobelYraw, false);
             cuCV::CuMat<CUCV_64F> sobelYdev(3, 3, 1);
             sobelYdev.uploadFrom(sobelYcpu);
             return sobelYdev;
     }
     else if (kerneltype == cuCV::Kernel::LAPLACE) {
             CUCV_64F * laplaceRaw = new CUCV_64F [9] {0, 1, 0, 1, -4, 1, 0, 1, 0};
-            cuCV::Mat<CUCV_64F> laplaceCpu(3, 3, 1, laplaceRaw);
+            cuCV::Mat<CUCV_64F> laplaceCpu(3, 3, 1, laplaceRaw, false);
             cuCV::CuMat<CUCV_64F> laplaceDev(3, 3, 1);
             laplaceDev.uploadFrom(laplaceCpu);
             return laplaceDev;
