@@ -19,20 +19,19 @@ cuCV::Mat<CUCV_8U> cuCV::imread(const char * path) {
         exit(EXIT_FAILURE);
     }
     
+    // Load image with CImg. Data will be stored in image and CImg does not allow us to steal the data.
     cimg_library::CImg<unsigned char> image;
-
     image.load(path);
-
     size_t counts = image.width() * image.height() * image.depth() * sizeof(unsigned char);
 
-    unsigned char * data = new unsigned char [counts];
-    memcpy((void *) data, (const void *) image.data(), counts);
+    CUCV_DEBUG_PRINT("Read image to %p.", image.data());
+
+    // Create a borrowed reference to image
+    cuCV::Mat<CUCV_8U> mat(image.width(), image.height(), image.depth(), image.data(), true);
     
-    CUCV_DEBUG_PRINT("Copied image data %p to mat object %p.", image.data(), data);
-    
-    // The mat will take care about free(data) / delete [] data
-    // The compiler will handle mat as lvalue and hence not copy the data a second time.
-    return cuCV::Mat<CUCV_8U>(image.width(), image.height(), image.depth(), data);
+    // ... and return a copy of mat what will copy the image data and own it afterwards
+    //return cuCV::Mat<CUCV_8U> (cuCV::Mat<CUCV_8U> (image.width(), image.height(), image.depth(), image.data(), true));
+    return cuCV::Mat<CUCV_8U> (mat);
 }
 
 
@@ -46,11 +45,16 @@ cuCV::CuMat<CUCV_8U> cuCV::imreadToDevice(const char * path) {
     image.load(path);
     size_t counts = image.width() * image.height() * image.depth() * sizeof(unsigned char);
 
+    CUCV_DEBUG_PRINT("Read image to %p.", image.data());
+
     /// Allocate Memory
     cuCV::CuMat<CUCV_8U> cuMat(image.width(), image.height(), image.depth());
     cuMat.allocateOnDevice();
 
+    /// upload memory. @todo: write method `uploadFrom(T * data, size_t counts);
     gpuErrchk(cudaMemcpy((void *) cuMat.getDataPtr(), (void *) image.data(), counts, cudaMemcpyHostToDevice));   
+
+    CUCV_DEBUG_PRINT("Uploaded %ld bytes to %p. ", counts, cuMat.getDataPtr());
 
     return cuMat;
 }
