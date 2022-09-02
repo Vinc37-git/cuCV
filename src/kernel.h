@@ -20,6 +20,11 @@
 #include "cumat.h"
 #include "filter.h"
 
+#define CUCV_PRINT_THREAD(str, ...) \
+        printf("(%d, %d, %d) : " str, threadIdx.x, threadIdx.y, threadIdx.z , __VA_ARGS__);
+
+
+
 namespace cuCV {
 
 
@@ -200,6 +205,22 @@ void matmul(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const cuCV::
  */
 template <typename T1, typename T2> __global__
 void simpleConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding);
+
+
+/**
+ * @brief CUDA kernel to perform a convolution on `A` with the kernel kernel. `A` can be padded according to Padding enum.
+ * The calculation is performed by the simplest convolution method using shared memory.
+ * @todo rename to simpleConv2d
+ * 
+ * @tparam T1 CUCV datatype of `OUT` and `A`: CUCV_8U, CUCV_16U, CUCV_64F.
+ * @tparam T2 CUCV datatype of the kernel: CUCV_8U, CUCV_16U, CUCV_64F.
+ * @param OUT The output matrix which will keep the results of the convolution. The size dependes on the Padding method.
+ * @param A The Matrix to be convoluted.
+ * @param kernel The kernel for the convolution. Note that the kernel will be flipped (since it is a convolution and not correlation).
+ * @param padding The padding method.
+ */
+template <typename T1, typename T2> __global__
+void simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding);
 
 
 /**

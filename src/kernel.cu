@@ -217,54 +217,87 @@ void cuCV::kernel::matmul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, const Devi
 }
 
 
+template <typename T> __device__
+static T paddedValue(const int r, const int c, const cuCV::DeviceCuMat<T> A, const cuCV::Padding padding) {
+    T returnVal = 0;
+    switch (padding) {
+        case cuCV::Padding::ZERO:
+            return returnVal;                  
+        default:
+            return returnVal;
+    }
+}
+
+
 template <typename T1, typename T2> __global__
 void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding) {
-    // const unsigned int blockRow = blockIdx.y;
-    // const unsigned int blockCol = blockIdx.x;
-    // const unsigned int blockCh  = blockIdx.z;
-
-    // const unsigned int threadRow = threadIdx.y;
-    // const unsigned int threadCol = threadIdx.x;
 
     const unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    const unsigned int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
-
-    const unsigned int kernelHalfWidth = (kernel.mWidth /*+ 1*/) / 2;
-    const unsigned int kernelHalfHeight = (kernel.mHeight /*+ 1*/) / 2;
+    const unsigned int Nx = (kernel.mWidth /*+ 1*/) / 2;
+    const unsigned int Ny = (kernel.mHeight /*+ 1*/) / 2;
 
     if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
         double out = 0;
 
         /// @todo First we will assume the kernel hasn a odd number of cols and rows
-        for (int r = row-kernelHalfHeight, rK = 0; rK < kernel.mHeight; ++r, ++rK) {  // r is row of image. rK is row of kernel
-            for (int c = col-kernelHalfWidth, cK = 0; cK < kernel.mWidth; ++c, ++cK) {  // c is col of image. cK is col of kernel
-
+        for (int r = row - Ny, rK = kernel.mHeight - 1; rK >= 0; ++r, --rK) {  // r is row of image. rK is row of kernel. rK decreases (kernel flip)
+           for (int c = col - Nx, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)        
                 // Check if kernel overlaps with image edges
                 if (r >= 0 && r < A.mHeight && c >= 0 && c < A.mWidth) {
                     out += A.getElement(r, c, ch) * kernel.getElement(rK, cK);  // accumulate
                 }
                 // index is out of bounds of A. Use Padding
                 else {
-                    switch (padding) {
-                        case cuCV::Padding::ZERO:
-                            // out += 0;
-                            continue;                    
-                        default:
-                            continue;
-                    }
+                    out += paddedValue(r, c, A, padding) * kernel.getElement(rK, cK);
                 }
             }
         }
 
         // Every Thread will insert an output value at its position in OUT.
         /// @todo Rounding would be nice for uint8 and uint16 outputs. However, we can not use typeid to determine type since it is device code. 
-        OUT.mData[index] = (T1) out;  
+        OUT.setElement(row, col, ch, (T1) out);  
     }
 }
 
+
+template <typename T1, typename T2> __global__
+void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding) {
+
+    const unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
+    const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
+
+    const unsigned int Nx = (kernel.mWidth /*+ 1*/) / 2;
+    const unsigned int Ny = (kernel.mHeight /*+ 1*/) / 2;
+/*
+    __shared__ 
+
+    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
+        double out = 0;
+
+        /// @todo First we will assume the kernel hasn a odd number of cols and rows
+        for (int r = row - Ny, rK = kernel.mHeight - 1; rK >= 0; ++r, --rK) {  // r is row of image. rK is row of kernel. rK decreases (kernel flip)
+           for (int c = col - Nx, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)        
+                // Check if kernel overlaps with image edges
+                if (r >= 0 && r < A.mHeight && c >= 0 && c < A.mWidth) {
+                    out += A.getElement(r, c, ch) * kernel.getElement(rK, cK);  // accumulate
+                }
+                // index is out of bounds of A. Use Padding
+                else {
+                    out += paddedValue(r, c, A, padding) * kernel.getElement(rK, cK);
+                }
+            }
+        }
+
+        // Every Thread will insert an output value at its position in OUT.
+        /// @todo Rounding would be nice for uint8 and uint16 outputs. However, we can not use typeid to determine type since it is device code. 
+        OUT.setElement(row, col, ch, (T1) out);  
+    }
+*/
+}
 
 template <typename T> __global__
 void cuCV::kernel::zeros(cuCV::DeviceCuMat<T> OUT) {
