@@ -123,6 +123,38 @@ template <typename T1, typename T2>
 CuMat<T1> simpleConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
 
 
+/**
+ * @brief Perform a convolution on `A` by passing a kernel. `A` can be padded according to Padding enum.
+ * The calculation is performed by the simplest convolution method.
+ * Pass the matrix which will keep the result by reference.
+ * 
+ * @tparam T1 CUCV datatype of `OUT` and `A`: CUCV_8U, CUCV_16U, CUCV_64F.
+ * @tparam T2 CUCV datatype of the kernel: CUCV_8U, CUCV_16U, CUCV_64F.
+ * @param OUT The matrix which will keep the result.
+ * @param A The Matrix to be convoluted.
+ * @param kernel The kernel for the convolution. Note that the kernel will be flipped (since it is a convolution and not correlation).
+ * @param padding The padding method.
+ * @return the resulting matrix of type T1. The size dependes on the Padding method.
+ */
+template <typename T1, typename T2>
+void simpleSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
+
+
+/**
+ * @brief Perform a convolution on `A` by passing a kernel. `A` can be padded according to Padding enum.
+ * The calculation is performed by the simplest convolution method.
+ * 
+ * @tparam T1 CUCV datatype of return and `A`: CUCV_8U, CUCV_16U, CUCV_64F.
+ * @tparam T2 CUCV datatype of the kernel: CUCV_8U, CUCV_16U, CUCV_64F.
+ * @param A The Matrix to be convoluted.
+ * @param kernel The kernel for the convolution. Note that the kernel will be flipped (since it is a convolution and not correlation).
+ * @param padding The padding method.
+ * @return the resulting matrix of type T1. The size dependes on the Padding method.
+ */
+template <typename T1, typename T2>
+CuMat<T1> simpleSharedConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
+
+
 }  // namespace cuCV
 
 #endif  // LINALG_H

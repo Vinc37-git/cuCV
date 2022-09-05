@@ -231,7 +231,14 @@ static T paddedValue(const int r, const int c, const cuCV::DeviceCuMat<T> A, con
 
 template <typename T1, typename T2> __global__
 void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding) {
-
+/**
+ * Notes about simpleConv2d:
+ * - "Since the innermost processing loop of both row and column filter performs very few 
+ * computations per iteration, the loop/branching overhead is very big, so in order to 
+ * improve performance" the loops should be unrolled...
+ * https://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_64_website/projects/convolutionSeparable/doc/convolutionSeparable.pdf
+ * 
+ */
     const unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
@@ -265,38 +272,77 @@ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
 
 template <typename T1, typename T2> __global__
 void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding) {
+    /**
+     * Notes about simpleSharedConv2d():
+     * - Loading kernel into __constant__ float could be an option, but: __constant__ memory has the 
+     * lifetime of the CUDA context in which it is created.
+     * - "However the problem with this approach is that elements on the boundaries will have neighbouring 
+     * elements in other blocks and shared memory is only at the block level so it cannot be exploited for 
+     * these elements. Therefore in these boundary cases we must read from global memory. 
+     * However, the good news is that it is probable that these elements would have already been loaded to 
+     * the L2 cache if they had been read into the shared memory of another block by the time this call is 
+     * made. In this case it would actually have been read from the L2 cache rather than global memory which 
+     * is faster." http://alexminnaar.com/2019/07/12/implementing-convolutions-in-cuda.html
+     */
 
-    const unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
-    const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
+    /** simpleSharedConv2d() only allowed for kernel sizes < (BLOCK_SIZE, BLOCK_SIZE).
+     * This must be checked before kernel call. */
+
+    const unsigned int blockBoundLX = blockIdx.x * blockDim.x;   ///< Left bound of block: blockIdx.y * blockDim.y
+    const unsigned int blockBoundUX = (blockIdx.x + 1) * blockDim.x - 1;  ///< Right bound: (blockIdx.y + 1) * blockDim.y (exclusive)
+    const unsigned int blockBoundLY = blockIdx.y * blockDim.y;  ///< Upper bound: blockIdx.y * blockDim.y
+    const unsigned int blockBoundUY = (blockIdx.y + 1) * blockDim.y - 1;  ///< Lower bound: (blockIdx.y + 1) * blockDim.y (exclusive)
+
+    const unsigned int col = blockBoundLX + threadIdx.x;
+    const unsigned int row = blockBoundLY + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
     const unsigned int Nx = (kernel.mWidth /*+ 1*/) / 2;
     const unsigned int Ny = (kernel.mHeight /*+ 1*/) / 2;
-/*
-    __shared__ 
 
     if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
         double out = 0;
+        
+        ///< Shared kernel per warp. Row major to ensure coalesceding.
+        ///< @todo: make sharedKernel Size variable (dynamic allocation)
+        __shared__ T2 sharedKernel[BLOCK_SIZE][BLOCK_SIZE];
+        __shared__ T1 sharedAsub[BLOCK_SIZE][BLOCK_SIZE];
+
+        if (threadIdx.x < kernel.mWidth && threadIdx.y < kernel.mHeight)
+            sharedKernel[threadIdx.y][threadIdx.x] = kernel.getElement(threadIdx.y, threadIdx.x, threadIdx.z);
+        sharedAsub[threadIdx.y][threadIdx.x] = A.getElement(row, col, ch);
+
+        // Synchronize to make sure the sub-matrices are loaded
+        // before starting the computation
+        __syncthreads();   
 
         /// @todo First we will assume the kernel hasn a odd number of cols and rows
         for (int r = row - Ny, rK = kernel.mHeight - 1; rK >= 0; ++r, --rK) {  // r is row of image. rK is row of kernel. rK decreases (kernel flip)
            for (int c = col - Nx, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)        
                 // Check if kernel overlaps with image edges
                 if (r >= 0 && r < A.mHeight && c >= 0 && c < A.mWidth) {
-                    out += A.getElement(r, c, ch) * kernel.getElement(rK, cK);  // accumulate
+                    if (r < blockBoundLY || r > blockBoundUY || c < blockBoundLX || c > blockBoundUX) {  // kernel is partially outside of block
+                        // To convolute with values outside of current block, we need to load those values from global memory.
+                        // They might be loaded in L2 chache already though since they were loaded into shared memory of another block before.
+                        out += A.getElement(r, c, ch) * sharedKernel[rK][cK];  // accumulate from global
+                    }
+                    else {
+                        // kernel is inside of block
+                        out += sharedAsub[r - blockBoundLY][c - blockBoundLX] * sharedKernel[rK][cK];  // accumulate from shared 
+                        ///< @bug [threadIdx.y][threadIdx.x] always same
+                    }
                 }
                 // index is out of bounds of A. Use Padding
                 else {
-                    out += paddedValue(r, c, A, padding) * kernel.getElement(rK, cK);
+                    out += paddedValue(r, c, A, padding) * sharedKernel[rK][cK];
                 }
             }
         }
-
         // Every Thread will insert an output value at its position in OUT.
         /// @todo Rounding would be nice for uint8 and uint16 outputs. However, we can not use typeid to determine type since it is device code. 
         OUT.setElement(row, col, ch, (T1) out);  
     }
-*/
+
 }
 
 template <typename T> __global__
@@ -447,6 +493,23 @@ template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_8U> O
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
 template __global__ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
+
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT, const cuCV::DeviceCuMat<CUCV_8U> A, const cuCV::DeviceCuMat<CUCV_8U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_8U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_8U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_8U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT, const cuCV::DeviceCuMat<CUCV_8U> A, const cuCV::DeviceCuMat<CUCV_16U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_16U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_16U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_16U> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT, const cuCV::DeviceCuMat<CUCV_8U> A, const cuCV::DeviceCuMat<CUCV_32F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_32F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_32F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_32F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_8U> OUT, const cuCV::DeviceCuMat<CUCV_8U> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_16U> OUT, const cuCV::DeviceCuMat<CUCV_16U> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_32F> OUT, const cuCV::DeviceCuMat<CUCV_32F> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
+template __global__ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<CUCV_64F> OUT, const cuCV::DeviceCuMat<CUCV_64F> A, const cuCV::DeviceCuMat<CUCV_64F> kernel, const cuCV::Padding padding);
 
 template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_8U> OUT);
 template __global__ void cuCV::kernel::zeros(cuCV::DeviceCuMat<CUCV_16U> OUT);
