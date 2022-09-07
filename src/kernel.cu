@@ -303,13 +303,16 @@ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::Dev
     if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
         double out = 0;
         
-        ///< Shared kernel per warp. Row major to ensure coalesceding.
-        ///< @todo: make sharedKernel Size variable (dynamic allocation)
-        __shared__ T2 sharedKernel[BLOCK_SIZE][BLOCK_SIZE];
-        __shared__ T1 sharedAsub[BLOCK_SIZE][BLOCK_SIZE];
+        ///< Shared kernel per block. Row major to ensure coalesceding.
+        ///< sharedKernel is dynamically allocated shared memory
+        // reinterpret_cast() mechanism from https://stackoverflow.com/questions/27570552/templated-cuda-kernel-with-dynamic-shared-memory
+        extern __shared__ __align__(sizeof(T2)) unsigned char sharedKernel_[];
+        T2 * sharedKernel = reinterpret_cast<T2 *>(sharedKernel_);
 
         if (threadIdx.x < kernel.mWidth && threadIdx.y < kernel.mHeight)
-            sharedKernel[threadIdx.y][threadIdx.x] = kernel.getElement(threadIdx.y, threadIdx.x, threadIdx.z);
+            sharedKernel[threadIdx.y * kernel.mWidth + threadIdx.x] = kernel.getElement(threadIdx.y, threadIdx.x, threadIdx.z);
+
+        __shared__ T1 sharedAsub[BLOCK_SIZE][BLOCK_SIZE];
         sharedAsub[threadIdx.y][threadIdx.x] = A.getElement(row, col, ch);
 
         // Synchronize to make sure the sub-matrices are loaded
@@ -324,17 +327,17 @@ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::Dev
                     if (r < blockBoundLY || r > blockBoundUY || c < blockBoundLX || c > blockBoundUX) {  // kernel is partially outside of block
                         // To convolute with values outside of current block, we need to load those values from global memory.
                         // They might be loaded in L2 chache already though since they were loaded into shared memory of another block before.
-                        out += A.getElement(r, c, ch) * sharedKernel[rK][cK];  // accumulate from global
+                        out += A.getElement(r, c, ch) * sharedKernel[rK * kernel.mWidth + cK];  // accumulate from global
                     }
                     else {
                         // kernel is inside of block
-                        out += sharedAsub[r - blockBoundLY][c - blockBoundLX] * sharedKernel[rK][cK];  // accumulate from shared 
+                        out += sharedAsub[r - blockBoundLY][c - blockBoundLX] * sharedKernel[rK * kernel.mWidth + cK];  // accumulate from shared 
                         ///< @bug [threadIdx.y][threadIdx.x] always same
                     }
                 }
                 // index is out of bounds of A. Use Padding
                 else {
-                    out += paddedValue(r, c, A, padding) * sharedKernel[rK][cK];
+                    out += paddedValue(r, c, A, padding) * sharedKernel[rK * kernel.mWidth + cK];
                 }
             }
         }

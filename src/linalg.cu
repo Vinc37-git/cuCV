@@ -184,8 +184,9 @@ void cuCV::simpleSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<
     // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
     const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
     const dim3 blocks((OUT.mWidth + threads.x - 1) / threads.x, (OUT.mHeight + threads.y - 1) / threads.y, OUT.mChannels);
+    const size_t kernelCounts = (size_t) (kernel.getWidth() * kernel.getHeight() * sizeof(T2));
 
-    cuCV::kernel::simpleSharedConv2d<<<blocks, threads>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
+    cuCV::kernel::simpleSharedConv2d<<<blocks, threads, kernelCounts>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
 
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
