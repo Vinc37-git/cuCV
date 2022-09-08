@@ -14,8 +14,8 @@
 
 template <typename T> __host__ 
 cuCV::DeviceCuMat<T>::DeviceCuMat(const cuCV::CuMat<T> & cuMat) 
-        : mWidth(cuMat.mWidth), mHeight(cuMat.mHeight), mChannels(cuMat.mChannels), 
-        mStrideX(cuMat.mStrideX), mStrideY(cuMat.mStrideY), mData(cuMat.mData) { }
+        : mWidth(cuMat.getWidth()), mHeight(cuMat.getHeight()), mChannels(cuMat.getNChannels()), 
+        mStrideX(cuMat.getStrideX()), mStrideY(cuMat.getStrideY()), mData(cuMat.getDataPtr()) { }
 
 
 template <typename T> __device__ 

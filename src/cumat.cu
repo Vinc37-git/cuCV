@@ -19,7 +19,7 @@ cuCV::CuMat<T>::CuMat() { }
 
 template <typename T>
 cuCV::CuMat<T>::CuMat(Mat<T> & mat) 
-        : Mat<T>(mat.mWidth, mat.mHeight, mat.mChannels, NULL, false) {  
+        : Mat<T>(mat.getWidth(), mat.getHeight(), mat.getNChannels(), NULL, false) {  
     ///< We instanciate Base Class Object "Mat" using parameters of mat. However, dont point to the same data.
     //allocateLike(mat);
 }
@@ -69,7 +69,7 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator=(CuMat cuMat) {
     this->mStrideY = cuMat.mStrideY;
     this->mChannels = cuMat.mChannels;
     this->mBorrowed = cuMat.mBorrowed;
-    CUCV_DEBUG_PRINT("%p swaped with %p.", cuMat.mData, this->mData);
+    CUCV_DEBUG_PRINT("%p swaped with %p.", cuMat.getDataPtr(), this->mData);
     return * this;
 }
 
@@ -313,11 +313,11 @@ void cuCV::CuMat<T>::uploadFrom(const Mat<T> & src) {
 
     // Check if dimenions match. If dimensions are uninitialized assign them.
     if ((this->mWidth == 0) || (this->mHeight == 0) || (this->mChannels == 0)) {
-        this->mWidth = src.mWidth;
-        this->mHeight = src.mHeight;
-        this->mChannels = src.mChannels;
-        this->mStrideX = src.mStrideX;
-        this->mStrideY = src.mStrideY;
+        this->mWidth = src.getWidth();
+        this->mHeight = src.getHeight();
+        this->mChannels = src.getNChannels();
+        this->mStrideX = src.getStrideX();
+        this->mStrideY = src.getStrideY();
     }
     else if (!compareDim(src, * this)) {
         throw cuCV::exception::DimensionMismatch(src, * this);
@@ -328,7 +328,7 @@ void cuCV::CuMat<T>::uploadFrom(const Mat<T> & src) {
         allocateLike(src);
 
     /// Send Memory from src to 'this'. 'this' is on device
-    gpuErrchk(cudaMemcpy(this->mData, src.mData, sizeof(T) * src.mWidth * src.mHeight * src.mChannels, cudaMemcpyHostToDevice));   
+    gpuErrchk(cudaMemcpy(this->mData, src.getDataPtr(), sizeof(T) * src.getWidth() * src.getHeight() * src.getNChannels(), cudaMemcpyHostToDevice));   
 }
 
 
@@ -345,22 +345,22 @@ void cuCV::CuMat<T>::downloadTo(Mat<T> & dst) const {
         throw cuCV::exception::NullPointer("Download failed. mData of source on device is NULL"); ///< @note undefined behaviour! 
 
     // Check if dimenions match. If dimensions are uninitialized assign them.
-    if ((dst.mWidth == 0) || (dst.mHeight == 0) || (dst.mChannels == 0)) {
-        dst.mWidth = this->mWidth;
-        dst.mHeight = this->mHeight;
-        dst.mChannels = this->mChannels;
-        dst.mStrideX = this->mStrideX;
-        dst.mStrideY = this->mStrideY;
+    if ((dst.getWidth() == 0) || (dst.getHeight() == 0) || (dst.getNChannels() == 0)) {
+        dst.setWidth(this->mWidth);
+        dst.setHeight(this->mHeight);
+        dst.setNChannels(this->mChannels);
+        dst.setStrideX(this->mStrideX);
+        dst.setStrideY(this->mStrideY);
     }
     else if (!compareDim(* this, dst))
         throw cuCV::exception::DimensionMismatch(* this, dst);
     
 
     // If MEM for destination on host is not allocated yet, allocate.
-    if (dst.mData == NULL)
+    if (dst.getDataPtr() == NULL)
         dst.alloc();  // The dim check makes sure the allocated size is always the right one for `this`.
     
-    gpuErrchk(cudaMemcpy(dst.mData, this->mData, sizeof(T) * dst.mWidth * dst.mHeight * dst.mChannels, cudaMemcpyDeviceToHost));
+    gpuErrchk(cudaMemcpy(dst.getDataPtr(), this->mData, sizeof(T) * dst.getWidth() * dst.getHeight() * dst.getNChannels(), cudaMemcpyDeviceToHost));
 }
 
 
@@ -368,11 +368,11 @@ template <typename T>
 void cuCV::CuMat<T>::allocateLike(const Mat<T> & src) {
     // Check if dimenions match. If dimensions are uninitialized assign them.
     if ((this->mWidth == 0) || (this->mHeight == 0) || (this->mChannels == 0)) {
-        this->mWidth = src.mWidth;
-        this->mHeight = src.mHeight;
-        this->mChannels = src.mChannels;
-        this->mStrideX = src.mStrideX;
-        this->mStrideY = src.mStrideY;
+        this->mWidth = src.getWidth();
+        this->mHeight = src.getHeight();
+        this->mChannels = src.getNChannels();
+        this->mStrideX = src.getStrideX();
+        this->mStrideY = src.getStrideY();
     }
     else if (!compareDim(src, * this))
         throw cuCV::exception::DimensionMismatch(src, * this, "allocation");
@@ -421,28 +421,28 @@ cuCV::DeviceCuMat<T> cuCV::CuMat<T>::kernel() const {
 
 template <typename T>
 bool cuCV::CuMat<T>::compareDim(const CuMat & A, const CuMat & B) const {
-    if (A.mWidth != B.mWidth || A.mHeight != B.mHeight || A.mChannels != B.mChannels)
+    if (A.getWidth() != B.getWidth() || A.getHeight() != B.getHeight() || A.getNChannels() != B.getNChannels())
         return 0;
     return 1;
 }
 
 template <typename T>
 bool cuCV::CuMat<T>::compareDim(const CuMat & A, const cuCV::Mat<T> & B) const {
-    if (A.mWidth != B.mWidth || A.mHeight != B.mHeight || A.mChannels != B.mChannels)
+    if (A.getWidth() != B.getWidth() || A.getHeight() != B.getHeight() || A.getNChannels() != B.getNChannels())
         return 0;
     return 1;
 }
 
 template <typename T>
 bool cuCV::CuMat<T>::compareDim(const cuCV::Mat<T> & A, const CuMat & B) const {
-    if (A.mWidth != B.mWidth || A.mHeight != B.mHeight || A.mChannels != B.mChannels)
+    if (A.getWidth() != B.getWidth() || A.getHeight() != B.getHeight() || A.getNChannels() != B.getNChannels())
         return 0;
     return 1;
 }
 
 template <typename T>
 bool cuCV::CuMat<T>::compareDim(const cuCV::Mat<T> & A, const cuCV::Mat<T> & B) const {
-    if (A.mWidth != B.mWidth || A.mHeight != B.mHeight || A.mChannels != B.mChannels)
+    if (A.getWidth() != B.getWidth() || A.getHeight() != B.getHeight() || A.getNChannels() != B.getNChannels())
         return 0;
     return 1;
 }

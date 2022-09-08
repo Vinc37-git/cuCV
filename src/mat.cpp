@@ -289,8 +289,20 @@ int cuCV::Mat<T>::getWidth() const {
 
 
 template <typename T>
+void cuCV::Mat<T>::setWidth(int width) {
+    mWidth = width;
+}
+
+
+template <typename T>
 int cuCV::Mat<T>::getHeight() const {
     return mHeight;
+}
+
+
+template <typename T>
+void cuCV::Mat<T>::setHeight(int height) {
+    mHeight = height;
 }
 
 
@@ -301,8 +313,20 @@ int cuCV::Mat<T>::getNChannels() const {
 
 
 template <typename T>
+void cuCV::Mat<T>::setNChannels(int channels) {
+    mChannels = channels;
+}
+
+
+template <typename T>
 int cuCV::Mat<T>::getStrideX() const {
     return mStrideX;
+}
+
+
+template <typename T>
+void cuCV::Mat<T>::setStrideX(int strideX) {
+    mStrideX = strideX;
 }
 
 
@@ -313,8 +337,20 @@ int cuCV::Mat<T>::getStrideY() const {
 
 
 template <typename T>
+void cuCV::Mat<T>::setStrideY(int strideY) {
+    mStrideX = strideY;
+}
+
+
+template <typename T>
 T * cuCV::Mat<T>::getDataPtr() const {
     return mData;
+}
+
+
+template <typename T>
+void cuCV::Mat<T>::setDataPtr(T * pData) {
+    mData = pData;
 }
 
 
@@ -442,7 +478,7 @@ void cuCV::Mat<T>::print(int nRows, int nCols, int channel) const {
 
     for (int row=0; row < nRows; row++) {
         for (int col=0; col < nCols; col++) {
-            printf("%f \t", (double) at(row, col, channel));
+            printf("%.1f ", (double) at(row, col, channel));
         }
         printf("\n");
     }

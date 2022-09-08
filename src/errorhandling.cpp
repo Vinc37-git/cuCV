@@ -36,25 +36,25 @@ int cuCV::error::cudaError(std::string pos, cudaError_t & err) {
 
 template <typename T>
 cuCV::exception::DimensionMismatch<T>::DimensionMismatch(const Mat<T> & A, const Mat<T> & B, std::string desc) 
-        : aX(A.mWidth), aY(A.mHeight), aZ(A.mChannels), bX(B.mWidth), bY(B.mHeight), bZ(B.mChannels), operation(desc) {
+        : aX(A.getWidth()), aY(A.getHeight()), aZ(A.getNChannels()), bX(B.getWidth()), bY(B.getHeight()), bZ(B.getNChannels()), operation(desc) {
     genMessage();
 }
 
 template <typename T>
 cuCV::exception::DimensionMismatch<T>::DimensionMismatch(const CuMat<T> & A, const CuMat<T> & B, std::string desc) 
-        : aX(A.mWidth), aY(A.mHeight), aZ(A.mChannels), bX(B.mWidth), bY(B.mHeight), bZ(B.mChannels), operation(desc) {
+        : aX(A.getWidth()), aY(A.getHeight()), aZ(A.getNChannels()), bX(B.getWidth()), bY(B.getHeight()), bZ(B.getNChannels()), operation(desc) {
     genMessage();
 }
 
 template <typename T>
 cuCV::exception::DimensionMismatch<T>::DimensionMismatch(const CuMat<T> & A, const Mat<T> & B, std::string desc) 
-        : aX(A.mWidth), aY(A.mHeight), aZ(A.mChannels), bX(B.mWidth), bY(B.mHeight), bZ(B.mChannels), operation(desc) {
+        : aX(A.getWidth()), aY(A.getHeight()), aZ(A.getNChannels()), bX(B.getWidth()), bY(B.getHeight()), bZ(B.getNChannels()), operation(desc) {
     genMessage();
 }
 
 template <typename T>
 cuCV::exception::DimensionMismatch<T>::DimensionMismatch(const Mat<T> & A, const CuMat<T> & B, std::string desc) 
-        : aX(A.mWidth), aY(A.mHeight), aZ(A.mChannels), bX(B.mWidth), bY(B.mHeight), bZ(B.mChannels), operation(desc) {
+        : aX(A.getWidth()), aY(A.getHeight()), aZ(A.getNChannels()), bX(B.getWidth()), bY(B.getHeight()), bZ(B.getNChannels()), operation(desc) {
     genMessage();
 }
 

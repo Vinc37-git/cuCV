@@ -15,13 +15,13 @@
 template <typename T>
 void cuCV::simpleMatmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
     // Matrices must have a shape that matches the signature A(m,n) @ B(n,l)->(m,l)
-    if (A.mWidth != B.mHeight || A.mChannels != B.mChannels)
+    if (A.getWidth() != B.getHeight() || A.getNChannels() != B.getNChannels())
         throw cuCV::exception::DimensionMismatch(A, B, "matmul operation");
 
-    if (OUT.mHeight != A.mHeight || OUT.mWidth != B.mWidth)
+    if (OUT.getHeight() != A.getHeight() || OUT.getWidth() != B.getWidth())
         throw std::runtime_error("DimensionMismatch: Matrices must have a shape that matches the signature A(m,n) @ B(n,l)->(m,l).");
     
-    if (A.mData == NULL || B.mData == NULL)
+    if (A.getDataPtr() == NULL || B.getDataPtr() == NULL)
         throw cuCV::exception::NullPointer("PointerError: one or more operands point to NULL data!");
 
     if (OUT.getDataPtr() == NULL)
@@ -29,7 +29,7 @@ void cuCV::simpleMatmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cu
 
     // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
     const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
-    const dim3 blocks((OUT.mWidth + threads.x - 1) / threads.x, (OUT.mHeight + threads.y - 1) / threads.y, OUT.mChannels);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
 
     /// Perform Math
     cuCV::kernel::naiveMatmul<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
@@ -41,7 +41,7 @@ void cuCV::simpleMatmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cu
 
 template <typename T>
 cuCV::CuMat<T> cuCV::naiveMatmul(const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
-    cuCV::CuMat<T> OUT(A.mHeight, B.mWidth, A.mChannels);
+    cuCV::CuMat<T> OUT(A.getHeight(), B.getWidth(), A.getNChannels());
     OUT.allocateOnDevice();
 
     cuCV::simpleMatmul(OUT, A, B);
@@ -53,13 +53,13 @@ cuCV::CuMat<T> cuCV::naiveMatmul(const cuCV::CuMat<T> & A, const cuCV::CuMat<T> 
 template <typename T>
 void cuCV::matmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
     // Matrices must have a shape that matches the signature A(m,n) @ B(n,l)->(m,l)
-    if (A.mWidth != B.mHeight || A.mChannels != B.mChannels)
+    if (A.getWidth() != B.getHeight() || A.getNChannels() != B.getNChannels())
         throw cuCV::exception::DimensionMismatch(A, B, "matmul operation");
 
-    if (OUT.mHeight != A.mHeight || OUT.mWidth != B.mWidth)
+    if (OUT.getHeight() != A.getHeight() || OUT.getWidth() != B.getWidth())
         throw std::runtime_error("DimensionMismatch: Matrices must have a shape that matches the signature A(m,n) @ B(n,l)->(m,l).");
     
-    if (A.mData == NULL || B.mData == NULL)
+    if (A.getDataPtr() == NULL || B.getDataPtr() == NULL)
         throw cuCV::exception::NullPointer("PointerError: one or more operands point to NULL data!");
 
     if (OUT.getDataPtr() == NULL)
@@ -67,7 +67,7 @@ void cuCV::matmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::Cu
 
     // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
     const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
-    const dim3 blocks((OUT.mWidth + threads.x - 1) / threads.x, (OUT.mHeight + threads.y - 1) / threads.y, OUT.mChannels);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
 
     /// Perform Math
     cuCV::kernel::matmul<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
@@ -80,7 +80,7 @@ void cuCV::matmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::Cu
 template <typename T>
 cuCV::CuMat<T> cuCV::matmul(const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
 
-    cuCV::CuMat<T> OUT(A.mHeight, B.mWidth, A.mChannels);
+    cuCV::CuMat<T> OUT(A.getHeight(), B.getWidth(), A.getNChannels());
     OUT.allocateOnDevice();
 
     cuCV::matmul(OUT, A, B);
@@ -120,7 +120,7 @@ void cuCV::simpleConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & 
 
     // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
     const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
-    const dim3 blocks((OUT.mWidth + threads.x - 1) / threads.x, (OUT.mHeight + threads.y - 1) / threads.y, OUT.mChannels);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
 
     cuCV::kernel::simpleConv2d<<<blocks, threads>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
 
@@ -182,7 +182,7 @@ void cuCV::simpleSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<
 
     // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
     const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
-    const dim3 blocks((OUT.mWidth + threads.x - 1) / threads.x, (OUT.mHeight + threads.y - 1) / threads.y, OUT.mChannels);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
     const size_t kernelCounts = (size_t) (kernel.getWidth() * kernel.getHeight() * sizeof(T2));
 
     cuCV::kernel::simpleSharedConv2d<<<blocks, threads, kernelCounts>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
@@ -248,11 +248,11 @@ void cuCV::simpleSharedConv2d_2(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMa
     // floating type matrices: sizeof(sharedMem) = 9 * BLOCK_SIZE * BLOCK_SIZE * sizeof(double)
     const size_t block_size = std::min(BLOCK_SIZE, 16);    
     const dim3 threads(block_size, block_size);
-    const dim3 blocks((OUT.mWidth + threads.x - 1) / threads.x, (OUT.mHeight + threads.y - 1) / threads.y, OUT.mChannels);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
     const size_t sharedMemCounts = (size_t) (kernel.getWidth() * kernel.getHeight() * sizeof(T2))
             + block_size * block_size * 9 * sizeof(T1);
 
-    /// @todo: Check if block_size < kernel.width / 2
+    /// @todo: Check if block_size < kernel.getWidth() / 2
 
     cuCV::kernel::simpleSharedConv2d_2<<<blocks, threads, sharedMemCounts>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
 

@@ -269,53 +269,43 @@ public:
 
     // ******* PUBLIC SETTERS AND GETTERS *******
     
-    /**
-     * @brief Get the Width of Mat.
-     * 
-     * @return The width as int.
-     */
+    /** @brief Get the width of Mat. */
     int getWidth() const;
+    
+    /** @brief Set the width of Mat. */
+    void setWidth(int width);
 
-    /**
-     * @brief Get the height of Mat.
-     * 
-     * @return The height as int.
-     */
+    /** @brief Get the height of Mat. */
     int getHeight() const;
+    
+    /** @brief Set the height of Mat. */
+    void setHeight(int width);
 
-    /**
-     * @brief Get the number of channels of Mat.
-     * 
-     * @return The number of channels as int.
-     */
+    /** @brief Get the depth of Mat. */
     int getNChannels() const;
+    
+    /** @brief Set the depth of Mat. */
+    void setNChannels(int width);
 
-    /**
-     * @brief Get the stride of Mat.
-     * 
-     * @return The stride as int.
-     */
+    /** @brief Get the Stride in width-direction of Mat. */
     int getStrideX() const;
+    
+    /** @brief Set the Stride in width-direction of Mat. */
+    void setStrideX(int width);
 
-    /**
-     * @brief Get the stride of Mat.
-     * 
-     * @return The stride as int.
-     */
+    /** @brief Get the Stride in height-direction of Mat. */
     int getStrideY() const;
 
-    /**
-     * @brief Get the data pointer of Mat.
-     * 
-     * @return The data pointer as pointer to data of type T.
-     */
-    T * getDataPtr() const;
+    /** @brief Set the Stride in height-direction of Mat. */
+    void setStrideY(int width);
 
-    /**
-     * @brief Get the number of elements in the matrix.
-     * 
-     * @return NUmber of elements. 
-     */
+    /** @brief Get the Data pointer pointing to the first element of Mat. */
+    T * getDataPtr() const;
+    
+    /** @brief Set the Data pointer pointing to the first element of Mat. */
+    void setDataPtr(T * pData);
+
+    /** @brief Get thenumber of elements of Mat. */
     size_t getSize() const;
 
 
@@ -396,15 +386,16 @@ public:
      */
     CuType cuType;
 
-//protected:
 ///< @todo: Make protected.
+protected:
     int mWidth;  ///< Width of the matrix represented by the mat object.
     int mHeight;  ///< Height of the matrix represented by the mat object.
+    int mChannels;  ///< Number of channels of the matrix represented by the mat object.
     int mStrideX;  ///< Stride of the memory in x direction.
     int mStrideY;  ///< Stride of the memory in y direction.
-    int mChannels;  ///< Number of channels of the matrix represented by the mat object.
     T * mData;  ///< Pointer to the data of the matrix represented by the mat object.
     bool mBorrowed; ///< Indicates if data of mat is borrowed only. If borrowed, it will not try to deallocate on destruction.
+public:
 
 };
 
