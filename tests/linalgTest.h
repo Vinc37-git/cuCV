@@ -11,6 +11,8 @@
 
 #ifndef LINALGTEST_H
 #define LINALGTEST_H
+#include <iostream>
+#include <stdlib.h>
 
 #include "mat.h"
 #include "cumat.h"
@@ -25,6 +27,7 @@ class LinalgTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testNaiveMatmul);
     CPPUNIT_TEST(testMatmul);
     CPPUNIT_TEST(testSimpleConv2d);
+    CPPUNIT_TEST(testAllConv2d);
     CPPUNIT_TEST_SUITE_END();
 
     protected:
@@ -32,11 +35,12 @@ class LinalgTest : public CPPUNIT_NS::TestFixture {
 
     public:
     void setUp();
-    //void tearDown();
+    void tearDown();
 
     void testNaiveMatmul();
     void testMatmul();
     void testSimpleConv2d();
+    void testAllConv2d();
 };
 
 #endif  // LINALGTEST_H

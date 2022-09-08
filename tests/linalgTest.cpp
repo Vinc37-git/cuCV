@@ -20,6 +20,10 @@ void LinalgTest::setUp() {
     nCh = 4;
 }
 
+void LinalgTest::tearDown() {
+    gpuErrchk(cudaDeviceReset());
+}
+
 
 void LinalgTest::testNaiveMatmul() {
     cuCV::Mat A1 = cuCV::eye<CUCV_8U>(N, N, nCh);
@@ -171,5 +175,139 @@ void LinalgTest::testSimpleConv2d() {
             }
         }
     }
-    gpuErrchk(cudaDeviceReset());  // to detect leaks with cuda-memcheck
+}
+
+
+void LinalgTest::testAllConv2d() {
+    nCh = 1;
+    N = 100;
+    int sigma = N/2;
+    int kSize = 9;
+    int f = 100;
+    
+    {  // for CUCV_8U
+        cuCV::CuMat<CUCV_8U> A = cuCV::eyeOnDevice<CUCV_8U>(N,N,nCh);
+        cuCV::CuMat<CUCV_8U> A_out_target = cuCV::zerosOnDevice<CUCV_8U>(N, N, nCh);
+        cuCV::CuMat<CUCV_8U> A_out_calc1 = cuCV::zerosOnDevice<CUCV_8U>(N, N, nCh);
+        cuCV::CuMat<CUCV_8U> A_out_calc2 = cuCV::zerosOnDevice<CUCV_8U>(N, N, nCh);
+        cuCV::CuMat<CUCV_8U> A_out_calc3 = cuCV::zerosOnDevice<CUCV_8U>(N, N, nCh);
+        cuCV::CuMat<CUCV_32F> kernel = cuCV::createKernel(cuCV::Kernel::GAUSS, kSize, kSize);
+        cuCV::simpleConv2d(A_out_target, A, kernel, cuCV::Padding::ZERO);
+        cuCV::simpleSharedConv2d(A_out_calc1, A, kernel, cuCV::Padding::ZERO);
+        cuCV::simpleSharedConv2d_2(A_out_calc2, A, kernel, cuCV::Padding::ZERO);
+        //cuCV::simpleSharedConv2d_2(A_out_calc2, A, kernel, cuCV::Padding::ZERO);
+        cuCV::Mat<CUCV_8U> A_target_h(N,N,nCh);
+        cuCV::Mat<CUCV_8U> A_calc1_h(N,N,nCh);
+        cuCV::Mat<CUCV_8U> A_calc2_h(N,N,nCh);
+        cuCV::Mat<CUCV_8U> A_calc3_h(N,N,nCh);
+        A_out_target.downloadTo(A_target_h);
+        A_out_calc1.downloadTo(A_calc1_h);
+        A_out_calc2.downloadTo(A_calc2_h);
+        //A_out_calc3.downloadTo(A_calc3_h);
+
+        for (int ch = 0; ch < nCh; ch++) {
+            for (int row = 0; row < N; row++) {
+                for (int col = 0; col < N; col++) {
+                    std::stringstream rowCol; rowCol << "CUCV_8U - " << "R: "<< row <<" C: " << col ;
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(rowCol.str(), A_target_h.at(row, col, ch), A_calc1_h.at(row, col, ch), 0.001);
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(rowCol.str(), A_target_h.at(row, col, ch), A_calc2_h.at(row, col, ch), 0.001);
+                    //CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("simpleSharedConv2d_2(): " << rowCol, A_out_target.at(row, col, ch), A_calc3_h.at(row, col, ch), 0.001);
+                }
+            }
+        }
+    }
+    {  // for CUCV_16U
+        cuCV::CuMat<CUCV_16U> A = cuCV::eyeOnDevice<CUCV_16U>(N,N,nCh);
+        cuCV::CuMat<CUCV_16U> A_out_target = cuCV::zerosOnDevice<CUCV_16U>(N, N, nCh);
+        cuCV::CuMat<CUCV_16U> A_out_calc1 = cuCV::zerosOnDevice<CUCV_16U>(N, N, nCh);
+        cuCV::CuMat<CUCV_16U> A_out_calc2 = cuCV::zerosOnDevice<CUCV_16U>(N, N, nCh);
+        cuCV::CuMat<CUCV_16U> A_out_calc3 = cuCV::zerosOnDevice<CUCV_16U>(N, N, nCh);
+        cuCV::CuMat<CUCV_32F> kernel = cuCV::createKernel(cuCV::Kernel::GAUSS, kSize, kSize);
+        cuCV::simpleConv2d(A_out_target, A, kernel, cuCV::Padding::ZERO);
+        cuCV::simpleSharedConv2d(A_out_calc1, A, kernel, cuCV::Padding::ZERO);
+        cuCV::simpleSharedConv2d_2(A_out_calc2, A, kernel, cuCV::Padding::ZERO);
+        //cuCV::simpleSharedConv2d_2(A_out_calc2, A, kernel, cuCV::Padding::ZERO);
+        cuCV::Mat<CUCV_16U> A_target_h(N,N,nCh);
+        cuCV::Mat<CUCV_16U> A_calc1_h(N,N,nCh);
+        cuCV::Mat<CUCV_16U> A_calc2_h(N,N,nCh);
+        cuCV::Mat<CUCV_16U> A_calc3_h(N,N,nCh);
+        A_out_target.downloadTo(A_target_h);
+        A_out_calc1.downloadTo(A_calc1_h);
+        A_out_calc2.downloadTo(A_calc2_h);
+        //A_out_calc3.downloadTo(A_calc3_h);
+
+        for (int ch = 0; ch < nCh; ch++) {
+            for (int row = 0; row < N; row++) {
+                for (int col = 0; col < N; col++) {
+                    std::stringstream rowCol; rowCol << "CUCV_16U - " << "R: "<< row <<" C: " << col ;
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(rowCol.str(), A_target_h.at(row, col, ch), A_calc1_h.at(row, col, ch), 0.001);
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(rowCol.str(), A_target_h.at(row, col, ch), A_calc2_h.at(row, col, ch), 0.001);
+                    //CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("simpleSharedConv2d_2(): " << rowCol, A_out_target.at(row, col, ch), A_calc3_h.at(row, col, ch), 0.001);
+                }
+            }
+        }
+    }
+    {  // for CUCV_32F
+        N--;
+        cuCV::CuMat<CUCV_32F> A = cuCV::gaussOnDevice<CUCV_32F>(N,nCh,sigma,true) * f;
+        cuCV::CuMat<CUCV_32F> A_out_target = cuCV::zerosOnDevice<CUCV_32F>(N, N, nCh);
+        cuCV::CuMat<CUCV_32F> A_out_calc1 = cuCV::zerosOnDevice<CUCV_32F>(N, N, nCh);
+        cuCV::CuMat<CUCV_32F> A_out_calc2 = cuCV::zerosOnDevice<CUCV_32F>(N, N, nCh);
+        cuCV::CuMat<CUCV_32F> A_out_calc3 = cuCV::zerosOnDevice<CUCV_32F>(N, N, nCh);
+        cuCV::CuMat<CUCV_32F> kernel = cuCV::createKernel(cuCV::Kernel::GAUSS, kSize, kSize);
+        cuCV::simpleConv2d(A_out_target, A, kernel, cuCV::Padding::ZERO);
+        cuCV::simpleSharedConv2d(A_out_calc1, A, kernel, cuCV::Padding::ZERO);
+        cuCV::simpleSharedConv2d_2(A_out_calc2, A, kernel, cuCV::Padding::ZERO);
+        //cuCV::simpleSharedConv2d_2(A_out_calc2, A, kernel, cuCV::Padding::ZERO);
+        cuCV::Mat<CUCV_32F> A_target_h(N,N,nCh);
+        cuCV::Mat<CUCV_32F> A_calc1_h(N,N,nCh);
+        cuCV::Mat<CUCV_32F> A_calc2_h(N,N,nCh);
+        cuCV::Mat<CUCV_32F> A_calc3_h(N,N,nCh);
+        A_out_target.downloadTo(A_target_h);
+        A_out_calc1.downloadTo(A_calc1_h);
+        A_out_calc2.downloadTo(A_calc2_h);
+        //A_out_calc3.downloadTo(A_calc3_h);
+
+        for (int ch = 0; ch < nCh; ch++) {
+            for (int row = 0; row < N; row++) {
+                for (int col = 0; col < N; col++) {
+                    std::stringstream rowCol; rowCol << "CUCV_32F - " << "R: "<< row <<" C: " << col ;
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(rowCol.str(), A_target_h.at(row, col, ch), A_calc1_h.at(row, col, ch), 0.0001);
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(rowCol.str(), A_target_h.at(row, col, ch), A_calc2_h.at(row, col, ch), 0.0001);
+                    ////CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("simpleSharedConv2d_2(): " << rowCol, A_out_target.at(row, col, ch), A_calc3_h.at(row, col, ch), 0.0001);
+                }
+            }
+        }
+    }
+    {  // for CUCV_64F
+        cuCV::CuMat<CUCV_64F> A = cuCV::gaussOnDevice<CUCV_64F>(N,nCh,sigma,true) * f;
+        cuCV::CuMat<CUCV_64F> A_out_target = cuCV::zerosOnDevice<CUCV_64F>(N, N, nCh);
+        cuCV::CuMat<CUCV_64F> A_out_calc1 = cuCV::zerosOnDevice<CUCV_64F>(N, N, nCh);
+        cuCV::CuMat<CUCV_64F> A_out_calc2 = cuCV::zerosOnDevice<CUCV_64F>(N, N, nCh);
+        cuCV::CuMat<CUCV_64F> A_out_calc3 = cuCV::zerosOnDevice<CUCV_64F>(N, N, nCh);
+        cuCV::CuMat kernel = cuCV::createKernel(cuCV::Kernel::GAUSS, kSize, kSize);
+        cuCV::simpleConv2d(A_out_target, A, kernel, cuCV::Padding::ZERO);
+        cuCV::simpleSharedConv2d(A_out_calc1, A, kernel, cuCV::Padding::ZERO);
+        cuCV::simpleSharedConv2d_2(A_out_calc2, A, kernel, cuCV::Padding::ZERO);
+        //cuCV::simpleSharedConv2d_2(A_out_calc2, A, kernel, cuCV::Padding::ZERO);
+        cuCV::Mat<CUCV_64F> A_target_h(N,N,nCh);
+        cuCV::Mat<CUCV_64F> A_calc1_h(N,N,nCh);
+        cuCV::Mat<CUCV_64F> A_calc2_h(N,N,nCh);
+        cuCV::Mat<CUCV_64F> A_calc3_h(N,N,nCh);
+        A_out_target.downloadTo(A_target_h);
+        A_out_calc1.downloadTo(A_calc1_h);
+        A_out_calc2.downloadTo(A_calc2_h);
+        //A_out_calc3.downloadTo(A_calc3_h);
+
+        for (int ch = 0; ch < nCh; ch++) {
+            for (int row = 0; row < N; row++) {
+                for (int col = 0; col < N; col++) {
+                    std::stringstream rowCol; rowCol << "CUCV_64F - " << "R: "<< row <<" C: " << col ;
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(rowCol.str(), A_target_h.at(row, col, ch), A_calc1_h.at(row, col, ch), 0.0001);
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(rowCol.str(), A_target_h.at(row, col, ch), A_calc2_h.at(row, col, ch), 0.0001);
+                    ////CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("simpleSharedConv2d_2(): " << rowCol, A_out_target.at(row, col, ch), A_calc3_h.at(row, col, ch), 0.0001);
+                }
+            }
+        }
+    }
 }
