@@ -254,11 +254,11 @@ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
            for (int c = col - Nx, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)        
                 // Check if kernel overlaps with image edges
                 if (r >= 0 && r < A.mHeight && c >= 0 && c < A.mWidth) {
-                    out += A.getElement(r, c, ch) * kernel.getElement(rK, cK);  // accumulate
+                    out += (double) A.getElement(r, c, ch) * (double) kernel.getElement(rK, cK);  // accumulate
                 }
                 // index is out of bounds of A. Use Padding
                 else {
-                    out += paddedValue(r, c, A, padding) * kernel.getElement(rK, cK);
+                    out += (double) paddedValue(r, c, A, padding) * (double) kernel.getElement(rK, cK);
                 }
             }
         }
@@ -300,17 +300,18 @@ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::Dev
     const unsigned int Nx = (kernel.mWidth /*+ 1*/) / 2;
     const unsigned int Ny = (kernel.mHeight /*+ 1*/) / 2;
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
-        double out = 0;
-        
-        ///< Shared kernel per block. Row major to ensure coalesceding.
-        ///< sharedKernel is dynamically allocated shared memory
-        // reinterpret_cast() mechanism from https://stackoverflow.com/questions/27570552/templated-cuda-kernel-with-dynamic-shared-memory
-        extern __shared__ __align__(sizeof(T2)) unsigned char sharedKernel_[];
-        T2 * sharedKernel = reinterpret_cast<T2 *>(sharedKernel_);
+    double out = 0;
+    
+    ///< Shared kernel per block. Row major to ensure coalesceding.
+    ///< sharedKernel is dynamically allocated shared memory
+    // reinterpret_cast() mechanism from https://stackoverflow.com/questions/27570552/templated-cuda-kernel-with-dynamic-shared-memory
+    extern __shared__ __align__(sizeof(T2)) unsigned char sharedKernel_[];
+    T2 * sharedKernel = reinterpret_cast<T2 *>(sharedKernel_);
 
-        if (threadIdx.x < kernel.mWidth && threadIdx.y < kernel.mHeight)
-            sharedKernel[threadIdx.y * kernel.mWidth + threadIdx.x] = kernel.getElement(threadIdx.y, threadIdx.x, threadIdx.z);
+    if (threadIdx.x < kernel.mWidth && threadIdx.y < kernel.mHeight)
+        sharedKernel[threadIdx.y * kernel.mWidth + threadIdx.x] = kernel.getElement(threadIdx.y, threadIdx.x, threadIdx.z);
+
+    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
 
         __shared__ T1 sharedAsub[BLOCK_SIZE][BLOCK_SIZE];
         sharedAsub[threadIdx.y][threadIdx.x] = A.getElement(row, col, ch);
@@ -327,16 +328,16 @@ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::Dev
                     if (r < blockBoundLY || r > blockBoundUY || c < blockBoundLX || c > blockBoundUX) {  // kernel is partially outside of block
                         // To convolute with values outside of current block, we need to load those values from global memory.
                         // They might be loaded in L2 chache already though since they were loaded into shared memory of another block before.
-                        out += A.getElement(r, c, ch) * sharedKernel[rK * kernel.mWidth + cK];  // accumulate from global
+                        out += (double) A.getElement(r, c, ch) * (double) sharedKernel[rK * kernel.mWidth + cK];  // accumulate from global
                     }
                     else {
                         // kernel is inside of block
-                        out += sharedAsub[r - blockBoundLY][c - blockBoundLX] * sharedKernel[rK * kernel.mWidth + cK];  // accumulate from shared 
+                        out += (double) sharedAsub[r - blockBoundLY][c - blockBoundLX] * (double) sharedKernel[rK * kernel.mWidth + cK];  // accumulate from shared 
                     }
                 }
                 // index is out of bounds of A. Use Padding
                 else {
-                    out += paddedValue(r, c, A, padding) * sharedKernel[rK * kernel.mWidth + cK];
+                    out += (double) paddedValue(r, c, A, padding) * (double) sharedKernel[rK * kernel.mWidth + cK];
                 }
             }
         }
@@ -361,54 +362,54 @@ void cuCV::kernel::simpleSharedConv2d_2(cuCV::DeviceCuMat<T1> OUT, const cuCV::D
     const unsigned int Nx = (kernel.mWidth /*+ 1*/) / 2;
     const unsigned int Ny = (kernel.mHeight /*+ 1*/) / 2;
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
-        double out = 0;
-        
-        /** Shared kernel per block. Row major to ensure coalesceding.
-        * sharedMem_ is dynamically allocated shared memory
-        * and will be split into two arrays of different types T1 and T2
-        * size must match (blockDim.x * 3) * (blockDim.y * 3) * sizeof(T1) + kernel.width * kernel.height * sizeof(T2)
-        * reinterpret_cast() mechanism from https://stackoverflow.com/questions/27570552/templated-cuda-kernel-with-dynamic-shared-memory
-        */
-        extern __shared__ __align__(sizeof(T1)) unsigned char sharedMem_[];
-        T1 * sharedA = reinterpret_cast<T1 *>(sharedMem_);
-        T2 * sharedK = reinterpret_cast<T2 *>(& sharedMem_[blockDim.x * blockDim.y * 9]);
+    double out = 0;
+    
+    /** Shared kernel per block. Row major to ensure coalesceding.
+    * sharedMem_ is dynamically allocated shared memory
+    * and will be split into two arrays of different types T1 and T2
+    * size must match (blockDim.x * 3) * (blockDim.y * 3) * sizeof(T1) + kernel.width * kernel.height * sizeof(T2)
+    * reinterpret_cast() mechanism from https://stackoverflow.com/questions/27570552/templated-cuda-kernel-with-dynamic-shared-memory
+    */
+    extern __shared__ __align__(sizeof(T1)) unsigned char sharedMem_[];
+    T1 * sharedA = reinterpret_cast<T1 *>(sharedMem_);
+    T2 * sharedK = reinterpret_cast<T2 *>(& sharedA[blockDim.x * blockDim.y * 9]);    
 
-        // Divide image into 9 squares around the current tile. use every thread to load 9 values sequentially
-        // unroll loop since it's always a loop of 3x3 iterations.
-    #pragma unroll
-        for (int rS = 0; rS < 3; ++rS) {  // rS is the square in Y, r and c are row/column of image.
-            for (int cS = 0; cS < 3; ++cS) {
-                int c = (cS-1) * blockDim.x + col;
-                int r = (rS-1) * blockDim.y + row;
-                int iSharedA = threadIdx.y * 3 * blockDim.y  // increment per row
-                        + threadIdx.x  // increment per col
-                        + cS * blockDim.x  // offset per square in col-dir
-                        + rS * blockDim.y * blockDim.y * 3;  // offset per square in row-dir 
+    // Divide image into 9 squares around the current tile. use every thread to load 9 values sequentially
+    // unroll loop since it's always a loop of 3x3 iterations.
+#pragma unroll
+    for (int rS = 0; rS < 3; ++rS) {  // rS is the square in Y, r and c are row/column of image.
+        for (int cS = 0; cS < 3; ++cS) {
+            int c = (cS-1) * blockDim.x + col;
+            int r = (rS-1) * blockDim.y + row;
+            int shStrideX = 3 * blockDim.x;
+            int iSharedA = threadIdx.y * shStrideX  // increment per row
+                    + threadIdx.x  // increment per col
+                    + cS * blockDim.x  // offset per square in col-dir
+                    + rS * blockDim.y * blockDim.y * 3;  // offset per square in row-dir 
 
-                if (c < 0 || r < 0 || r >= A.mHeight || c >= A.mWidth)  // out of bounds. use padding
-                    sharedA[iSharedA] = paddedValue(r, c, A, padding);
-                else {  // inbound
-                    cuCV::DeviceCuMat<T1> Asub = A.getBlock(blockIdx.y + rS-1, blockIdx.x + cS-1, ch);
-                    sharedA[iSharedA] = Asub.getElement(threadIdx.y, threadIdx.x, ch);
-                } 
+            if (c < 0 || r < 0 || r >= A.mHeight || c >= A.mWidth) { // out of bounds. use padding
+                sharedA[iSharedA] = paddedValue(r, c, A, padding);
             }
+            else {  // inbound
+                cuCV::DeviceCuMat<T1> Asub = A.getBlock(blockIdx.y + rS-1, blockIdx.x + cS-1, ch);
+                sharedA[iSharedA] = Asub.getElement(threadIdx.y, threadIdx.x, ch);
+            } 
+            //__syncthreads(); 
         }
+    }    
+    // fill sharedK with kernel
+    if (threadIdx.x < kernel.mWidth && threadIdx.y < kernel.mHeight)
+        sharedK[threadIdx.y * kernel.mWidth + threadIdx.x] = kernel.getElement(threadIdx.y, threadIdx.x, threadIdx.z);
 
-        //__syncthreads(); 
-        
-        // fill sharedK with kernel
-        if (threadIdx.x < kernel.mWidth && threadIdx.y < kernel.mHeight)
-            sharedK[threadIdx.y * kernel.mWidth + threadIdx.x] = kernel.getElement(threadIdx.y, threadIdx.x, threadIdx.z);
+    // Synchronize to make sure the sub-matrices are loaded
+    // before starting the computation
+    __syncthreads(); 
 
-        // Synchronize to make sure the sub-matrices are loaded
-        // before starting the computation
-        __syncthreads();  
-
+    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
         /// @todo First we will assume the kernel hasn a odd number of cols and rows
-        for (int r = blockDim.y - Ny + threadIdx.x, rK = kernel.mHeight - 1; rK >= 0; ++r, --rK) {  // r is row of image. rK is row of kernel. rK decreases (kernel flip)
-           for (int c = blockDim.x - Nx + threadIdx.y, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)         
-                out += sharedA[r * blockDim.x * 3 + c] * sharedK[rK * kernel.mWidth + cK];
+        for (int r = blockDim.y - Ny + threadIdx.y, rK = kernel.mHeight - 1; rK >= 0; ++r, --rK) {  // r is row of 3*3 tiles. rK is row of kernel. rK decreases (kernel flip)
+           for (int c = blockDim.x - Nx + threadIdx.x, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of 3*3 tiles. cK is col of kernel. rC decreases (kernel flip)         
+                out += (double) sharedA[r * blockDim.x * 3 + c] * (double) sharedK[rK * kernel.mWidth + cK];
             }
         }
         // Every Thread will insert an output value at its position in OUT.

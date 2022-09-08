@@ -24,6 +24,18 @@
         printf("(%d, %d, %d) : " str, threadIdx.x, threadIdx.y, threadIdx.z , __VA_ARGS__);
 
 
+/// @note: never tested.
+#define CUCV_PRINT_SHARED(sharedMem) {\
+        if (threadIdx.x == 0 && threadIdx.y == 0 && threadIdx.z == 0) { \
+                for (int i = 0; i<blockDim.x * blockDim.y * 9; ++i) { \
+                        printf("%.1f ", (double) sharedMem[i]); \
+                        if ((i+1) % (blockDim.x * 3) == 0) \
+                                printf("\n"); \
+                } \
+                printf("\n"); \
+        } \
+}
+
 
 namespace cuCV {
 
@@ -227,6 +239,10 @@ void simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A
 
 template <typename T1, typename T2> __global__
 void simpleSharedConv2d_2(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding);
+
+
+template <typename T1, typename T2> __global__
+void sepColConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding);
 
 
 /**
