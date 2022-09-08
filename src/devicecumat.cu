@@ -25,9 +25,17 @@ cuCV::DeviceCuMat<T>::DeviceCuMat(int width, int height, int channels, int strid
 
 
 template <typename T> __device__ 
-cuCV::DeviceCuMat<T> cuCV::DeviceCuMat<T>::getSubCuMat(int blockIdRow, int blockIdCol, int blockIdCh) const {
-    cuCV::DeviceCuMat<T> sub(BLOCK_SIZE, BLOCK_SIZE, 1, mStrideX, mStrideY);
-    sub.mData = & mData[mStrideX * blockIdRow * BLOCK_SIZE + blockIdCol * BLOCK_SIZE + mStrideX * mStrideY * blockIdCh];
+cuCV::DeviceCuMat<T> cuCV::DeviceCuMat<T>::getBlock(int blockIdRow, int blockIdCol, int blockIdCh) const {
+    cuCV::DeviceCuMat<T> sub(blockDim.x, blockDim.y, 1, mStrideX, mStrideY);
+    sub.mData = & mData[mStrideX * blockIdRow * blockDim.y + blockIdCol * blockDim.x + mStrideX * mStrideY * blockIdCh];
+    return sub;
+}
+
+
+template <typename T> __device__ 
+cuCV::DeviceCuMat<T> cuCV::DeviceCuMat<T>::getSubCuMat(const int row, const int col, const int ch, const int width, const int height) const {
+    cuCV::DeviceCuMat<T> sub(width, height, 1, mStrideX, mStrideY);
+    sub.mData = & mData[mStrideX * row + col + mStrideX * mStrideY * ch];
     return sub;
 }
 

@@ -54,7 +54,7 @@ namespace kernel {
  * @brief CUDA kernel to perform an elementwise addition on the device of two Matrices.
  * Note that shape of A must be equal to shape of B and Out.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param B The second operand.
@@ -66,7 +66,7 @@ void add(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const cuCV::Dev
 /**
  * @brief CUDA kernel to perform an elementwise addition on the device of one Matrix with a scalar.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param alpha The second operand.
@@ -79,7 +79,7 @@ void add(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const T alpha);
  * @brief CUDA kernel to perform a elementwise subtraction on the device of two Matrices.
  * Note that shape of A must be equal to shape of B and Out.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param B The second operand.
@@ -91,7 +91,7 @@ void dif(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const cuCV::Dev
 /**
  * @brief CUDA kernel to perform a elementwise subtraction on the device of two Matrices.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param alpha The second operand.
@@ -104,7 +104,7 @@ void dif(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const T alpha);
  * @brief CUDA kernel to perform a elementwise multiplication on the device of two Matrices.
  * Note that shape of A must be equal to shape of B and Out.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param B The second operand.
@@ -116,7 +116,7 @@ void mul(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const cuCV::Dev
 /**
  * @brief CUDA kernel to perform a elementwise multiplication on the device of one Matrix with a scalar.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param alpha The second operand.
@@ -129,7 +129,7 @@ void mul(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const T alpha);
  * @brief CUDA kernel to perform a elementwise division on the device of two Matrices.
  * Note that shape of A must be equal to shape of B and Out.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param B The second operand.
@@ -141,7 +141,7 @@ void div(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const cuCV::Dev
 /**
  * @brief CUDA kernel to perform a elementwise division on the device of one Matrix with a scalar.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param alpha The second operand.
@@ -154,7 +154,7 @@ void div(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const T alpha);
  * @brief CUDA kernel to perform a elementwise division on the device of one Matrix with a floating point sclar.
  * @note: pAlpha is a pointer to a floating point value on the device.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results.
  * @param A The first operand.
  * @param pAlpha The second operand of type float on the device (pointer to float).
@@ -168,7 +168,7 @@ void div(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, float * pAlpha)
  * without using the concept of shared memory. 
  * @todo rename to simpleMatmul
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results with shape NxL.
  * @param A The first operand with shape NxM.
  * @param B The second operand with shape MxL.
@@ -182,7 +182,7 @@ void naiveMatmul(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const c
  * using the concept of shared memory.
  * @todo Explain a bit about shared memory. 
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the results with shape NxL.
  * @param A The first operand with shape NxM.
  * @param B The second operand with shape MxL.
@@ -194,10 +194,9 @@ void matmul(cuCV::DeviceCuMat<T> OUT, const cuCV::DeviceCuMat<T> A, const cuCV::
 /**
  * @brief CUDA kernel to perform a convolution on `A` with the kernel kernel. `A` can be padded according to Padding enum.
  * The calculation is performed by the simplest convolution method.
- * @todo rename to simpleConv2d
  * 
- * @tparam T1 CUCV datatype of `OUT` and `A`: CUCV_8U, CUCV_16U, CUCV_64F.
- * @tparam T2 CUCV datatype of the kernel: CUCV_8U, CUCV_16U, CUCV_64F.
+ * @tparam T1 CUCV datatype of `OUT` and `A`: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F.
+ * @tparam T2 CUCV datatype of the kernel: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F.
  * @param OUT The output matrix which will keep the results of the convolution. The size dependes on the Padding method.
  * @param A The Matrix to be convoluted.
  * @param kernel The kernel for the convolution. Note that the kernel will be flipped (since it is a convolution and not correlation).
@@ -210,10 +209,13 @@ void simpleConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, cons
 /**
  * @brief CUDA kernel to perform a convolution on `A` with the kernel kernel. `A` can be padded according to Padding enum.
  * The calculation is performed by the simplest convolution method using shared memory.
- * @todo rename to simpleConv2d
+ * Both the image (as tiles) and the kernel is loaded into shared memory. The kernel memory is allocated dynamically to match
+ * the current kernel size. Therefore, the kernel size must be passed as third parameter in the kernel launch execution parameter.
+ * @note that during computation, values which extend outwards of one block are loaded from global memory as they are not existent
+ * in the current block's shared memory.
  * 
- * @tparam T1 CUCV datatype of `OUT` and `A`: CUCV_8U, CUCV_16U, CUCV_64F.
- * @tparam T2 CUCV datatype of the kernel: CUCV_8U, CUCV_16U, CUCV_64F.
+ * @tparam T1 CUCV datatype of `OUT` and `A`: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F.
+ * @tparam T2 CUCV datatype of the kernel: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F. Use CUCV_32F for optimal performance.
  * @param OUT The output matrix which will keep the results of the convolution. The size dependes on the Padding method.
  * @param A The Matrix to be convoluted.
  * @param kernel The kernel for the convolution. Note that the kernel will be flipped (since it is a convolution and not correlation).
@@ -223,10 +225,14 @@ template <typename T1, typename T2> __global__
 void simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding);
 
 
+template <typename T1, typename T2> __global__
+void simpleSharedConv2d_2(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuMat<T1> A, const cuCV::DeviceCuMat<T2> kernel, const cuCV::Padding padding);
+
+
 /**
  * @brief CUDA kernel to initialize a matrix on the device. The matrix is filled with 0s.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the 0s.
  */
 template <typename T> __global__ 
@@ -236,7 +242,7 @@ void zeros(cuCV::DeviceCuMat<T> OUT);
 /**
  * @brief CUDA kernel to initialize a matrix on the device. The matrix is filled with 1s.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
  * @param OUT The output matrix which will keep the 1s.
  */
 template <typename T> __global__ 
@@ -247,8 +253,8 @@ void ones(cuCV::DeviceCuMat<T> OUT);
  * @brief CUDA kernel to initialize a matrix on the device. 
  * The matrix is filled with ones on the diagonal and zeros elsewhere.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
- * @param OUT The output matrix which will keep the 0s.
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
+ * @param OUT The output matrix which will keep the result.
  */
 template <typename T> __global__ 
 void eye(cuCV::DeviceCuMat<T> OUT);
@@ -258,8 +264,8 @@ void eye(cuCV::DeviceCuMat<T> OUT);
  * @brief CUDA kernel to initialize a matrix on the device. 
  * The matrix is filled with elements which entries follow a gaussian distribution.
  * 
- * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_64F
- * @param OUT The output matrix which will keep the 0s.
+ * @tparam T CUCV datatype: CUCV_8U, CUCV_16U, CUCV_32F, CUCV_64F
+ * @param OUT The output matrix which will keep the result.
  */
 template <typename T> __global__ 
 void gauss(cuCV::DeviceCuMat<T> OUT, double sigma, bool norm, float * sum);

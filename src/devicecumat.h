@@ -38,11 +38,17 @@ public:
     __host__ 
     DeviceCuMat(const CuMat<T> & cuMat);
 
+
     __device__ 
     DeviceCuMat(int width, int height, int channels, int strideX, int strideY);
 
+
     __device__ 
-    cuCV::DeviceCuMat<T> getSubCuMat(int blockIdRow, int blockIdCol, int blockIdCh=0) const;
+    cuCV::DeviceCuMat<T> getBlock(int blockIdRow, int blockIdCol, int blockIdCh=0) const;
+
+
+    __device__ 
+    cuCV::DeviceCuMat<T> getSubCuMat(const int row, const int col, const int ch, const int width, const int height) const;
 
 
     __device__ 

@@ -155,6 +155,12 @@ template <typename T1, typename T2>
 CuMat<T1> simpleSharedConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
 
 
+template <typename T1, typename T2>
+void simpleSharedConv2d_2(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
+
+template <typename T1, typename T2>
+CuMat<T1> simpleSharedConv2d_2(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
+
 }  // namespace cuCV
 
 #endif  // LINALG_H
