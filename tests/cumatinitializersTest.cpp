@@ -33,9 +33,9 @@ void CuMatInitializersTest::testZeros() {
     C_dev.downloadTo(C);
 
     for (size_t i=0; i<N*N*N; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==0);
-        CPPUNIT_ASSERT(B.mData[i]==0);
-        CPPUNIT_ASSERT(C.mData[i]==0);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==0);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==0);
+        CPPUNIT_ASSERT(C.getDataPtr()[i]==0);
     }
 }
 
@@ -54,9 +54,9 @@ void CuMatInitializersTest::testOnes() {
     C_dev.downloadTo(C);
 
     for (size_t i=0; i<N*N*N; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==1);
-        CPPUNIT_ASSERT(B.mData[i]==1);
-        CPPUNIT_ASSERT(C.mData[i]==1);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==1);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==1);
+        CPPUNIT_ASSERT(C.getDataPtr()[i]==1);
     }
 }
 
@@ -79,9 +79,9 @@ void CuMatInitializersTest::testEye() {
     cuCV::Mat C_gt = cuCV::eye<CUCV_64F>(N, N, N);
 
     for (size_t i=0; i<N*N*N; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==A_gt.mData[i]);
-        CPPUNIT_ASSERT(B.mData[i]==B_gt.getDataPtr()[i]);
-        CPPUNIT_ASSERT(C.mData[i]==C_gt.getDataPtr()[i]);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==A_gt.getDataPtr()[i]);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==B_gt.getDataPtr()[i]);
+        CPPUNIT_ASSERT(C.getDataPtr()[i]==C_gt.getDataPtr()[i]);
     }
 }
 
@@ -107,8 +107,8 @@ void CuMatInitializersTest::testGauss() {
     cuCV::Mat C_gt = cuCV::gauss<CUCV_64F>(N, nCh, sig, true);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        // CPPUNIT_ASSERT(A.mData[i]==A_gt.getDataPtr()[i]);
-        // CPPUNIT_ASSERT(B.mData[i]==B_gt.getDataPtr()[i]);
+        // CPPUNIT_ASSERT(A.getDataPtr()[i]==A_gt.getDataPtr()[i]);
+        // CPPUNIT_ASSERT(B.getDataPtr()[i]==B_gt.getDataPtr()[i]);
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("i = " + std::to_string(i), C_gt.getDataPtr()[i], C.getDataPtr()[i], 0.001);
     }
 }

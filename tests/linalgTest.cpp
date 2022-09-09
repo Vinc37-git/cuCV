@@ -63,9 +63,9 @@ void LinalgTest::testNaiveMatmul() {
     C_dev_out.downloadTo(C_out);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A_out.mData[i]==A1.mData[i]);
-        CPPUNIT_ASSERT(B_out.mData[i]==B1.mData[i]);
-        CPPUNIT_ASSERT(C_out.mData[i]==C1.mData[i]);
+        CPPUNIT_ASSERT(A_out.getDataPtr()[i]==A1.getDataPtr()[i]);
+        CPPUNIT_ASSERT(B_out.getDataPtr()[i]==B1.getDataPtr()[i]);
+        CPPUNIT_ASSERT(C_out.getDataPtr()[i]==C1.getDataPtr()[i]);
     }
 }
 
@@ -110,9 +110,9 @@ void LinalgTest::testMatmul() {
     C_dev_out.downloadTo(C_out);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A_out.mData[i]==A1.mData[i]);
-        CPPUNIT_ASSERT(B_out.mData[i]==B1.mData[i]);
-        CPPUNIT_ASSERT(C_out.mData[i]==C1.mData[i]);
+        CPPUNIT_ASSERT(A_out.getDataPtr()[i]==A1.getDataPtr()[i]);
+        CPPUNIT_ASSERT(B_out.getDataPtr()[i]==B1.getDataPtr()[i]);
+        CPPUNIT_ASSERT(C_out.getDataPtr()[i]==C1.getDataPtr()[i]);
     }
 }
 

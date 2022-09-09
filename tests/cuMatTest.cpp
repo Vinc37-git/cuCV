@@ -31,18 +31,18 @@ void CuMatTest::testUpload() {
     cuCV::CuMat<CUCV_64F> C_dev(C);
 
     // Device pointers should be zero.
-    CPPUNIT_ASSERT(A_dev.mData==NULL);
-    CPPUNIT_ASSERT(B_dev.mData==NULL);
-    CPPUNIT_ASSERT(C_dev.mData==NULL);
+    CPPUNIT_ASSERT(A_dev.getDataPtr()==NULL);
+    CPPUNIT_ASSERT(B_dev.getDataPtr()==NULL);
+    CPPUNIT_ASSERT(C_dev.getDataPtr()==NULL);
 
     // Send data to device
     A_dev.uploadFrom(A);
     B_dev.uploadFrom(B);
     C_dev.uploadFrom(C);
 
-    CPPUNIT_ASSERT(A_dev.mData!=NULL);
-    CPPUNIT_ASSERT(B_dev.mData!=NULL);
-    CPPUNIT_ASSERT(C_dev.mData!=NULL);
+    CPPUNIT_ASSERT(A_dev.getDataPtr()!=NULL);
+    CPPUNIT_ASSERT(B_dev.getDataPtr()!=NULL);
+    CPPUNIT_ASSERT(C_dev.getDataPtr()!=NULL);
 }
 
 
@@ -56,18 +56,18 @@ void CuMatTest::testUpDownload() {
     cuCV::CuMat<CUCV_64F> C_dev(C);
 
     // Device pointers should be zero.
-    CPPUNIT_ASSERT(A_dev.mData==NULL);
-    CPPUNIT_ASSERT(B_dev.mData==NULL);
-    CPPUNIT_ASSERT(C_dev.mData==NULL);
+    CPPUNIT_ASSERT(A_dev.getDataPtr()==NULL);
+    CPPUNIT_ASSERT(B_dev.getDataPtr()==NULL);
+    CPPUNIT_ASSERT(C_dev.getDataPtr()==NULL);
 
     // Send data to device
     A_dev.uploadFrom(A);
     B_dev.uploadFrom(B);
     C_dev.uploadFrom(C);
 
-    CPPUNIT_ASSERT(A_dev.mData!=NULL);
-    CPPUNIT_ASSERT(B_dev.mData!=NULL);
-    CPPUNIT_ASSERT(C_dev.mData!=NULL);
+    CPPUNIT_ASSERT(A_dev.getDataPtr()!=NULL);
+    CPPUNIT_ASSERT(B_dev.getDataPtr()!=NULL);
+    CPPUNIT_ASSERT(C_dev.getDataPtr()!=NULL);
 
     // Download data to host
     cuCV::Mat A1 = cuCV::Mat<CUCV_8U>(N, N, nCh);
@@ -79,9 +79,9 @@ void CuMatTest::testUpDownload() {
     C_dev.downloadTo(C1);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A1.mData[i]==1);
-        CPPUNIT_ASSERT(B1.mData[i]==1);
-        CPPUNIT_ASSERT(C1.mData[i]==1);
+        CPPUNIT_ASSERT(A1.getDataPtr()[i]==1);
+        CPPUNIT_ASSERT(B1.getDataPtr()[i]==1);
+        CPPUNIT_ASSERT(C1.getDataPtr()[i]==1);
     }
 
     // Download data to new uninitialised Matrix
@@ -94,9 +94,9 @@ void CuMatTest::testUpDownload() {
     CPPUNIT_ASSERT_NO_THROW(C_dev.downloadTo(C2));
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A2.mData[i]==1);
-        CPPUNIT_ASSERT(B2.mData[i]==1);
-        CPPUNIT_ASSERT(C2.mData[i]==1);
+        CPPUNIT_ASSERT(A2.getDataPtr()[i]==1);
+        CPPUNIT_ASSERT(B2.getDataPtr()[i]==1);
+        CPPUNIT_ASSERT(C2.getDataPtr()[i]==1);
     }
 }
 
@@ -119,9 +119,9 @@ void CuMatTest::testAssignment() {
     B_dev_copy = B_dev;
     C_dev_copy = C_dev;
 
-    CPPUNIT_ASSERT(A_dev.mData!=A_dev_copy.mData);
-    CPPUNIT_ASSERT(B_dev.mData!=B_dev_copy.mData);
-    CPPUNIT_ASSERT(C_dev.mData!=C_dev_copy.mData);
+    CPPUNIT_ASSERT(A_dev.getDataPtr()!=A_dev_copy.getDataPtr());
+    CPPUNIT_ASSERT(B_dev.getDataPtr()!=B_dev_copy.getDataPtr());
+    CPPUNIT_ASSERT(C_dev.getDataPtr()!=C_dev_copy.getDataPtr());
 
     cuCV::Mat<CUCV_8U> A_copy_from_device(N,N,nCh);
     cuCV::Mat<CUCV_16U> B_copy_from_device(N,N,nCh);
@@ -133,9 +133,9 @@ void CuMatTest::testAssignment() {
     C_dev_copy.downloadTo(C_copy_from_device);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==A_copy_from_device.mData[i]);
-        CPPUNIT_ASSERT(B.mData[i]==B_copy_from_device.mData[i]);
-        CPPUNIT_ASSERT(C.mData[i]==C_copy_from_device.mData[i]);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==A_copy_from_device.getDataPtr()[i]);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==B_copy_from_device.getDataPtr()[i]);
+        CPPUNIT_ASSERT(C.getDataPtr()[i]==C_copy_from_device.getDataPtr()[i]);
     }
 }
 
@@ -203,9 +203,9 @@ void CuMatTest::testAdd() {
     C_dev.downloadTo(C1);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A1.mData[i]==4);
-        CPPUNIT_ASSERT(B1.mData[i]==5);
-        CPPUNIT_ASSERT(C1.mData[i]==6);
+        CPPUNIT_ASSERT(A1.getDataPtr()[i]==4);
+        CPPUNIT_ASSERT(B1.getDataPtr()[i]==5);
+        CPPUNIT_ASSERT(C1.getDataPtr()[i]==6);
     }
 
     // Add and assign to self
@@ -227,9 +227,9 @@ void CuMatTest::testAdd() {
     C_dev5.downloadTo(C1);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A1.mData[i]==8);
-        CPPUNIT_ASSERT(B1.mData[i]==16);
-        CPPUNIT_ASSERT(C1.mData[i]==48);
+        CPPUNIT_ASSERT(A1.getDataPtr()[i]==8);
+        CPPUNIT_ASSERT(B1.getDataPtr()[i]==16);
+        CPPUNIT_ASSERT(C1.getDataPtr()[i]==48);
     }
 }
 
@@ -257,9 +257,9 @@ void CuMatTest::testDifMulDiv() {
     C_dev.downloadTo(C);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==3);
-        CPPUNIT_ASSERT(B.mData[i]==4);
-        CPPUNIT_ASSERT(C.mData[i]==0.5);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==3);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==4);
+        CPPUNIT_ASSERT(C.getDataPtr()[i]==0.5);
     }
 
     cuCV::CuMat<CUCV_8U> A_dev2 = (A_dev - (A_dev/2)) * 10;  // (3 - (3/2)) * 10 = 20
@@ -272,9 +272,9 @@ void CuMatTest::testDifMulDiv() {
     C_dev2.downloadTo(C);
 
     for (size_t i=0; i<N*N*nCh; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==20);
-        CPPUNIT_ASSERT(B.mData[i]==20);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1, C.mData[i], 0.001);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==20);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==20);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1, C.getDataPtr()[i], 0.001);
     }
 
 

@@ -13,6 +13,7 @@ int main() {
     bool wasSucessful = runner.run();
 
     #if CUDA_MEMCHECK_ABLE
+        fprintf(stdout, "Build with cudaDeviceReset()\n");
         gpuErrchk(cudaDeviceReset());  // to detect leaks with cuda-memcheck we need to call cudaDeviceReset(). 
     #endif
 

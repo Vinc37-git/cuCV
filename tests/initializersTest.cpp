@@ -24,9 +24,9 @@ void InitializersTest::testZeros() {
     cuCV::Mat C = cuCV::zeros<CUCV_64F>(N, N, N);
 
     for (size_t i=0; i<N*N*N; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==0);
-        CPPUNIT_ASSERT(B.mData[i]==0);
-        CPPUNIT_ASSERT(C.mData[i]==0);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==0);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==0);
+        CPPUNIT_ASSERT(C.getDataPtr()[i]==0);
     }
 }
 
@@ -37,9 +37,9 @@ void InitializersTest::testOnes() {
     cuCV::Mat C = cuCV::ones<CUCV_64F>(N, N, N);
 
     for (size_t i=0; i<N*N*N; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==1);
-        CPPUNIT_ASSERT(B.mData[i]==1);
-        CPPUNIT_ASSERT(C.mData[i]==1);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==1);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==1);
+        CPPUNIT_ASSERT(C.getDataPtr()[i]==1);
     }
 }
 
@@ -54,9 +54,9 @@ void InitializersTest::testEye() {
     CUCV_64F testData[8] = {1, 0, 0, 1, 1, 0, 0, 1};
 
     for (size_t i=0; i<8; i++) {
-        CPPUNIT_ASSERT(A.mData[i]==testData[i]);
-        CPPUNIT_ASSERT(B.mData[i]==testData[i]);
-        CPPUNIT_ASSERT(C.mData[i]==testData[i]);
+        CPPUNIT_ASSERT(A.getDataPtr()[i]==testData[i]);
+        CPPUNIT_ASSERT(B.getDataPtr()[i]==testData[i]);
+        CPPUNIT_ASSERT(C.getDataPtr()[i]==testData[i]);
     }
 }
 
@@ -81,9 +81,9 @@ void InitializersTest::testGauss() {
 
         for (size_t row = 0; row < N; ++row) {
             for (size_t col = 0; col < N; ++col) {
-                // CPPUNIT_ASSERT_EQUAL(A.mData[row * N + col], (unsigned char) discreteGaussianTest(N, col, row, sig));
-                // CPPUNIT_ASSERT_EQUAL(B.mData[row * N + col], (unsigned short) discreteGaussianTest(N, col, row, sig));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(" ", discreteGaussianTest(N, col, row, sig) * scale64F, C.mData[row * N + col], 0.001);
+                // CPPUNIT_ASSERT_EQUAL(A.getDataPtr()[row * N + col], (unsigned char) discreteGaussianTest(N, col, row, sig));
+                // CPPUNIT_ASSERT_EQUAL(B.getDataPtr()[row * N + col], (unsigned short) discreteGaussianTest(N, col, row, sig));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(" ", discreteGaussianTest(N, col, row, sig) * scale64F, C.getDataPtr()[row * N + col], 0.001);
             }
         }
     }
