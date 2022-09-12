@@ -72,17 +72,18 @@ Mat<T> eye(int width, int height, int channels);
 
 
 /**
- * @brief Get a squared mat object which entries follow a gaussian distribution.
+ * @brief Get a mat object which entries follow a gaussian distribution.
  * 
  * @tparam T The type of the matrix.
- * @param length The length of one side of the matrix.
+ * @param width The width of of the matrix.
+ * @param height The width of of the matrix.
  * @param channels The number of channels of the matrix.
  * @param sigma The standard deviation. Defaults to 1.
  * @param norm Normalize kernel such that the sum over all elements equals 1. Defaults to true.
  * @return The Mat object.
  */
 template <typename T>
-Mat<T> gauss(const int length, const int channels, double sigma=1, bool norm=true);
+Mat<T> gauss(const int width, const int height, const int channels, double sigma=1, bool norm=true);
 
 }
 

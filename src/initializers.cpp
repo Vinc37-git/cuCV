@@ -42,42 +42,51 @@ cuCV::Mat<T> cuCV::eye(int width, int height, int channels) {
 }
 
 
-double gaussian(double x, double mu, double sigma) {
+static double gaussian1d(double x, double mu, double sigma) {
     const double a = (x - mu) / sigma;
     return std::exp(-0.5 * a * a);    
 }
 
 
+static double discreteGaussianTest(int width, int height, int x, int y, double sigma) {
+    x -= width/2, y -= height/2;
+    double r = x * x + y * y, s = 2.f * sigma * sigma;
+    return exp(-r / s );
+}
+
 template <typename T>
-cuCV::Mat<T> cuCV::gauss(const int length, const int channels, double sigma, bool norm) {
+cuCV::Mat<T> cuCV::gauss(const int width, const int height, const int channels, double sigma, bool norm) {
     /// @todo Throw proper exception. 
-    if (length % 2 == 0) 
+    if (width % 2 == 0 || height % 2 == 0) 
         throw std::runtime_error("Invalid side-length for Gaussian Kernel. It must be an odd number."); 
+    if (!(sigma > 0))
+        throw std::runtime_error("Invalid sigma for Gaussian Kernel. It must be > 0."); 
     
     //T * data = (T *) malloc(length * length * channels * sizeof(T));
-    T * data = new T [length * length * channels];
+    T * data = new T [width * height * channels];
 
-    const int radius = length / 2;
+    const int radiusX = width / 2;
+    const int radiusY = height / 2;
 
     //sigma = radius/2.f;
 
     for (size_t ch = 0; ch < channels; ch++) {
         double sum = 0;
-        for (size_t row = 0; row < length; row++) {
-            for (size_t col = 0; col < length; col++) {
-                double out = gaussian(row, radius, sigma) * gaussian(col, radius, sigma);
-                data[row * length + col + (length * length) * ch] = (T) out;
+        for (size_t row = 0; row < height; row++) {
+            for (size_t col = 0; col < width; col++) {
+                double out = gaussian1d(row, radiusY, sigma) * gaussian1d(col, radiusX, sigma);
+                data[row * width + col + (width * height) * ch] = (T) out;
                 sum += out;
             }
         }
         if (norm)
             // normalize channel-wise
-            for (size_t i = 0; i < length * length; ++i) {
-                double out = data[i + (length * length) * ch] / sum;
-                data[i + (length * length) * ch] = (T) out;
+            for (size_t i = 0; i < width * height; ++i) {
+                double out = data[i + (width * height) * ch] / sum;
+                data[i + (width * height) * ch] = (T) out;
             }
     }
-    return cuCV::Mat<T>(length, length, channels, data);
+    return cuCV::Mat<T>(width, height, channels, data);
 }
 
 
@@ -107,5 +116,5 @@ template cuCV::Mat<CUCV_64F> cuCV::eye<CUCV_64F>(const int width, const int heig
 // template cuCV::Mat<CUCV_64F> cuCV::gauss<CUCV_64F>(const int length, const int channels, const int sigma);
 // template cuCV::Mat<CUCV_8U> cuCV::gauss(int length, int channels, double sigma, bool norm);
 // template cuCV::Mat<CUCV_16U> cuCV::gauss(int length, int channels, double sigma, bool norm);
-template cuCV::Mat<CUCV_32F> cuCV::gauss(int length, int channels, double sigma, bool norm);
-template cuCV::Mat<CUCV_64F> cuCV::gauss(int length, int channels, double sigma, bool norm);
+template cuCV::Mat<CUCV_32F> cuCV::gauss(int width, int height, int channels, double sigma, bool norm);
+template cuCV::Mat<CUCV_64F> cuCV::gauss(int width, int height, int channels, double sigma, bool norm);
