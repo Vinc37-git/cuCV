@@ -88,15 +88,16 @@ void CuMatInitializersTest::testEye() {
 
 void CuMatInitializersTest::testGauss() {
     N = 7;
+    int M = 5;
     double sig = 1;
     int nCh = 4;
-    // cuCV::CuMat A_dev = cuCV::gaussOnDevice<CUCV_8U>(N, nCh, sig, true);
-    // cuCV::CuMat B_dev = cuCV::gaussOnDevice<CUCV_16U>(N, nCh, sig, true);
-    cuCV::CuMat C_dev = cuCV::gaussOnDevice<CUCV_64F>(N, nCh, sig, true);
+    // cuCV::CuMat A_dev = cuCV::gaussOnDevice<CUCV_8U>(N, N, nCh, sig, true);
+    // cuCV::CuMat B_dev = cuCV::gaussOnDevice<CUCV_16U>(N, N, nCh, sig, true);
+    cuCV::CuMat C_dev = cuCV::gaussOnDevice<CUCV_64F>(N, M, nCh, sig, true);
 
-    cuCV::Mat<CUCV_8U> A(N,N,nCh);
-    cuCV::Mat<CUCV_16U> B(N,N,nCh);
-    cuCV::Mat<CUCV_64F> C(N,N,nCh);
+    cuCV::Mat<CUCV_8U> A(N,M,nCh);
+    cuCV::Mat<CUCV_16U> B(N,M,nCh);
+    cuCV::Mat<CUCV_64F> C(N,M,nCh);
 
     // A_dev.downloadTo(A);
     // B_dev.downloadTo(B);
@@ -104,9 +105,9 @@ void CuMatInitializersTest::testGauss() {
 
     // cuCV::Mat A_gt = cuCV::gauss<CUCV_64F>(N, nCh, sig, true);
     // cuCV::Mat B_gt = cuCV::gauss<CUCV_64F>(N, nCh, sig, true);
-    cuCV::Mat C_gt = cuCV::gauss<CUCV_64F>(N, nCh, sig, true);
+    cuCV::Mat C_gt = cuCV::gauss<CUCV_64F>(N, M, nCh, sig, true);
 
-    for (size_t i=0; i<N*N*nCh; i++) {
+    for (size_t i=0; i<N*M*nCh; i++) {
         // CPPUNIT_ASSERT(A.getDataPtr()[i]==A_gt.getDataPtr()[i]);
         // CPPUNIT_ASSERT(B.getDataPtr()[i]==B_gt.getDataPtr()[i]);
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("i = " + std::to_string(i), C_gt.getDataPtr()[i], C.getDataPtr()[i], 0.001);

@@ -78,11 +78,13 @@ cuCV::CuMat<T> cuCV::eyeOnDevice(int width, int height, int channels) {
 
 
 template <typename T>
-cuCV::CuMat<T> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm) {
-    if (length % 2 == 0) 
+cuCV::CuMat<T> cuCV::gaussOnDevice(int width, int height, int channels, double sigma, bool norm) {
+    if (width % 2 == 0 || height % 2 == 0) 
         throw std::runtime_error("Invalid side-length for Gaussian Kernel. It must be an odd number."); 
+    if (!(sigma > 0))
+        throw std::runtime_error("Invalid sigma for Gaussian Kernel. It must be > 0."); 
 
-    cuCV::CuMat<T> mat(length, length, channels);
+    cuCV::CuMat<T> mat(width, height, channels);
     mat.allocateOnDevice();
 
     // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
@@ -137,5 +139,5 @@ template cuCV::CuMat<CUCV_64F> cuCV::eyeOnDevice<CUCV_64F>(const int width, cons
 
 //template cuCV::CuMat<CUCV_8U> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
 //template cuCV::CuMat<CUCV_16U> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
-template cuCV::CuMat<CUCV_32F> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
-template cuCV::CuMat<CUCV_64F> cuCV::gaussOnDevice(int length, int channels, double sigma, bool norm);
+template cuCV::CuMat<CUCV_32F> cuCV::gaussOnDevice(int width, int height, int channels, double sigma, bool norm);
+template cuCV::CuMat<CUCV_64F> cuCV::gaussOnDevice(int width, int height, int channels, double sigma, bool norm);

@@ -77,14 +77,15 @@ CuMat<T> eyeOnDevice(int width, int height, int channels);
  * @brief Get a squared cuMat object which entries follow a gaussian distribution.
  * 
  * @tparam T The type of the matrix.
- * @param length The length of one side of the matrix.
+ * @param width The width of the matrix.
+ * @param height The height of the matrix.
  * @param channels The number of channels of the matrix.
  * @param sigma The standard deviation. Defaults to 1.
  * @param norm Normalize kernel such that the sum over all elements equals 1. Defaults to true.
  * @return The cuMat object.
  */
 template <typename T>
-CuMat<T> gaussOnDevice(int length, int channels, double sigma, bool norm);
+CuMat<T> gaussOnDevice(int width, int height, int channels, double sigma, bool norm=true);
 
 }
 

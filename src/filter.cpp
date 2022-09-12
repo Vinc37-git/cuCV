@@ -42,7 +42,7 @@ cuCV::CuMat<CUCV_32F> cuCV::createKernel(const cuCV::Kernel kerneltype, const si
     }
     else if (kerneltype == cuCV::Kernel::GAUSS) {
             bool norm = true;  ///< @todo: Pass as argument
-            return cuCV::gaussOnDevice<CUCV_32F>(kernelX, 1, sigma, norm);
+            return cuCV::gaussOnDevice<CUCV_32F>(kernelX, kernelY, 1, sigma, norm);
     }   
     else {
         fprintf(stderr, "Error: Unknown kernel type: %d", (int) kerneltype);
