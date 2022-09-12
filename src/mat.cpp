@@ -476,7 +476,13 @@ void cuCV::Mat<T>::print(int nRows, int nCols, int channel) const {
     if (nCols > mWidth)
         nCols = mWidth;
 
+    printf("  ");
+    for (int col=0; col < nCols; col++)
+        printf("%3d ", col);
+    printf("\n");
+
     for (int row=0; row < nRows; row++) {
+        printf("%d : ", row);
         for (int col=0; col < nCols; col++) {
             printf("%.1f ", (double) at(row, col, channel));
         }
