@@ -63,7 +63,7 @@ void cuCV::exception::DimensionMismatch<T>::genMessage() {
     msg = std::string("Dimension Error! You are trying to perform an ") + operation + " "
         + std::string("but dimensions do not match. \nDimensions are: A: (")
         + std::to_string(aX) + ", " + std::to_string(aY) + ", " + std::to_string(aZ) + ") vs B: ("
-        + std::to_string(bX) + ", " + std::to_string(aY) + ", " + std::to_string(aZ) + ").\n";  
+        + std::to_string(bX) + ", " + std::to_string(bY) + ", " + std::to_string(bZ) + ").\n";  
 }
 
 template <typename T>
