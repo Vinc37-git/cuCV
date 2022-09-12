@@ -24,10 +24,10 @@ __global__ void cuCV::kernel::add(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] + B.mData[index];
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] + B.getDataPtr()[index];
 }
 
 
@@ -37,10 +37,10 @@ __global__ void cuCV::kernel::add(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] + alpha;
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] + alpha;
 }
 
 
@@ -50,10 +50,10 @@ __global__ void cuCV::kernel::dif(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] - B.mData[index];
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] - B.getDataPtr()[index];
 }
 
 
@@ -63,10 +63,10 @@ __global__ void cuCV::kernel::dif(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] - alpha;
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] - alpha;
 }
 
 
@@ -76,10 +76,10 @@ __global__ void cuCV::kernel::mul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] * B.mData[index];
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] * B.getDataPtr()[index];
 }
 
 
@@ -89,10 +89,10 @@ __global__ void cuCV::kernel::mul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] * alpha;
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] * alpha;
 }
 
 
@@ -102,10 +102,10 @@ __global__ void cuCV::kernel::div(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] / B.mData[index];
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] / B.getDataPtr()[index];
 }
 
 
@@ -115,10 +115,10 @@ __global__ void cuCV::kernel::div(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, co
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] / alpha;
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] / alpha;
 }
 
 
@@ -128,10 +128,10 @@ __global__ void cuCV::kernel::div(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, fl
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    int index = row * A.mWidth + col + (A.mWidth*A.mHeight) * ch;  // linearisation of index
+    int index = row * A.getWidth() + col + (A.getWidth()*A.getHeight()) * ch;  // linearisation of index
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels)
-        OUT.mData[index] = A.mData[index] / * pAlpha;
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels())
+        OUT.getDataPtr()[index] = A.getDataPtr()[index] / * pAlpha;
 }
 
 
@@ -141,13 +141,13 @@ void cuCV::kernel::naiveMatmul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, const
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels) {
+    if (col < OUT.getWidth() && row < OUT.getHeight() && ch < OUT.getNChannels()) {
         int OUTval = 0;
 
-        for (int n = 0; n < A.mWidth; n++)  // Matrix dimensions: MxN @ NxL
-            OUTval += A.mData[(row * A.mWidth + n) + (A.mWidth*A.mHeight)*ch] * B.mData[(n * B.mWidth + col) + (B.mWidth*B.mHeight)*ch];
+        for (int n = 0; n < A.getWidth(); n++)  // Matrix dimensions: MxN @ NxL
+            OUTval += A.getDataPtr()[(row * A.getWidth() + n) + (A.getWidth()*A.getHeight())*ch] * B.getDataPtr()[(n * B.getWidth() + col) + (B.getWidth()*B.getHeight())*ch];
         
-        OUT.mData[(row * OUT.mWidth + col) + (OUT.mWidth*OUT.mHeight)*ch] = OUTval;
+        OUT.getDataPtr()[(row * OUT.getWidth() + col) + (OUT.getWidth()*OUT.getHeight())*ch] = OUTval;
     }
 }
 
@@ -173,7 +173,7 @@ void cuCV::kernel::matmul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, const Devi
     // required to compute Csub
     // Multiply each pair of sub-matrices together
     // and accumulate the results
-    for (int n = 0; n < ((A.mWidth + BLOCK_SIZE - 1) / BLOCK_SIZE); n++) { // Matrix dimensions: MxN @ NxL
+    for (int n = 0; n < ((A.getWidth() + BLOCK_SIZE - 1) / BLOCK_SIZE); n++) { // Matrix dimensions: MxN @ NxL
         // Get sub matrices of A and B
         DeviceCuMat<T> Asub = A.getBlock(blockRow, n);
         DeviceCuMat<T> Bsub = B.getBlock(n, blockCol);
@@ -185,12 +185,12 @@ void cuCV::kernel::matmul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, const Devi
         // Load Asub and Bsub from device memory to shared memory
         // Each thread loads one element of each sub-matrix
         // Some entries in that matrix might be incorrect since the last submatrix might geht out of bounds of the full Matrix. Set those elems to 0.
-        if (n * BLOCK_SIZE + threadCol < A.mWidth && blockRow * BLOCK_SIZE + threadRow < A.mHeight) {
+        if (n * BLOCK_SIZE + threadCol < A.getWidth() && blockRow * BLOCK_SIZE + threadRow < A.getHeight()) {
             As[threadRow][threadCol] = Asub.getElement(threadRow, threadCol);
         } else {
             As[threadRow][threadCol] = 0.0;
         }
-        if (n * BLOCK_SIZE + threadRow < B.mHeight && blockCol * BLOCK_SIZE + threadCol < B.mWidth) {
+        if (n * BLOCK_SIZE + threadRow < B.getHeight() && blockCol * BLOCK_SIZE + threadCol < B.getWidth()) {
             Bs[threadRow][threadCol] = Bsub.getElement(threadRow, threadCol);
         } else {
             Bs[threadRow][threadCol] = 0.0;
@@ -210,7 +210,7 @@ void cuCV::kernel::matmul(DeviceCuMat<T> OUT, const DeviceCuMat<T> A, const Devi
         // sub-matrices of A and B in the next iteration
         __syncthreads();
     }
-    if (((blockCol * BLOCK_SIZE + threadCol) < OUT.mWidth) && ((blockRow * BLOCK_SIZE + threadRow) < OUT.mHeight)) {
+    if (((blockCol * BLOCK_SIZE + threadCol) < OUT.getWidth()) && ((blockRow * BLOCK_SIZE + threadRow) < OUT.getHeight())) {
         OUTsub.setElement(threadRow, threadCol, OUTval);
     }
 }
@@ -242,17 +242,17 @@ void cuCV::kernel::simpleConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
     const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    const unsigned int kNx = (kernel.mWidth /*+ 1*/) / 2;
-    const unsigned int kNy = (kernel.mHeight /*+ 1*/) / 2;
+    const unsigned int kNx = (kernel.getWidth() /*+ 1*/) / 2;
+    const unsigned int kNy = (kernel.getHeight() /*+ 1*/) / 2;
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels()) {
         double out = 0;
 
         /// @todo First we will assume the kernel hasn a odd number of cols and rows
-        for (int r = row - kNy, rK = kernel.mHeight - 1; rK >= 0; ++r, --rK) {  // r is row of image. rK is row of kernel. rK decreases (kernel flip)
-           for (int c = col - kNx, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)        
+        for (int r = row - kNy, rK = kernel.getHeight() - 1; rK >= 0; ++r, --rK) {  // r is row of image. rK is row of kernel. rK decreases (kernel flip)
+           for (int c = col - kNx, cK = kernel.getWidth() - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)        
                 // Check if kernel overlaps with image edges
-                if (r >= 0 && r < A.mHeight && c >= 0 && c < A.mWidth) {
+                if (r >= 0 && r < A.getHeight() && c >= 0 && c < A.getWidth()) {
                     out += (double) A.getElement(r, c, ch) * (double) kernel.getElement(rK, cK);  // accumulate
                 }
                 // index is out of bounds of A. Use Padding
@@ -296,8 +296,8 @@ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::Dev
     const unsigned int row = blockBoundLY + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    const unsigned int kNx = (kernel.mWidth /*+ 1*/) / 2;
-    const unsigned int kNy = (kernel.mHeight /*+ 1*/) / 2;
+    const unsigned int kNx = (kernel.getWidth() /*+ 1*/) / 2;
+    const unsigned int kNy = (kernel.getHeight() /*+ 1*/) / 2;
 
     double out = 0;
     
@@ -307,12 +307,12 @@ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::Dev
     extern __shared__ __align__(8) unsigned char sharedKernel_[];
     T2 * sharedKernel = reinterpret_cast<T2 *>(sharedKernel_);
 
-    // fill sharedKernel with kernel. If blockDim.x * blockDim.y < kernel.mWidth * kernel.mHeight, loop over it.
-    for (int i = threadIdx.y * blockDim.x + threadIdx.x; i < kernel.mWidth * kernel.mHeight; i += blockDim.x * blockDim.y) {
-        sharedKernel[i] = kernel.mData[i + kernel.mWidth * kernel.mHeight * threadIdx.z];  // apply channel offset to kernel.mData
+    // fill sharedKernel with kernel. If blockDim.x * blockDim.y < kernel.getWidth() * kernel.getHeight(), loop over it.
+    for (int i = threadIdx.y * blockDim.x + threadIdx.x; i < kernel.getWidth() * kernel.getHeight(); i += blockDim.x * blockDim.y) {
+        sharedKernel[i] = kernel.getDataPtr()[i + kernel.getWidth() * kernel.getHeight() * threadIdx.z];  // apply channel offset to kernel.getDataPtr()
     }
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels()) {
 
         __shared__ T1 sharedAsub[BLOCK_SIZE][BLOCK_SIZE];
         sharedAsub[threadIdx.y][threadIdx.x] = A.getElement(row, col, ch);
@@ -322,23 +322,23 @@ void cuCV::kernel::simpleSharedConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::Dev
         __syncthreads();   
 
         /// @todo First we will assume the kernel hasn a odd number of cols and rows
-        for (int r = row - kNy, rK = kernel.mHeight - 1; rK >= 0; ++r, --rK) {  // r is row of image. rK is row of kernel. rK decreases (kernel flip)
-           for (int c = col - kNx, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)        
+        for (int r = row - kNy, rK = kernel.getHeight() - 1; rK >= 0; ++r, --rK) {  // r is row of image. rK is row of kernel. rK decreases (kernel flip)
+           for (int c = col - kNx, cK = kernel.getWidth() - 1; cK >= 0; ++c, --cK) {  // c is col of image. cK is col of kernel. rC decreases (kernel flip)        
                 // Check if kernel overlaps with image edges
-                if (r >= 0 && r < A.mHeight && c >= 0 && c < A.mWidth) {
+                if (r >= 0 && r < A.getHeight() && c >= 0 && c < A.getWidth()) {
                     if (r < blockBoundLY || r > blockBoundUY || c < blockBoundLX || c > blockBoundUX) {  // kernel is partially outside of block
                         // To convolute with values outside of current block, we need to load those values from global memory.
                         // They might be loaded in L2 chache already though since they were loaded into shared memory of another block before.
-                        out += (double) A.getElement(r, c, ch) * (double) sharedKernel[rK * kernel.mWidth + cK];  // accumulate from global
+                        out += (double) A.getElement(r, c, ch) * (double) sharedKernel[rK * kernel.getWidth() + cK];  // accumulate from global
                     }
                     else {
                         // kernel is inside of block
-                        out += (double) sharedAsub[r - blockBoundLY][c - blockBoundLX] * (double) sharedKernel[rK * kernel.mWidth + cK];  // accumulate from shared 
+                        out += (double) sharedAsub[r - blockBoundLY][c - blockBoundLX] * (double) sharedKernel[rK * kernel.getWidth() + cK];  // accumulate from shared 
                     }
                 }
                 // index is out of bounds of A. Use Padding
                 else {
-                    out += (double) paddedValue(r, c, A, padding) * (double) sharedKernel[rK * kernel.mWidth + cK];
+                    out += (double) paddedValue(r, c, A, padding) * (double) sharedKernel[rK * kernel.getWidth() + cK];
                 }
             }
         }
@@ -361,8 +361,8 @@ void cuCV::kernel::sharedPaddingConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::De
     const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    const unsigned int kNx = (kernel.mWidth /*+ 1*/) / 2;
-    const unsigned int kNy = (kernel.mHeight /*+ 1*/) / 2;
+    const unsigned int kNx = (kernel.getWidth() /*+ 1*/) / 2;
+    const unsigned int kNy = (kernel.getHeight() /*+ 1*/) / 2;
 
     double out = 0;
     
@@ -389,7 +389,7 @@ void cuCV::kernel::sharedPaddingConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::De
                     + cS * blockDim.x  // offset per square in col-dir
                     + rS * blockDim.y * blockDim.y * 3;  // offset per square in row-dir 
 
-            if (c < 0 || r < 0 || r >= A.mHeight || c >= A.mWidth) { // out of bounds. use padding
+            if (c < 0 || r < 0 || r >= A.getHeight() || c >= A.getWidth()) { // out of bounds. use padding
                 sharedA[iSharedA] = paddedValue(r, c, A, padding);
             }
             else {  // inbound
@@ -398,20 +398,20 @@ void cuCV::kernel::sharedPaddingConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::De
             } 
         }
     }    
-    // fill sharedK with kernel. If blockDim.x * blockDim.y < kernel.mWidth * kernel.mHeight, loop over it.
-    for (int i = threadIdx.y * blockDim.x + threadIdx.x; i < kernel.mWidth * kernel.mHeight; i += blockDim.x * blockDim.y) {
-        sharedK[i] = kernel.mData[i + kernel.mWidth * kernel.mHeight * threadIdx.z];  // apply channel offset to kernel.mData
+    // fill sharedK with kernel. If blockDim.x * blockDim.y < kernel.getWidth() * kernel.getHeight(), loop over it.
+    for (int i = threadIdx.y * blockDim.x + threadIdx.x; i < kernel.getWidth() * kernel.getHeight(); i += blockDim.x * blockDim.y) {
+        sharedK[i] = kernel.getDataPtr()[i + kernel.getWidth() * kernel.getHeight() * threadIdx.z];  // apply channel offset to kernel.getDataPtr()
     }
 
     // Synchronize to make sure the sub-matrices are loaded
     // before starting the computation
     __syncthreads(); 
 
-    if (col < A.mWidth && row < A.mHeight && ch < A.mChannels) {
+    if (col < A.getWidth() && row < A.getHeight() && ch < A.getNChannels()) {
         /// @todo First we will assume the kernel hasn a odd number of cols and rows
-        for (int r = blockDim.y - kNy + threadIdx.y, rK = kernel.mHeight - 1; rK >= 0; ++r, --rK) {  // r is row of 3*3 tiles. rK is row of kernel. rK decreases (kernel flip)
-           for (int c = blockDim.x - kNx + threadIdx.x, cK = kernel.mWidth - 1; cK >= 0; ++c, --cK) {  // c is col of 3*3 tiles. cK is col of kernel. rC decreases (kernel flip)         
-                out += (double) sharedA[r * blockDim.x * 3 + c] * (double) sharedK[rK * kernel.mWidth + cK];
+        for (int r = blockDim.y - kNy + threadIdx.y, rK = kernel.getHeight() - 1; rK >= 0; ++r, --rK) {  // r is row of 3*3 tiles. rK is row of kernel. rK decreases (kernel flip)
+           for (int c = blockDim.x - kNx + threadIdx.x, cK = kernel.getWidth() - 1; cK >= 0; ++c, --cK) {  // c is col of 3*3 tiles. cK is col of kernel. rC decreases (kernel flip)         
+                out += (double) sharedA[r * blockDim.x * 3 + c] * (double) sharedK[rK * kernel.getWidth() + cK];
             }
         }
         // Every Thread will insert an output value at its position in OUT.
@@ -427,9 +427,9 @@ void cuCV::kernel::sepRowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
     /**
      * rowKernel must be of shape (W,1) (horizontal/row vector)
      * blockDim should be of shape: (X,1,Z), where X = KERNEL_HALF_ALIGNED + ROW_TILE_W + KERNEL_HALF and Z the depth of the image.
-     * gridDim should be of shape: ((A.mWidth / ROW_TILE_WIDTH + 1), A.mHeight, A.mChannels), resulting in one block per tile.
+     * gridDim should be of shape: ((A.getWidth() / ROW_TILE_WIDTH + 1), A.getHeight(), A.getNChannels()), resulting in one block per tile.
      * Hence, it is independet of threadsIdx (in contrast to all other kernel calls in cuCV).
-     * A shared memory of size (W // 2 + ROW_TILE_WIDTH + W // 2) * sizeof(T1) + rowKernel.mWidth * sizeof(T2) will be allocated dynamically.
+     * A shared memory of size (W // 2 + ROW_TILE_WIDTH + W // 2) * sizeof(T1) + rowKernel.getWidth() * sizeof(T2) will be allocated dynamically.
      * Size Instruction must come from host.
      * Data of the tile and apron (overlap of tiles during convolution) on both sides is loaded into shared memory.
      * @todo: Align data to meet half warp requirement ? If yes, the first n threads will be inactive to make subsequent threads aligned properly
@@ -440,7 +440,7 @@ void cuCV::kernel::sepRowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
 
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    const unsigned int kNx = (unsigned int) rowKernel.mWidth / 2;  ///< Truncated half of kernel width (or "kernel radius")
+    const unsigned int kNx = (unsigned int) rowKernel.getWidth() / 2;  ///< Truncated half of kernel width (or "kernel radius")
     const unsigned int ALIGNED_OFFSET = blockDim.x - tileWidth - 2 * kNx;  ///< This may be less or equal to kNx in order to align the data.
 
     const unsigned int col0 = blockIdx.x * tileWidth;  ///< or x0: The index where the actual data of the tile begins.
@@ -460,14 +460,14 @@ void cuCV::kernel::sepRowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
 
     /** Load data of A (__global__) into sharedA.
      * Skip the ALIGNED_OFFSET offset, but load the apron. If the apron is out of bounds, get padded value.
-     * If A.mWidth and tileWidth meet half-warp requirements (hence, are multiple of half warp size),
+     * If A.getWidth() and tileWidth meet half-warp requirements (hence, are multiple of half warp size),
      * row0 + col0ApronAligned should also be a multuiple of half-warp size. This will ensure proper 
      * alignment for coalesced data read.
      */
     int col = col0ApronAligned + threadIdx.x;
     if (col >= col0Apron) {  // Some threads, which are not aligned will be inactive.
         const int iSharedA = col - col0Apron;  
-        if (col >= 0 && col < A.mWidth)  // inbound
+        if (col >= 0 && col < A.getWidth())  // inbound
             sharedA[iSharedA] = A.getElement(row0, col, threadIdx.z);
         else  // outbound
             sharedA[iSharedA] = paddedValue(row0, col, A, padding);
@@ -477,7 +477,7 @@ void cuCV::kernel::sepRowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
      * If there ARE inactive threads due to alignemt, 
      * (some) of them will be used to load the kernel
      */
-    if (threadIdx.x < rowKernel.mWidth)
+    if (threadIdx.x < rowKernel.getWidth())
         sharedK[threadIdx.x] = rowKernel.getElement(0, threadIdx.x, threadIdx.z);
 
     // Synchronize threads
@@ -491,8 +491,8 @@ void cuCV::kernel::sepRowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
      */
     double out = 0;
     col = col0 + threadIdx.x;
-    if (col < (int) colN && col < A.mWidth) {
-        for (int i = col - col0Apron - kNx, iK = rowKernel.mWidth - 1; iK >= 0; --iK, ++i) {
+    if (col < (int) colN && col < A.getWidth()) {
+        for (int i = col - col0Apron - kNx, iK = rowKernel.getWidth() - 1; iK >= 0; --iK, ++i) {
             out += sharedA[i] * sharedK[iK];
         }
 
@@ -510,17 +510,17 @@ void cuCV::kernel::sepColConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
      *      Y = KERNEL_HALF + tileHeight + KERNEL_HALF : 
      *      Z = the depth of the image.
      * gridDim should be of shape: (gX, gY, gZ), where
-     *      gX = A.mWidth / tileWidth + 1
-     *      gY = A.mHeight / tileHeight + 1
+     *      gX = A.getWidth() / tileWidth + 1
+     *      gY = A.getHeight() / tileHeight + 1
      *      gZ = A.mChannel
-     * A shared memory of size: (blockDim.y * blockDim.x) * sizeof(T1) + colKernel.mWidth * sizeof(T2) will be allocated dynamically.
+     * A shared memory of size: (blockDim.y * blockDim.x) * sizeof(T1) + colKernel.getWidth() * sizeof(T2) will be allocated dynamically.
      * Size Instruction must come from host.
      * Data of the tile and apron (overlap of tiles during convolution) on both sides is loaded into shared memory.
      * Sync threads 
      * Compute convolution for col tile and ACCUMULATE IT with / on (?) OUT
      */
 
-    const unsigned int kNy = (unsigned int) colKernel.mHeight / 2;  ///< Truncated half of kernel height (or "kernel radius")
+    const unsigned int kNy = (unsigned int) colKernel.getHeight() / 2;  ///< Truncated half of kernel height (or "kernel radius")
 
     // row indices
     const unsigned int row0 = blockIdx.y * tileHeight;  ///< or y0: The index where the actual data of the tile begins.
@@ -552,9 +552,9 @@ void cuCV::kernel::sepColConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
      */
     unsigned int iSharedA = threadIdx.y * tileWidth + threadIdx.x;
 
-    for (int row = row0Apron + threadIdx.y; row <= (int) rowNApron /*&& row < A.mHeight*/; ) {
+    for (int row = row0Apron + threadIdx.y; row <= (int) rowNApron /*&& row < A.getHeight()*/; ) {
 
-        if (col < A.mWidth && row >= 0 && row < A.mHeight) {  // inbound. @note: col is unsigned.
+        if (col < A.getWidth() && row >= 0 && row < A.getHeight()) {  // inbound. @note: col is unsigned.
             sharedA[iSharedA] = A.getElement(row, col, ch);
         }
         else {  //outbound
@@ -566,7 +566,7 @@ void cuCV::kernel::sepColConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
 
     /** Load data of colKernel (__global__) into sharedK. */
     int iSharedK = threadIdx.y * blockDim.x + threadIdx.x;
-    if (iSharedK < colKernel.mHeight)
+    if (iSharedK < colKernel.getHeight())
         sharedK[iSharedK] = colKernel.getElement(0, iSharedK, threadIdx.z);
 
     __syncthreads();
@@ -578,13 +578,13 @@ void cuCV::kernel::sepColConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
      * memory to make it relative to shared memory start.
      */
     
-    for (int row = row0 + threadIdx.y; row <= (int) rowN && row < A.mHeight; ) {
+    for (int row = row0 + threadIdx.y; row <= (int) rowN && row < A.getHeight(); ) {
         double out = 0;
 
-        if (col < A.mWidth && row < A.mHeight) {
+        if (col < A.getWidth() && row < A.getHeight()) {
             unsigned int iSharedA = (threadIdx.y + kNy) * tileWidth + threadIdx.x;  // iSharedA should not start at 0 due to the apron
 
-            for (int i = iSharedA - kNy * tileWidth, iK = colKernel.mHeight - 1; iK >= 0; --iK, i+=tileWidth) {
+            for (int i = iSharedA - kNy * tileWidth, iK = colKernel.getHeight() - 1; iK >= 0; --iK, i+=tileWidth) {
                 out += sharedA[i] * sharedK[iK];
             }
             
@@ -603,10 +603,10 @@ void cuCV::kernel::zeros(cuCV::DeviceCuMat<T> OUT) {
     const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    const unsigned int index = row * OUT.mWidth + col + (OUT.mWidth*OUT.mHeight) * ch;  // linearisation of index
+    const unsigned int index = row * OUT.getWidth() + col + (OUT.getWidth()*OUT.getHeight()) * ch;  // linearisation of index
 
-    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels)
-        OUT.mData[index] = 0;
+    if (col < OUT.getWidth() && row < OUT.getHeight() && ch < OUT.getNChannels())
+        OUT.getDataPtr()[index] = 0;
 }
 
 
@@ -616,10 +616,10 @@ void cuCV::kernel::ones(cuCV::DeviceCuMat<T> OUT) {
     const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    const unsigned int index = row * OUT.mWidth + col + (OUT.mWidth*OUT.mHeight) * ch;  // linearisation of index
+    const unsigned int index = row * OUT.getWidth() + col + (OUT.getWidth()*OUT.getHeight()) * ch;  // linearisation of index
 
-    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels)
-        OUT.mData[index] = 1;
+    if (col < OUT.getWidth() && row < OUT.getHeight() && ch < OUT.getNChannels())
+        OUT.getDataPtr()[index] = 1;
 }
 
 
@@ -629,13 +629,13 @@ void cuCV::kernel::eye(cuCV::DeviceCuMat<T> OUT) {
     const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    const unsigned int index = row * OUT.mWidth + col + (OUT.mWidth*OUT.mHeight) * ch;  // linearisation of index
+    const unsigned int index = row * OUT.getWidth() + col + (OUT.getWidth()*OUT.getHeight()) * ch;  // linearisation of index
 
-    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels) {
+    if (col < OUT.getWidth() && row < OUT.getHeight() && ch < OUT.getNChannels()) {
         if (col == row)
-            OUT.mData[index] = 1;
+            OUT.getDataPtr()[index] = 1;
         else
-            OUT.mData[index] = 0;
+            OUT.getDataPtr()[index] = 0;
     }
 }
 
@@ -655,9 +655,9 @@ void cuCV::kernel::gauss(cuCV::DeviceCuMat<T> OUT, double sigma, bool norm, floa
     const unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int  ch = blockIdx.z * blockDim.z + threadIdx.z;
 
-    if (col < OUT.mWidth && row < OUT.mHeight && ch < OUT.mChannels) {
-        size_t radiusX = (size_t) OUT.mWidth / 2;
-        size_t radiusY = (size_t) OUT.mHeight / 2;
+    if (col < OUT.getWidth() && row < OUT.getHeight() && ch < OUT.getNChannels()) {
+        size_t radiusX = (size_t) OUT.getWidth() / 2;
+        size_t radiusY = (size_t) OUT.getHeight() / 2;
 
         // Calculate gaussian distributed value for current position / thread
         double out = gaussian1dDevice(row, radiusY, sigma) * gaussian1dDevice(col, radiusX, sigma);

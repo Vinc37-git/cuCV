@@ -66,6 +66,47 @@ T cuCV::DeviceCuMat<T>::getElement(const int row, const int col, const int ch) c
 }
 
 
+template <typename T> __device__  
+int cuCV::DeviceCuMat<T>::getWidth() const {
+    return mWidth;
+}
+
+
+template <typename T> __device__  
+int cuCV::DeviceCuMat<T>::getHeight() const {
+    return mHeight;
+}
+
+
+template <typename T> __device__  
+int cuCV::DeviceCuMat<T>::getNChannels() const {
+    return mChannels;
+}
+
+
+template <typename T> __device__  
+int cuCV::DeviceCuMat<T>::getStrideX() const {
+    return mStrideX;
+}
+
+
+template <typename T> __device__  
+int cuCV::DeviceCuMat<T>::getStrideY() const {
+    return mStrideY;
+}
+
+
+template <typename T> __device__  
+T * cuCV::DeviceCuMat<T>::getDataPtr() const {
+    return mData;
+}
+
+
+template <typename T> __device__  
+size_t cuCV::DeviceCuMat<T>::getSize() const {
+    return mWidth * mHeight * mChannels;
+}
+
 
 /// Explicit template specialization
 template class cuCV::DeviceCuMat<CUCV_8U>;

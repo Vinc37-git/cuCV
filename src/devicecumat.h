@@ -21,15 +21,17 @@ template <typename T>
 class CuMat;  // Forward Declaration of CuMat to make sure compiler knows the class exists
 
 /**
- * @brief Device CuMat Class is almost a copy of the standard CuMat Class. However, it only borrows a reference to the data
+ * @brief Device CuMat Class should be used for CUDA kernel calls.
+ * Device CuMat Class is almost a copy of the standard CuMat Class. However, it only borrows a reference to the data
  * of an cuMat Object to launch the cuda kernel. This is neccessary due to the fact, that __global__ cuda kernels require 
  * arguments to be passed by value, which would result in a copy of data when using the standard cuMat object.
  * Since the data is borrowed only, the DeviceCuMat object will not take care of the data. When the object goes out of scope
  * after the kernel call, it will not free the data associated with the borrowed reference.
  * Note that most of the member functions are __device__ functions. Hence, it should not be used on the host.
- * Use it only for kernel calls else the standard CuMat Class
+ * Use it only for kernel calls else the standard CuMat Class. The standard CuMat objects can be returned as a Device CuMat obect
+ * using the build in method `kernel()`. 
  * 
- * @tparam T 
+ * @tparam T The CUCV datatype.
  */
 template <typename T>
 class DeviceCuMat {
@@ -67,7 +69,39 @@ public:
     T getElement(const int row, const int col, const int ch) const;
 
 
+    // ******* PUBLIC GETTERS *******
+    
+    /** @brief Get the width of Mat. */
+    __device__ 
+    int getWidth() const;
+
+    /** @brief Get the height of Mat. */
+    __device__ 
+    int getHeight() const;
+
+    /** @brief Get the depth of Mat. */
+    __device__ 
+    int getNChannels() const;
+
+    /** @brief Get the Stride in width-direction of Mat. */
+    __device__ 
+    int getStrideX() const;
+
+    /** @brief Get the Stride in height-direction of Mat. */
+    __device__ 
+    int getStrideY() const;
+
+    /** @brief Get the Data pointer pointing to the first element of Mat. */
+    __device__ 
+    T * getDataPtr() const;
+
+    /** @brief Get thenumber of elements of Mat. */
+    __device__ 
+    size_t getSize() const;
+
+
 ///< @todo make private
+private:
     int mWidth;  ///< Width of the matrix represented by the mat object.
     int mHeight;  ///< Height of the matrix represented by the mat object.
     int mStrideX;  ///< Stride of the memory in x direction.
