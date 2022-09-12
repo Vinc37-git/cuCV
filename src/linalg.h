@@ -156,11 +156,41 @@ CuMat<T1> simpleSharedConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, cons
 
 
 template <typename T1, typename T2>
-void simpleSharedConv2d_2(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
+void sharedPaddingConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
 
 template <typename T1, typename T2>
-CuMat<T1> simpleSharedConv2d_2(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
+CuMat<T1> sharedPaddingConv2d(const CuMat<T1> & A, const CuMat<T2> & kernel, const cuCV::Padding padding);
 
+
+template <typename T1, typename T2>
+void sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & rowKernel, const CuMat<T2> & colKernel, const cuCV::Padding padding);
+
+template <typename T1, typename T2>
+CuMat<T1> sepSharedConv2d(const CuMat<T1> & A, const CuMat<T2> & rowKernel, const CuMat<T2> & colKernel, const cuCV::Padding padding);
+
+
+namespace convHelper {
+
+
+template <typename T>
+void estimateOutSize(const CuMat<T> & A, const Padding padding , int * width, int * height);
+
+
+template <typename T1, typename T2>
+void checks(const CuMat<T1> & A, const CuMat<T2> & kernel);
+
+
+/**
+ * @brief This function takes the number of bytes of an array and checks 
+ * if it is a multiple of sizeofNextArrayType. If not, the function returns 
+ * a recommended length of array, to ensure alignment of the next array. 
+ * @param arrayCounts number of bytes of the array.
+ * @param sizeofNextArrayType size of the next array type.
+ */
+size_t cucvAddBytes2Align(size_t arrayCounts, size_t sizeofNextArrayType); 
+
+
+}  // namespace convHelper
 }  // namespace cuCV
 
 #endif  // LINALG_H

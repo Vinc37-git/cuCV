@@ -27,6 +27,7 @@ class LinalgTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testNaiveMatmul);
     CPPUNIT_TEST(testMatmul);
     CPPUNIT_TEST(testSimpleConv2d);
+    CPPUNIT_TEST(testSepConv2d);
     CPPUNIT_TEST(testAllConv2d);
     CPPUNIT_TEST_SUITE_END();
 
@@ -40,6 +41,7 @@ class LinalgTest : public CPPUNIT_NS::TestFixture {
     void testNaiveMatmul();
     void testMatmul();
     void testSimpleConv2d();
+    void testSepConv2d();
     void testAllConv2d();
 };
 
