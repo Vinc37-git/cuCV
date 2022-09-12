@@ -289,20 +289,8 @@ int cuCV::Mat<T>::getWidth() const {
 
 
 template <typename T>
-void cuCV::Mat<T>::setWidth(int width) {
-    mWidth = width;
-}
-
-
-template <typename T>
 int cuCV::Mat<T>::getHeight() const {
     return mHeight;
-}
-
-
-template <typename T>
-void cuCV::Mat<T>::setHeight(int height) {
-    mHeight = height;
 }
 
 
@@ -313,32 +301,14 @@ int cuCV::Mat<T>::getNChannels() const {
 
 
 template <typename T>
-void cuCV::Mat<T>::setNChannels(int channels) {
-    mChannels = channels;
-}
-
-
-template <typename T>
 int cuCV::Mat<T>::getStrideX() const {
     return mStrideX;
 }
 
 
 template <typename T>
-void cuCV::Mat<T>::setStrideX(int strideX) {
-    mStrideX = strideX;
-}
-
-
-template <typename T>
 int cuCV::Mat<T>::getStrideY() const {
     return mStrideY;
-}
-
-
-template <typename T>
-void cuCV::Mat<T>::setStrideY(int strideY) {
-    mStrideX = strideY;
 }
 
 
@@ -361,9 +331,25 @@ size_t cuCV::Mat<T>::getSize() const {
 
 
 template <typename T>
+void cuCV::Mat<T>::initShape(int width, int height, int channels, int strideX, int strideY) {
+    if (mWidth == 0 && mHeight == 0 && mChannels == 0 && mStrideX == 0 && mStrideY == 0) {
+        mWidth = width;
+        mHeight = height;
+        mChannels = channels;
+        mStrideX = (strideX == -1) ? width : strideX;
+        mStrideY = (strideY == -1) ? height : strideY;
+    }
+    else
+        throw std::runtime_error("Re-Initialization of the shape of a matrix object is not allowed. "
+                    "Use reshape() method instead.");
+}
+
+
+template <typename T>
 void cuCV::Mat<T>::alloc() {
     if ((mWidth == 0) || (mHeight == 0) || (mChannels == 0)) {
-        fprintf(stderr, "You are trying to allocate memory for a mat object but dimensions are: (%d, %d, %d). (FILE: %s), (LINE: %d)\n", mHeight, mWidth, mChannels, __FILE__, __LINE__);
+        fprintf(stderr, "You are trying to allocate memory for a mat object but dimensions are: " 
+                "(%d, %d, %d). (FILE: %s), (LINE: %d)\n", mHeight, mWidth, mChannels, __FILE__, __LINE__);
         exit(EXIT_FAILURE);
     }
 

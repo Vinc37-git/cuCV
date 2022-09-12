@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <utility>
+#include <stdexcept>
 
 /**
  * @brief CUCV specific datatypes
@@ -272,41 +273,60 @@ public:
     /** @brief Get the width of Mat. */
     int getWidth() const;
     
-    /** @brief Set the width of Mat. */
-    void setWidth(int width);
+    /** @brief Set the width of Mat. @deprecated: use initShape or reshape. */
+    // void setWidth(int width);
 
     /** @brief Get the height of Mat. */
     int getHeight() const;
     
-    /** @brief Set the height of Mat. */
-    void setHeight(int width);
+    /** @brief Set the height of Mat. @deprecated: use initShape or reshape. */
+    // void setHeight(int height);
 
     /** @brief Get the depth of Mat. */
     int getNChannels() const;
     
-    /** @brief Set the depth of Mat. */
-    void setNChannels(int width);
+    /** @brief Set the depth of Mat. @deprecated: use initShape or reshape. */
+    // void setNChannels(int channels);
 
     /** @brief Get the Stride in width-direction of Mat. */
     int getStrideX() const;
     
-    /** @brief Set the Stride in width-direction of Mat. */
-    void setStrideX(int width);
+    /** @brief Set the Stride in width-direction of Mat. @deprecated: use initShape or reshape. */
+    // void setStrideX(int strideX);
 
     /** @brief Get the Stride in height-direction of Mat. */
     int getStrideY() const;
 
-    /** @brief Set the Stride in height-direction of Mat. */
-    void setStrideY(int width);
+    /** @brief Set the Stride in height-direction of Mat. @deprecated: use initShape or reshape. */
+    // void setStrideY(int strideY);
+
+    /** @brief Get thenumber of elements of Mat. */
+    size_t getSize() const;
 
     /** @brief Get the Data pointer pointing to the first element of Mat. */
     T * getDataPtr() const;
     
-    /** @brief Set the Data pointer pointing to the first element of Mat. */
+    /** @brief Set the Data pointer pointing to the first element of Mat. 
+     * Note that the user must guarantee the size of the array pData is pointing to
+     * matches the number of elements in the mat object.
+    */
     void setDataPtr(T * pData);
 
-    /** @brief Get thenumber of elements of Mat. */
-    size_t getSize() const;
+    /**
+     * @brief Initialize the shape of a matrix, in case it was not initialized yet 
+     * (if the standard constructor was used before). This works if all dimension
+     * parameters are set to 0 only. This prevents that the mat will have an invalid
+     * number of elements that does not match the number of elements in the data
+     * array. This method replaces the standard setters of the dimension parameters.
+     * @todo add reshape method.
+     * 
+     * @param width 
+     * @param height 
+     * @param channels 
+     * @param strideX 
+     * @param strideY 
+     */
+    void initShape(int width, int height, int channels, int strideX=-1, int strideY=-1);
 
 
     //  ******* MEMBER FUNCTIONS **********
@@ -330,19 +350,13 @@ public:
      */
     T at(const int row, const int col, const int ch) const;
 
-    /**
-     * @brief Initialize the mat object with zeros.
-     */
+    /**  @brief Initialize the mat object with zeros. */
     void zeros() ;
 
-    /**
-     * @brief Initialize the mat object with ones.
-     */
+    /** @brief Initialize the mat object with ones. */
     void ones() ;
 
-    /**
-     * @brief Initialize the mat object as Identity Matrix.
-     */
+    /** @brief Initialize the mat object as Identity Matrix. */
     void eye() ;
 
     /**
@@ -355,11 +369,7 @@ public:
     template <typename Tout>
     Mat<Tout> astype();
 
-    /**
-     * @brief Check if matrix contains data.
-     * 
-     * @return true if empty, otherwise false.
-     */
+    /** @brief Check if matrix contains data. Return true if empty, otherwise false. */
     bool empty() const;
 
     /**
@@ -371,22 +381,16 @@ public:
      */
     void print(int nRows, int nCols, int channel=0) const;
 
-    /**
-     * @brief Allocate memory for a mat object with a already given size.
-     */
-    void alloc();   ///< Maybe
+    /** @brief Allocate memory for a mat object with a already given size. */
+    void alloc();
 
-    /**
-     * @brief Free memory associated with the mat object.
-     */
+    /** @brief Free memory associated with the mat object. */
     void clear();  ///< Maybe
     
-    /**
-     * @brief @note CURRENTLY NOT USED. cuCV Datatypes.
-     */
+    /** @brief @note CURRENTLY NOT USED. cuCV Datatypes.  */
     CuType cuType;
 
-///< @todo: Make protected.
+
 protected:
     int mWidth;  ///< Width of the matrix represented by the mat object.
     int mHeight;  ///< Height of the matrix represented by the mat object.
@@ -395,8 +399,6 @@ protected:
     int mStrideY;  ///< Stride of the memory in y direction.
     T * mData;  ///< Pointer to the data of the matrix represented by the mat object.
     bool mBorrowed; ///< Indicates if data of mat is borrowed only. If borrowed, it will not try to deallocate on destruction.
-public:
-
 };
 
 };

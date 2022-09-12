@@ -345,13 +345,8 @@ void cuCV::CuMat<T>::downloadTo(Mat<T> & dst) const {
         throw cuCV::exception::NullPointer("Download failed. mData of source on device is NULL"); ///< @note undefined behaviour! 
 
     // Check if dimenions match. If dimensions are uninitialized assign them.
-    if ((dst.getWidth() == 0) || (dst.getHeight() == 0) || (dst.getNChannels() == 0)) {
-        dst.setWidth(this->mWidth);
-        dst.setHeight(this->mHeight);
-        dst.setNChannels(this->mChannels);
-        dst.setStrideX(this->mStrideX);
-        dst.setStrideY(this->mStrideY);
-    }
+    if ((dst.getWidth() == 0) || (dst.getHeight() == 0) || (dst.getNChannels() == 0)) 
+        dst.initShape(this->mWidth, this->mHeight, this->mChannels, this->mStrideX, this->mStrideY);
     else if (!compareDim(* this, dst))
         throw cuCV::exception::DimensionMismatch(* this, dst);
     
