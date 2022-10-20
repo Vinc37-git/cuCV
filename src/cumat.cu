@@ -117,16 +117,16 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator+=(T alpha) {
 
 template <typename T>
 cuCV::CuMat<T> cuCV::CuMat<T>::operator+(const CuMat & cuMat) const {
-    cuCV::CuMat<T> sum(*this);  // Copy `this`
-    sum += cuMat;
+    cuCV::CuMat<T> sum(this->mWidth, this->mHeight, this->mChannels);
+    cuCV::add(sum, * this, cuMat);
     return sum;
 }
 
 
 template <typename T>
 cuCV::CuMat<T> cuCV::CuMat<T>::operator+(const T alpha) const {
-    cuCV::CuMat<T> sum(*this);  // Copy `this`
-    sum += alpha;
+    cuCV::CuMat<T> sum(this->mWidth, this->mHeight, this->mChannels);
+    cuCV::add(sum, * this, alpha);
     return sum;
 }
 
@@ -175,16 +175,16 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator-=(T alpha) {
 
 template <typename T>
 cuCV::CuMat<T> cuCV::CuMat<T>::operator-(const CuMat & cuMat) const {
-    cuCV::CuMat<T> sum(*this);  // Copy `this`
-    sum -= cuMat;
+    cuCV::CuMat<T> sum(this->mWidth, this->mHeight, this->mChannels);
+    cuCV::dif(sum, * this, cuMat);
     return sum;
 }
 
 
 template <typename T>
 cuCV::CuMat<T> cuCV::CuMat<T>::operator-(const T alpha) const {
-    cuCV::CuMat<T> sum(*this);  // Copy `this`
-    sum -= alpha;
+    cuCV::CuMat<T> sum(this->mWidth, this->mHeight, this->mChannels);
+    cuCV::dif(sum, * this, alpha);
     return sum;
 }
 
@@ -232,16 +232,16 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator*=(T alpha) {
 
 template <typename T>
 cuCV::CuMat<T> cuCV::CuMat<T>::operator*(const CuMat & cuMat) const {
-    cuCV::CuMat<T> sum(*this);  // Copy `this`
-    sum *= cuMat;
+    cuCV::CuMat<T> sum(this->mWidth, this->mHeight, this->mChannels);
+    cuCV::mul(sum, * this, cuMat);
     return sum;
 }
 
 
 template <typename T>
 cuCV::CuMat<T> cuCV::CuMat<T>::operator*(const T alpha) const {
-    cuCV::CuMat<T> sum(*this);  // Copy `this`
-    sum *= alpha;
+    cuCV::CuMat<T> sum(this->mWidth, this->mHeight, this->mChannels);
+    cuCV::mul(sum, * this, alpha);
     return sum;
 }
 
@@ -289,16 +289,16 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator/=(T alpha) {
 
 template <typename T>
 cuCV::CuMat<T> cuCV::CuMat<T>::operator/(const CuMat & cuMat) const {
-    cuCV::CuMat<T> sum(*this);  // Copy `this`
-    sum /= cuMat;
+    cuCV::CuMat<T> sum(this->mWidth, this->mHeight, this->mChannels);
+    cuCV::div(sum, * this, cuMat);
     return sum;
 }
 
 
 template <typename T>
 cuCV::CuMat<T> cuCV::CuMat<T>::operator/(const T alpha) const {
-    cuCV::CuMat<T> sum(*this);  // Copy `this`
-    sum /= alpha;
+    cuCV::CuMat<T> sum(this->mWidth, this->mHeight, this->mChannels);
+    cuCV::div(sum, * this, alpha);
     return sum;
 }
 

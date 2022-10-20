@@ -25,6 +25,89 @@
 namespace cuCV {
 
 
+enum class Kernel; // Forward Delcaration of enum class Kernel to make sure compiler knows it.
+
+
+/** @brief Add one CuMat object A to the other B elementwise and set results in object OUT. 
+ * OUT can be prealloceted to speed up the computation. Otherwise the memory will be allocated automatically.
+ * @param OUT The Matrix which will keep the results.
+ * @param A The first operand.
+ * @param B The second operand.
+ */
+template <typename T>
+void add(CuMat<T> & OUT, const CuMat<T> & A, const CuMat<T>& B);
+
+
+/** @brief Add scalar alpha to a CuMat object B elementwise and set results in object OUT. 
+ * OUT can be prealloceted to speed up the computation. Otherwise the memory will be allocated automatically.
+ * @param OUT The Matrix which will keep the results.
+ * @param A The first operand.
+ * @param alpha The second operand.
+ */
+template <typename T>
+void add(CuMat<T> & OUT, const CuMat<T> & A, const T alpha);
+
+
+/** @brief Subtract one CuMat object B from the other A elementwise and set results in object OUT. 
+ * OUT can be prealloceted to speed up the computation. Otherwise the memory will be allocated automatically.
+ * @param OUT The Matrix which will keep the results.
+ * @param A The first operand.
+ * @param B The second operand.
+ */
+template <typename T>
+void dif(CuMat<T>& OUT, const CuMat<T>& A, const CuMat<T>& B);
+
+
+/** @brief Subtract a scalar alpha from the other A elementwise and set results in object OUT. 
+ * OUT can be prealloceted to speed up the computation. Otherwise the memory will be allocated automatically.
+ * @param OUT The Matrix which will keep the results.
+ * @param A The first operand.
+ * @param alpha The second operand.
+ */
+template <typename T>
+void dif(CuMat<T> & OUT, const CuMat<T> & A, const T alpha);
+
+
+/** @brief Multiply one CuMat object A with the other B elementwise and set results in object OUT. 
+ * OUT can be prealloceted to speed up the computation. Otherwise the memory will be allocated automatically. 
+ * @param OUT The Matrix which will keep the results.
+ * @param A The first operand.
+ * @param B The second operand.
+ */
+template <typename T>
+void mul(CuMat<T> & OUT, const CuMat<T> & A, const CuMat<T>& B);
+
+
+/** @brief Multiply one CuMat object A with a scalar alpha elementwise and set results in object OUT. 
+ * OUT can be prealloceted to speed up the computation. Otherwise the memory will be allocated automatically. 
+ * @param OUT The Matrix which will keep the results.
+ * @param A The first operand.
+ * @param alpha The second operand.
+ */
+template <typename T>
+void mul(CuMat<T> & OUT, const CuMat<T> & A, const T alpha);
+
+
+/** @brief Divide one CuMat object A by the other B elementwise and set results in object OUT. 
+ * OUT can be prealloceted to speed up the computation. Otherwise the memory will be allocated automatically.
+ * @param OUT The Matrix which will keep the results.
+ * @param A The first operand.
+ * @param B The second operand.
+ */
+template <typename T>
+void div(CuMat<T> & OUT, const CuMat<T> & A, const CuMat<T>& B);
+
+
+/** @brief Divide one CuMat object A by a scalar alpha elementwise and set results in object OUT. 
+ * OUT can be prealloceted to speed up the computation. Otherwise the memory will be allocated automatically.
+ * @param OUT The Matrix which will keep the results.
+ * @param A The first operand.
+ * @param alpha The second operand.
+ */
+template <typename T>
+void div(CuMat<T> & OUT, const CuMat<T> & A, const T alpha);
+
+
 /**
  * @brief Calculate the matrix multiplication of two matrices on the device 
  * without using the concept of shared memory. 

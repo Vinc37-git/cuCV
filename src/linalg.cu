@@ -13,6 +13,203 @@
 
 
 template <typename T>
+void cuCV::add(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
+    if (A.getDataPtr() == NULL || B.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("Calculation failed. One or more operands point to NULL data!");
+
+    if (OUT.getDataPtr() == NULL)
+        OUT.allocateLike(A);
+
+    if (!A.compareDim(A, B))
+        throw cuCV::exception::DimensionMismatch(A, B);
+    
+    if (!A.compareDim(OUT, A))
+        throw cuCV::exception::DimensionMismatch(OUT, A);
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
+
+    /// Perform Math
+    cuCV::kernel::add<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
+
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize());
+}
+
+
+template <typename T>
+void cuCV::add(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const T alpha) {
+    if (A.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("Calculation failed. One or more operands point to NULL data!");
+
+    if (OUT.getDataPtr() == NULL)
+        OUT.allocateLike(A);
+    
+    if (!A.compareDim(OUT, A))
+        throw cuCV::exception::DimensionMismatch(OUT, A);
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
+
+    /// Perform Math
+    cuCV::kernel::add<<<blocks, threads>>>(OUT.kernel(), A.kernel(), alpha);
+
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize());
+}
+
+
+template <typename T>
+void cuCV::dif(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
+    if (A.getDataPtr() == NULL || B.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("Calculation failed. One or more operands point to NULL data!");
+
+    if (OUT.getDataPtr() == NULL)
+        OUT.allocateLike(A);
+
+    if (!A.compareDim(A, B))
+        throw cuCV::exception::DimensionMismatch(A, B);
+    
+    if (!A.compareDim(OUT, A))
+        throw cuCV::exception::DimensionMismatch(OUT, A);
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
+
+    /// Perform Math
+    cuCV::kernel::dif<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
+
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize()); 
+}
+
+
+template <typename T>
+void cuCV::dif(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const T alpha) {
+    if (A.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("Calculation failed. One or more operands point to NULL data!");
+
+    if (OUT.getDataPtr() == NULL)
+        OUT.allocateLike(A);
+    
+    if (!A.compareDim(OUT, A))
+        throw cuCV::exception::DimensionMismatch(OUT, A);
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
+
+    /// Perform Math
+    cuCV::kernel::dif<<<blocks, threads>>>(OUT.kernel(), A.kernel(), alpha);
+
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize());
+}
+
+
+template <typename T>
+void cuCV::mul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
+    if (A.getDataPtr() == NULL || B.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("Calculation failed. One or more operands point to NULL data!");
+
+    if (OUT.getDataPtr() == NULL)
+        OUT.allocateLike(A);
+
+    if (!A.compareDim(A, B))
+        throw cuCV::exception::DimensionMismatch(A, B);
+    
+    if (!A.compareDim(OUT, A))
+        throw cuCV::exception::DimensionMismatch(OUT, A);
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
+
+    /// Perform Math
+    cuCV::kernel::mul<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
+
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize()); 
+}
+
+
+template <typename T>
+void cuCV::mul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const T alpha) {
+    if (A.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("Calculation failed. One or more operands point to NULL data!");
+
+    if (OUT.getDataPtr() == NULL)
+        OUT.allocateLike(A);
+    
+    if (!A.compareDim(OUT, A))
+        throw cuCV::exception::DimensionMismatch(OUT, A);
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
+
+    /// Perform Math
+    cuCV::kernel::mul<<<blocks, threads>>>(OUT.kernel(), A.kernel(), alpha);
+
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize());
+}
+
+
+template <typename T>
+void cuCV::div(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
+    if (A.getDataPtr() == NULL || B.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("Calculation failed. One or more operands point to NULL data!");
+
+    if (OUT.getDataPtr() == NULL)
+        OUT.allocateLike(A);
+
+    if (!A.compareDim(A, B))
+        throw cuCV::exception::DimensionMismatch(A, B);
+    
+    if (!A.compareDim(OUT, A))
+        throw cuCV::exception::DimensionMismatch(OUT, A);
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
+
+    /// Perform Math
+    cuCV::kernel::div<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
+
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize()); 
+}
+
+
+template <typename T>
+void cuCV::div(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const T alpha) {
+    if (A.getDataPtr() == NULL)
+        throw cuCV::exception::NullPointer("Calculation failed. One or more operands point to NULL data!");
+
+    if (OUT.getDataPtr() == NULL)
+        OUT.allocateLike(A);
+    
+    if (!A.compareDim(OUT, A))
+        throw cuCV::exception::DimensionMismatch(OUT, A);
+
+    // Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
+    const dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+    const dim3 blocks((OUT.getWidth() + threads.x - 1) / threads.x, (OUT.getHeight() + threads.y - 1) / threads.y, OUT.getNChannels());
+
+    /// Perform Math
+    cuCV::kernel::div<<<blocks, threads>>>(OUT.kernel(), A.kernel(), alpha);
+
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize());
+}
+
+
+
+template <typename T>
 void cuCV::simpleMatmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat<T> & B) {
     // Matrices must have a shape that matches the signature A(m,n) @ B(n,l)->(m,l)
     if (A.getWidth() != B.getHeight() || A.getNChannels() != B.getNChannels())
@@ -248,7 +445,7 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
      * 
      * Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
      * rowKernel must be of shape (W,1) (horizontal vector)
-     * blockDim should be of shape: (X,1,Z), where X = KERNEL_RADIUS_ALIGNED + ROW_TILE_W + KERNEL_RADIUS and Z the depth of the image.
+     * blockDim should be of shape: (X,1), where X = KERNEL_RADIUS_ALIGNED + ROW_TILE_W + KERNEL_RADIUS.
      * gridDim should be of shape: ((A.mWidth / ROW_TILE_WIDTH + 1), A.mHeight, A.mChannels), resulting in one block per tile.
      * Hence, it is independet of threadsIdx (in contrast to all other kernel calls in cuCV).
      * A shared memory of size (W // 2 + ROW_TILE_WIDTH + W // 2) * sizeof(T1) + rowKernel.mWidth * sizeof(T2) will be allocated dynamically.
@@ -277,14 +474,17 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
      * 
      * Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
      * rowKernel must be of shape (W,1) (horizontal vector)
-     * blockDim should be of shape: (X,1,Z), where X = KERNEL_RADIUS_ALIGNED + ROW_TILE_W + KERNEL_RADIUS and Z the depth of the image.
+     * blockDim should be of shape: (X,Y), where X = 32, Y = TILE_HEIGHT_Y. 
+     * @note: X= 16 or 32 to ensure coalesced memory access?? "To match coalescing requirements, it is
+     * the best to set the width to 32 (or 16 on pre-Fermi cards)" from https://cg.ivd.kit.edu/downloads/GPGPU_assignment_3.pdf
+     * 
      * gridDim should be of shape: ((A.mWidth / ROW_TILE_WIDTH + 1), A.mHeight, A.mChannels), resulting in one block per tile.
      * Hence, it is independet of threadsIdx (in contrast to all other kernel calls in cuCV).
      * A shared memory of size (W // 2 + ROW_TILE_WIDTH + W // 2) * sizeof(T1) + colKernel.mWidth * sizeof(T2) will be allocated dynamically.
      */
     {
-        const size_t TILE_WIDTH_X = 16, TILE_HEIGHT_Y = 32, kNy = (size_t) colKernel.getHeight() / 2;   
-        const dim3 threads(TILE_WIDTH_X, BLOCK_SIZE);
+        const size_t TILE_WIDTH_X = 32, TILE_HEIGHT_Y = 32, kNy = (size_t) colKernel.getHeight() / 2;   
+        const dim3 threads(TILE_WIDTH_X, std::min(BLOCK_SIZE, 32));
         const dim3 blocks((A.getWidth() + TILE_WIDTH_X - 1) / TILE_WIDTH_X, (A.getHeight() + TILE_HEIGHT_Y - 1) / TILE_HEIGHT_Y, A.getNChannels());
         const size_t shCountsA = cuCV::convHelper::cucvAddBytes2Align((TILE_HEIGHT_Y + 2 * kNy) * TILE_WIDTH_X * sizeof(T1), sizeof(T2));
         const size_t shMemCounts = shCountsA + (size_t) (colKernel.getWidth() * colKernel.getHeight() * sizeof(T2));
@@ -294,7 +494,7 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
         if (colKernel.getHeight() <= 1 && colKernel.getWidth() > 1)
             fprintf(stderr, "Warning: Column Kernel height for seperated convolution is %d, but height is %d.\n", colKernel.getHeight(), colKernel.getWidth());
 
-        ///< @todo is there another way to solve this? We need to synchronize threads on block level in sepColConv2d if we want to pass OUT as input and output.
+        ///< @todo is there another way to solve this? We need to synchronize threads on grid level in sepColConv2d if we want to pass OUT as input and output.
         ///< copy OUT as OUT serves as input and output. 
         ///< Kernel sepColConv2d() loads it into shared mem and writes it later. No synchronization is guaranteed.
         cuCV::CuMat<T1> temp(OUT); 
@@ -335,6 +535,12 @@ void cuCV::convHelper::checks(const CuMat<T1> & A, const CuMat<T2> & kernel) {
                 + std::to_string(kernel.getWidth()) + ", " + std::to_string(kernel.getHeight()) + ")";
         throw std::runtime_error(msg);
     }
+
+    if (kernel.getHeight() % 2 == 0 || kernel.getWidth() % 2 == 0) {
+        std::string msg = "Currently, only odd side lengths of filters are allowed in cuCV. You set: ("
+            + std::to_string(kernel.getWidth()) + ", " + std::to_string(kernel.getHeight()) + ").";
+        throw std::runtime_error(msg);
+    }
 }
 
 
@@ -372,6 +578,46 @@ size_t cuCV::convHelper::cucvAddBytes2Align(size_t arrayCounts, size_t sizeofNex
 
 
 /// Explicit template specialization
+template void cuCV::add(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const cuCV::CuMat<CUCV_8U> & B);
+template void cuCV::add(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const cuCV::CuMat<CUCV_16U> & B);
+template void cuCV::add(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const cuCV::CuMat<CUCV_32F> & B);
+template void cuCV::add(cuCV::CuMat<CUCV_64F> & OUT, const cuCV::CuMat<CUCV_64F> & A, const cuCV::CuMat<CUCV_64F> & B);
+
+template void cuCV::add(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const CUCV_8U alpha);
+template void cuCV::add(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const CUCV_16U alpha);
+template void cuCV::add(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const CUCV_32F alpha);
+template void cuCV::add(cuCV::CuMat<CUCV_64F> & OUT, const cuCV::CuMat<CUCV_64F> & A, const CUCV_64F alpha);
+
+template void cuCV::dif(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const cuCV::CuMat<CUCV_8U> & B);
+template void cuCV::dif(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const cuCV::CuMat<CUCV_16U> & B);
+template void cuCV::dif(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const cuCV::CuMat<CUCV_32F> & B);
+template void cuCV::dif(cuCV::CuMat<CUCV_64F> & OUT, const cuCV::CuMat<CUCV_64F> & A, const cuCV::CuMat<CUCV_64F> & B);
+
+template void cuCV::dif(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const CUCV_8U alpha);
+template void cuCV::dif(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const CUCV_16U alpha);
+template void cuCV::dif(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const CUCV_32F alpha);
+template void cuCV::dif(cuCV::CuMat<CUCV_64F> & OUT, const cuCV::CuMat<CUCV_64F> & A, const CUCV_64F alpha);
+
+template void cuCV::mul(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const cuCV::CuMat<CUCV_8U> & B);
+template void cuCV::mul(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const cuCV::CuMat<CUCV_16U> & B);
+template void cuCV::mul(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const cuCV::CuMat<CUCV_32F> & B);
+template void cuCV::mul(cuCV::CuMat<CUCV_64F> & OUT, const cuCV::CuMat<CUCV_64F> & A, const cuCV::CuMat<CUCV_64F> & B);
+
+template void cuCV::mul(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const CUCV_8U alpha);
+template void cuCV::mul(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const CUCV_16U alpha);
+template void cuCV::mul(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const CUCV_32F alpha);
+template void cuCV::mul(cuCV::CuMat<CUCV_64F> & OUT, const cuCV::CuMat<CUCV_64F> & A, const CUCV_64F alpha);
+
+template void cuCV::div(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const cuCV::CuMat<CUCV_8U> & B);
+template void cuCV::div(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const cuCV::CuMat<CUCV_16U> & B);
+template void cuCV::div(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const cuCV::CuMat<CUCV_32F> & B);
+template void cuCV::div(cuCV::CuMat<CUCV_64F> & OUT, const cuCV::CuMat<CUCV_64F> & A, const cuCV::CuMat<CUCV_64F> & B);
+
+template void cuCV::div(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const CUCV_8U alpha);
+template void cuCV::div(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const CUCV_16U alpha);
+template void cuCV::div(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const CUCV_32F alpha);
+template void cuCV::div(cuCV::CuMat<CUCV_64F> & OUT, const cuCV::CuMat<CUCV_64F> & A, const CUCV_64F alpha);
+
 template void cuCV::simpleMatmul(cuCV::CuMat<CUCV_8U> & OUT, const cuCV::CuMat<CUCV_8U> & A, const cuCV::CuMat<CUCV_8U> & B);
 template void cuCV::simpleMatmul(cuCV::CuMat<CUCV_16U> & OUT, const cuCV::CuMat<CUCV_16U> & A, const cuCV::CuMat<CUCV_16U> & B);
 template void cuCV::simpleMatmul(cuCV::CuMat<CUCV_32F> & OUT, const cuCV::CuMat<CUCV_32F> & A, const cuCV::CuMat<CUCV_32F> & B);

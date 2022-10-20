@@ -20,6 +20,7 @@
 #include "mat.h"
 #include "kernel.h"
 #include "devicecumat.h"
+#include "linalg.h"
 
 #define BLOCK_SIZE 32
 
@@ -194,6 +195,7 @@ public:
 //private:
     /**
      * @brief Compare Dimenions of Matrix A and B on Equality.
+     * @todo They should not be member functions.
      * 
      * @param A Matrix A
      * @param B Matrix B
