@@ -8,3 +8,6 @@ target_link_libraries(cuCVdemoCopyctor PRIVATE cuCV_LIB)
 
 add_executable(cuCVdemoCopyMove demo_copymove.cpp)
 target_link_libraries(cuCVdemoCopyMove PRIVATE cuCV_LIB)
+
+add_executable(cudaleak cudaleak.cu)
+target_link_libraries(cudaleak PRIVATE cuCV_LIB)
