@@ -446,7 +446,7 @@ void cuCV::kernel::sepRowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
     const unsigned int col0 = blockIdx.x * tileWidth;  ///< or x0: The index where the actual data of the tile begins.
     const unsigned int colN = col0 + tileWidth - 1;  ///< or xN: The index where the data of the tile ends.
     const int col0Apron = col0 - kNx;  ///< The index where the apron begins. Note that it may be negative (out of bounds to the left).
-    const int col0ApronAligned = col0Apron - ALIGNED_OFFSET;  ///< The index of A that will access the first element of the shared memory.
+    const int col0ApronAligned = col0Apron - ALIGNED_OFFSET;  ///< The index of A that will meet half warp requirement.
 
     const unsigned int row0 = blockIdx.y;  ///> The index of the row of currents block.
 
@@ -464,8 +464,8 @@ void cuCV::kernel::sepRowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
      * row0 + col0ApronAligned should also be a multuiple of half-warp size. This will ensure proper 
      * alignment for coalesced data read.
      */
-    int col = col0ApronAligned + threadIdx.x;
-    if (col >= col0Apron) {  // Some threads, which are not aligned will be inactive.
+    int col = col0ApronAligned + threadIdx.x;  // col will be aligned for threadId.x == 0
+    if (col >= col0Apron) {  // some thread which point to data out of bounds of tile and apron will be inactive
         const int iSharedA = col - col0Apron;  
         if (col >= 0 && col < A.getWidth())  // inbound
             sharedA[iSharedA] = A.getElement(row0, col, threadIdx.z);
@@ -476,6 +476,7 @@ void cuCV::kernel::sepRowConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
     /** Load data of rowKernel (__global__) into sharedK.
      * If there ARE inactive threads due to alignemt, 
      * (some) of them will be used to load the kernel
+     * @bug use for loop for case length of sharedK > blockDim
      */
     if (threadIdx.x < rowKernel.getWidth())
         sharedK[threadIdx.x] = rowKernel.getElement(0, threadIdx.x, threadIdx.z);
@@ -506,7 +507,7 @@ void cuCV::kernel::sepColConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
     /**
      * colKernel must be of shape (1,Y): vertical / column vector
      * blockDim should be of shape: (X,Y,Z), where 
-     *      X = tileWidth : Should be of length 16 at least: in case of uint8 pixels it will result in 16 threads (half warp)
+     *      X = tileWidth : Should be of length 32 at least: in case of uint8 pixels it will result in 32 threads (warp)
      *      Y = KERNEL_HALF + tileHeight + KERNEL_HALF : 
      *      Z = the depth of the image.
      * gridDim should be of shape: (gX, gY, gZ), where
@@ -564,7 +565,8 @@ void cuCV::kernel::sepColConv2d(cuCV::DeviceCuMat<T1> OUT, const cuCV::DeviceCuM
         iSharedA += blockDim.y * blockDim.x;
     }
 
-    /** Load data of colKernel (__global__) into sharedK. */
+    /** Load data of colKernel (__global__) into sharedK. 
+     * @bug use for loop for case length of sharedK > blockDim */
     int iSharedK = threadIdx.y * blockDim.x + threadIdx.x;
     if (iSharedK < colKernel.getHeight())
         sharedK[iSharedK] = colKernel.getElement(0, iSharedK, threadIdx.z);
