@@ -441,6 +441,14 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
     if (OUT.getDataPtr() == NULL)
         OUT.allocateOnDevice();
 
+    /** @todo is there another way to solve this? 
+     * We need to synchronize threads on grid level in sepColConv2d if we want to pass OUT as input and output.
+     * Kernel sepColConv2d() loads it into shared mem and writes it later. No synchronization is guaranteed. 
+     * For now, we create a temp object that serves as output of the row pass and input of col pass. 
+     * */
+    cuCV::CuMat<T1> temp(OUT.getWidth(), OUT.getHeight(), OUT.getNChannels());
+    temp.allocateOnDevice(); 
+
     /** Call CUDA kernel: sepRowConv2d():
      * 
      * Construct Grid. As for images usually cols && rows >> nCh we do not launch a whole thread-block in z dimension.
@@ -463,7 +471,7 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
         if (rowKernel.getWidth() <= 1 && rowKernel.getHeight() > 1)
             fprintf(stderr, "Warning: Row Kernel width for seperated convolution is %d, but height is: %d.\n", rowKernel.getWidth(), rowKernel.getHeight());
 
-        cuCV::kernel::sepRowConv2d<<<blocks, threads, shMemCounts>>>(OUT.kernel(), A.kernel(), rowKernel.kernel(), TILE_WIDTH_X, shCountsA / sizeof(T1), padding);
+        cuCV::kernel::sepRowConv2d<<<blocks, threads, shMemCounts>>>(temp.kernel(), A.kernel(), rowKernel.kernel(), TILE_WIDTH_X, shCountsA / sizeof(T1), padding);
         
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
@@ -493,11 +501,6 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
         /// @todo: Warning or automatic reshape if kernel is not a col kernel
         if (colKernel.getHeight() <= 1 && colKernel.getWidth() > 1)
             fprintf(stderr, "Warning: Column Kernel height for seperated convolution is %d, but height is %d.\n", colKernel.getHeight(), colKernel.getWidth());
-
-        ///< @todo is there another way to solve this? We need to synchronize threads on grid level in sepColConv2d if we want to pass OUT as input and output.
-        ///< copy OUT as OUT serves as input and output. 
-        ///< Kernel sepColConv2d() loads it into shared mem and writes it later. No synchronization is guaranteed.
-        cuCV::CuMat<T1> temp(OUT); 
         
         cuCV::kernel::sepColConv2d<<<blocks, threads, shMemCounts>>>(OUT.kernel(), temp.kernel(), colKernel.kernel(), TILE_WIDTH_X, TILE_HEIGHT_Y, shCountsA / sizeof(T1), padding);
 
