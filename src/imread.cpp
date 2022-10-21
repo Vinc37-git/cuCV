@@ -13,7 +13,11 @@
 
 
 cuCV::Mat<CUCV_8U> cuCV::imread(const char * path) {
-
+    if (path == NULL) {
+        fprintf(stderr, "Error: No file found at '%s'. Invalid Pointer.\n", path);
+        exit(EXIT_FAILURE);
+    }
+    
     if (!std::filesystem::is_regular_file(path)) {
         fprintf(stderr, "Error: No file found at '%s'\n", path);
         exit(EXIT_FAILURE);
@@ -35,7 +39,12 @@ cuCV::Mat<CUCV_8U> cuCV::imread(const char * path) {
 }
 
 
-cuCV::CuMat<CUCV_8U> cuCV::imreadToDevice(const char * path) {
+cuCV::CuMat<CUCV_8U> cuCV::imreadToDevice(const char * path) {    
+    if (path == NULL) {
+        fprintf(stderr, "Error: No file found at '%s'. Invalid Pointer.\n", path);
+        exit(EXIT_FAILURE);
+    }
+    
     if (!std::filesystem::is_regular_file(path)) {
         fprintf(stderr, "Error: No file found at '%s'\n", path);
         exit(EXIT_FAILURE);
