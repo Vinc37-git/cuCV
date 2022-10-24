@@ -32,8 +32,10 @@ cuCV::CuMat<T> cuCV::zerosOnDevice(int width, int height, int channels) {
     /// Perform Math
     cuCV::kernel::zeros<<<blocks, threads>>>(mat.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return mat;
 }
@@ -51,8 +53,10 @@ cuCV::CuMat<T> cuCV::onesOnDevice(int width, int height, int channels) {
     /// Perform Math
     cuCV::kernel::ones<<<blocks, threads>>>(mat.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return mat;
 }
@@ -70,8 +74,10 @@ cuCV::CuMat<T> cuCV::eyeOnDevice(int width, int height, int channels) {
     /// Perform Math
     cuCV::kernel::eye<<<blocks, threads>>>(mat.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return mat;
 }
@@ -106,8 +112,10 @@ cuCV::CuMat<T> cuCV::gaussOnDevice(int width, int height, int channels, double s
     if ((bool) norm) {
         //cuCV::kernel::gauss<<<blocks, threads>>>(mat.kernel(), sigma, norm, pSum);
         cuCV::kernel::div<<<blocks, threads>>>(mat.kernel(), mat.kernel(), pSum);
+        #if CUCV_DEBUG
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
+        #endif
     }
 
     gpuErrchk(cudaFree(pSum));

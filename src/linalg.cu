@@ -33,8 +33,10 @@ void cuCV::add(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat
     /// Perform Math
     cuCV::kernel::add<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -56,8 +58,10 @@ void cuCV::add(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const T alpha) {
     /// Perform Math
     cuCV::kernel::add<<<blocks, threads>>>(OUT.kernel(), A.kernel(), alpha);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -82,8 +86,10 @@ void cuCV::dif(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat
     /// Perform Math
     cuCV::kernel::dif<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize()); 
+    #endif
 }
 
 
@@ -105,8 +111,10 @@ void cuCV::dif(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const T alpha) {
     /// Perform Math
     cuCV::kernel::dif<<<blocks, threads>>>(OUT.kernel(), A.kernel(), alpha);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -131,8 +139,10 @@ void cuCV::mul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat
     /// Perform Math
     cuCV::kernel::mul<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize()); 
+    #endif
 }
 
 
@@ -154,8 +164,10 @@ void cuCV::mul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const T alpha) {
     /// Perform Math
     cuCV::kernel::mul<<<blocks, threads>>>(OUT.kernel(), A.kernel(), alpha);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -180,8 +192,10 @@ void cuCV::div(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::CuMat
     /// Perform Math
     cuCV::kernel::div<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize()); 
+    #endif
 }
 
 
@@ -203,8 +217,10 @@ void cuCV::div(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const T alpha) {
     /// Perform Math
     cuCV::kernel::div<<<blocks, threads>>>(OUT.kernel(), A.kernel(), alpha);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -231,8 +247,10 @@ void cuCV::simpleMatmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cu
     /// Perform Math
     cuCV::kernel::naiveMatmul<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -269,8 +287,10 @@ void cuCV::matmul(cuCV::CuMat<T> & OUT, const cuCV::CuMat<T> & A, const cuCV::Cu
     /// Perform Math
     cuCV::kernel::matmul<<<blocks, threads>>>(OUT.kernel(), A.kernel(), B.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -307,8 +327,10 @@ void cuCV::simpleConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2> & 
 
     cuCV::kernel::simpleConv2d<<<blocks, threads>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -351,8 +373,10 @@ void cuCV::simpleSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<
 
     cuCV::kernel::simpleSharedConv2d<<<blocks, threads, kernelCounts>>>(OUT.kernel(), A.kernel(), kernel.kernel(), padding);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -404,8 +428,10 @@ void cuCV::sharedPaddingConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat
 
     cuCV::kernel::sharedPaddingConv2d<<<blocks, threads, shMemCounts>>>(OUT.kernel(), A.kernel(), kernel.kernel(), shCountsA / sizeof(T1), padding);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 }
 
 
@@ -457,10 +483,11 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
      * gridDim should be of shape: ((A.mWidth / ROW_TILE_WIDTH + 1), A.mHeight, A.mChannels), resulting in one block per tile.
      * Hence, it is independet of threadsIdx (in contrast to all other kernel calls in cuCV).
      * A shared memory of size (W // 2 + ROW_TILE_WIDTH + W // 2) * sizeof(T1) + rowKernel.mWidth * sizeof(T2) will be allocated dynamically.
+     * @todo: Determine alignment value. The transactions are very high!!
      */
     {
-        const size_t TILE_WIDTH_X = 128, kNx = (size_t) rowKernel.getWidth() / 2, ALIGNMENT_OFFSET = 0, kNx_aligned = kNx + ALIGNMENT_OFFSET;   
-        const dim3 threads(kNx_aligned + TILE_WIDTH_X + kNx);
+        const size_t TILE_WIDTH_X = 256, kNx = (size_t) rowKernel.getWidth() / 2, ALIGNMENT_OFFSET = kNx;  // or use std::max((size_t) 16, kNx);   
+        const dim3 threads(ALIGNMENT_OFFSET + TILE_WIDTH_X + kNx);
         const dim3 blocks((A.getWidth() + TILE_WIDTH_X - 1) / TILE_WIDTH_X, A.getHeight(), A.getNChannels());
         const size_t shCountsA = cuCV::convHelper::cucvAddBytes2Align((TILE_WIDTH_X + 2 * kNx) * sizeof(T1), sizeof(T2));
         const size_t shMemCounts = shCountsA + (size_t) (rowKernel.getWidth() * rowKernel.getHeight() * sizeof(T2));
@@ -473,8 +500,10 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
 
         cuCV::kernel::sepRowConv2d<<<blocks, threads, shMemCounts>>>(temp.kernel(), A.kernel(), rowKernel.kernel(), TILE_WIDTH_X, shCountsA / sizeof(T1), padding);
         
+        #if CUCV_DEBUG
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
+        #endif
     }
     
 
@@ -504,8 +533,10 @@ void cuCV::sepSharedConv2d(CuMat<T1> & OUT, const CuMat<T1> & A, const CuMat<T2>
         
         cuCV::kernel::sepColConv2d<<<blocks, threads, shMemCounts>>>(OUT.kernel(), temp.kernel(), colKernel.kernel(), TILE_WIDTH_X, TILE_HEIGHT_Y, shCountsA / sizeof(T1), padding);
 
+        #if CUCV_DEBUG
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
+        #endif
     }
 }
 

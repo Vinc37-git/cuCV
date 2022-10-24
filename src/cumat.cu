@@ -89,8 +89,10 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator+=(const CuMat & cuMat) {
     /// Perform Math
     cuCV::kernel::add<<<blocks, threads>>>(this->kernel(), this->kernel(), cuMat.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return * this;    
 }
@@ -108,8 +110,10 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator+=(T alpha) {
     /// Perform Math
     cuCV::kernel::add<<<blocks, threads>>>(this->kernel(), this->kernel(), alpha);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return * this;    
 }
@@ -147,8 +151,10 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator-=(const CuMat & cuMat) {
     /// Perform Math
     cuCV::kernel::dif<<<blocks, threads>>>(this->kernel(), this->kernel(), cuMat.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return * this;    
 }
@@ -166,8 +172,10 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator-=(T alpha) {
     /// Perform Math
     cuCV::kernel::dif<<<blocks, threads>>>(this->kernel(), this->kernel(), alpha);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return * this;    
 }
@@ -204,8 +212,10 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator*=(const CuMat & cuMat) {
     /// Perform Math
     cuCV::kernel::mul<<<blocks, threads>>>(this->kernel(), this->kernel(), cuMat.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return * this;    
 }
@@ -223,8 +233,10 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator*=(T alpha) {
     /// Perform Math
     cuCV::kernel::mul<<<blocks, threads>>>(this->kernel(), this->kernel(), alpha);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return * this;    
 }
@@ -261,8 +273,10 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator/=(const CuMat & cuMat) {
     /// Perform Math
     cuCV::kernel::div<<<blocks, threads>>>(this->kernel(), this->kernel(), cuMat.kernel());
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return * this;    
 }
@@ -280,8 +294,10 @@ cuCV::CuMat<T> & cuCV::CuMat<T>::operator/=(T alpha) {
     /// Perform Math
     cuCV::kernel::div<<<blocks, threads>>>(this->kernel(), this->kernel(), alpha);
 
+    #if CUCV_DEBUG
     gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
+    #endif
 
     return * this;    
 }

@@ -28,7 +28,9 @@ include_directories(${JPEG_INCLUDE_DIR})
 target_link_libraries(cuCV_LIB PUBLIC ${JPEG_LIBRARY})
 
 # Activate DEBUG printouts to stdout
-target_compile_definitions(cuCV_LIB PUBLIC CUCV_DEBUG)
+#target_compile_definitions(cuCV_LIB PUBLIC CUCV_DEBUG)
+#target_compile_options(cuCV_LIB PUBLIC -O0 -fno-elide-constructors)
+
 
 # Request that cuCV_LIB be built with -std=c++11
 # As this is a public compile feature anything that links to cuCV_LIB
