@@ -1,0 +1,4 @@
+./measurments/cucvRuntimeMeasurments8U
+./measurments/cucvRuntimeMeasurments16U
+./measurments/cucvRuntimeMeasurments32F
+./measurments/cucvRuntimeMeasurments64F 
