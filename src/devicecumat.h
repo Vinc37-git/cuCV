@@ -30,6 +30,7 @@ class CuMat;  // Forward Declaration of CuMat to make sure compiler knows the cl
  * Note that most of the member functions are __device__ functions. Hence, it should not be used on the host.
  * Use it only for kernel calls else the standard CuMat Class. The standard CuMat objects can be returned as a Device CuMat obect
  * using the build in method `kernel()`. 
+ * @todo: write docu for methods.
  * 
  * @tparam T The CUCV datatype.
  */
@@ -37,34 +38,59 @@ template <typename T>
 class DeviceCuMat {
 public:
 
+    /**
+     * @brief Construct a DeviceCuMat Objekt using a cuMat object. 
+     * Note that it is not intended to use this constructor for a kernel call.
+     * Rather use the kernel() method of CuMat Objects.
+     * 
+     * @param cuMat 
+     */
     __host__ 
     DeviceCuMat(const CuMat<T> & cuMat);
 
 
+    /**
+     * @brief Construct a DeviceCuMat Objekt using the following parameter. 
+     * Note that it is not intended to use this constructor for a kernel call.
+     * Rather use the kernel() method of CuMat Objects.
+     * 
+     * @param width 
+     * @param height 
+     * @param channels 
+     * @param strideX 
+     * @param strideY 
+     */
     __device__ 
     DeviceCuMat(int width, int height, int channels, int strideX, int strideY);
 
 
+    /** @brief Get Sub Matrix of matrix, where width and height is the blockDim. 
+     * Specify the blockId on the grid. */
     __device__ 
     cuCV::DeviceCuMat<T> getBlock(int blockIdRow, int blockIdCol, int blockIdCh=0) const;
 
 
+    /** @brief Get Sub Matrix of matrix. Specify the first element (upper left corner) and width an height.*/
     __device__ 
     cuCV::DeviceCuMat<T> getSubCuMat(const int row, const int col, const int ch, const int width, const int height) const;
 
 
+    /** @brief set element of matrix at specific 2D Position. */
     __device__ 
     void setElement(const int row, const int col, const T value);
 
 
+    /** @brief Set element of matrix at specific 3D Position. */
     __device__ 
     void setElement(const int row, const int col, const int ch, const T value);
 
 
+    /** @brief Get element of matrix at specific 2D Position. */
     __device__ 
     T getElement(const int row, const int col) const;
 
 
+    /** @brief Get element of matrix at specific 3D Position. */
     __device__ 
     T getElement(const int row, const int col, const int ch) const;
 
@@ -100,7 +126,6 @@ public:
     size_t getSize() const;
 
 
-///< @todo make private
 private:
     int mWidth;  ///< Width of the matrix represented by the mat object.
     int mHeight;  ///< Height of the matrix represented by the mat object.
