@@ -72,7 +72,7 @@ int main(int argc, char ** argv) {
 
         fclose(log);
     }
-    if (false)
+    //if (false)
     {
         // Measure Matrix Multiplication
         fs::path fpath = fs::path(__FILE__).parent_path() / "logs" / fs::path("matmul_" + std::to_string(countPerElem) + "B.csv");
@@ -89,7 +89,7 @@ int main(int argc, char ** argv) {
 
         fclose(log);
     }
-    if (false)
+    //if (false)
     {
         N = 2048;
         // Measure Convolution
